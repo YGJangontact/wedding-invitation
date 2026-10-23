@@ -2,6 +2,18 @@
   // Static previews and reduced-motion visitors get the complete, still invitation.
   const preference = matchMedia('(prefers-reduced-motion: reduce)');
   const hero = document.querySelector<HTMLElement>('.new-hero, .hero');
+  if (hero && document.body.dataset.theme !== 'editorial') {
+    const petals=document.createElement('div');
+    petals.className='may-petals';petals.setAttribute('aria-hidden','true');
+    for(let i=0;i<9;i++){
+      const petal=document.createElement('i');
+      petal.style.setProperty('--petal-x',`${6+(i*17)%88}%`);
+      petal.style.setProperty('--petal-delay',`${i*.34}s`);
+      petal.style.setProperty('--petal-turn',`${80+i*37}deg`);
+      petals.append(petal);
+    }
+    hero.append(petals);
+  }
   let cleanup = () => {};
   const start = () => {
     cleanup();
@@ -12,13 +24,13 @@
     const animations: Animation[] = [];
     const enter = (element: Element, delay: number) => {
       animations.push(element.animate([
-        { opacity: 0, transform: 'translateY(16px)' },
+        { opacity: 0, transform: 'translateY(34px)' },
         { opacity: 1, transform: 'translateY(0)' },
-      ], { duration: 850, delay, easing: 'cubic-bezier(.22,1,.36,1)', fill: 'backwards' }));
+      ], { duration: 1150, delay, easing: 'cubic-bezier(.22,1,.36,1)', fill: 'backwards' }));
     };
     // Don't replay an entrance when opening a deep link or restoring scroll position.
     if (!location.hash && window.scrollY < 40) {
-      Array.from(hero.children).forEach((element, i) => enter(element, Math.min(i * 110, 550)));
+      Array.from(hero.children).filter(element=>!element.classList.contains('may-petals')).forEach((element, i) => enter(element, Math.min(i * 170, 850)));
       hero.querySelectorAll<SVGPathElement>('.botanical path, .ribbon-drawing path, .ribbon-drawing ellipse').forEach(path => {
         const length = path.getTotalLength();
         animations.push(path.animate([
@@ -71,6 +83,18 @@
   window.addEventListener('pageshow', event => { if (event.persisted) start(); });
 </script>
 <style is:global>
+  .new-hero,.hero {position:relative;isolation:isolate;}
+  .may-petals {position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:2;}
+  .may-petals i {position:absolute;left:var(--petal-x);top:-24px;width:11px;height:17px;border-radius:80% 12% 70% 25%;background:#f1d9d4;opacity:0;box-shadow:inset 2px 1px 3px #fff9;}
+  .may-petals i:nth-child(even) {background:#fff9ed;width:9px;height:14px;}
+  [data-theme="ribbon"] .may-petals i {background:#e9e4dc;}
+  [data-motion="active"] .may-petals i {animation:may-fall 6s var(--petal-delay) ease-in-out both;}
+  @keyframes may-fall {
+    0% {opacity:0;transform:translate3d(-15px,0,0) rotate(0deg);}
+    15% {opacity:.85;}
+    75% {opacity:.65;}
+    100% {opacity:0;transform:translate3d(32px,600px,0) rotate(var(--petal-turn));}
+  }
   .scroll-picture { overflow: hidden; }
   .scroll-picture > img,
   .scroll-picture > .botanical,

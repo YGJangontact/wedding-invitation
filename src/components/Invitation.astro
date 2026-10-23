@@ -6,6 +6,7 @@ import '../styles/themes.css';
 import '../styles/new-themes.css';
 import NewHero from './NewHero.astro';
 import InvitationMotion from './InvitationMotion.astro';
+import SeasonStory from './SeasonStory.astro';
 import {themes as choices,sitePath} from '../data/themes';
 const { theme = 'garden' } = Astro.props;
 const fresh = choices.some(t=>t.id===theme && t.fresh);
@@ -45,6 +46,7 @@ const days = new Date(Date.UTC(year,month,0)).getUTCDate();
         <div class="hero-bottom"><p>{fullDate}<br/><strong>{time}</strong></p><p>{w.city} {w.venue}<br/><span>{w.hall || '상세 홀 안내는 곧 전해드릴게요'}</span></p></div>
         <a class="scroll-link" href="#invitation">초대의 글 <span>↓</span></a>
       </header>}
+      <SeasonStory asset={asset}/>
       <section class="invitation" id="invitation"><span class="ornament">✳</span><p class="eyebrow">소중한 분들께</p><h2>우리의 첫날에<br/>함께해 주세요.</h2><div class="letter">{w.invitation.map(line=>line ? <p>{line}</p> : <br/>)}</div><p class="muted names-note">{w.names.every(Boolean) ? names : '이름과 가족 소개를 나중에 넣을 자리예요'}</p></section>
       <section class="day-section" id="day"><p class="eyebrow">기억해 주세요</p><h2>{year}. {String(month).padStart(2,'0')}. {String(day).padStart(2,'0')}</h2><p>{fullDate.split(' ').at(-1)} {time}</p><div class="calendar" role="group" aria-label={`${year}년 ${month}월 예식 달력`}><div class="calendar-row week">{['일','월','화','수','목','금','토'].map(d=><span >{d}</span>)}</div><div class="calendar-grid">{Array.from({length:offset},()=> <span aria-hidden="true"></span>)}{Array.from({length:days},(_,i)=><span class:list={{selected:i+1===day}} aria-label={i+1===day ? `${month}월 ${day}일 예식일` : undefined}>{i+1}</span>)}</div></div><p class="date-caption">달력에 작은 약속 하나, 함께해 주세요.</p></section>
       <Location />

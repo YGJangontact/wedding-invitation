@@ -1,0 +1,56 @@
+---
+import {wedding as w} from '../data/wedding';
+const {asset}=Astro.props;
+---
+<div class="season-story" aria-label="함께 맞이하는 오월">
+  <div class="season-stage">
+    <div class="season-art" aria-hidden="true">
+      {w.heroPhoto ? <img src={asset(w.heroPhoto)} alt="" loading="lazy"/> : <svg viewBox="0 0 400 600" fill="none"><g stroke="currentColor" stroke-width="2"><path d="M180 620Q270 380 190 180M210 470Q100 400 90 320Q200 320 210 470M214 370Q320 310 320 230Q220 255 214 370"/><g transform="translate(190 175)"><ellipse cy="-45" rx="26" ry="50"/><ellipse cy="-45" rx="26" ry="50" transform="rotate(72)"/><ellipse cy="-45" rx="26" ry="50" transform="rotate(144)"/><ellipse cy="-45" rx="26" ry="50" transform="rotate(216)"/><ellipse cy="-45" rx="26" ry="50" transform="rotate(288)"/><circle r="12"/></g></g></svg>}
+    </div>
+    <div class="season-copy season-first"><p>햇살이 머무는 오월</p><h2>함께 피어나는<br/>우리의 계절.</h2><span>천천히 아래로 내려보세요</span></div>
+    <div class="season-copy season-second"><p>서로의 내일이 되어</p><h2>우리의 시작에<br/>함께해 주세요.</h2></div>
+  </div>
+</div>
+<script>
+  const story=document.querySelector<HTMLElement>('.season-story');
+  const reduced=matchMedia('(prefers-reduced-motion: reduce)');
+  let stop=()=>{};
+  const setup=()=>{
+    stop();
+    if(!story || reduced.matches || new URLSearchParams(location.search).get('motion')==='off') return;
+    const stage=story.querySelector<HTMLElement>('.season-stage')!;
+    let frame=0;
+    const update=()=>{
+      frame=0;
+      const r=story.getBoundingClientRect();
+      const p=Math.max(0,Math.min(1,-r.top/Math.max(1,r.height-stage.offsetHeight)));
+      story.style.setProperty('--scene-progress',String(p));
+      story.style.setProperty('--first-opacity',String(Math.max(0,1-p*2)));
+      story.style.setProperty('--second-opacity',String(Math.max(0,Math.min(1,(p-.3)*2))));
+    };
+    const schedule=()=>{if(!frame)frame=requestAnimationFrame(update)};
+    story.classList.add('is-cinematic'); update();
+    window.addEventListener('scroll',schedule,{passive:true});window.addEventListener('resize',schedule);
+    stop=()=>{cancelAnimationFrame(frame);window.removeEventListener('scroll',schedule);window.removeEventListener('resize',schedule);story.classList.remove('is-cinematic');story.removeAttribute('style')};
+  };
+  setup();reduced.addEventListener('change',setup);
+  window.addEventListener('pagehide',()=>stop());window.addEventListener('pageshow',e=>{if(e.persisted)setup()});
+</script>
+<style is:global>
+  .season-story {background:var(--sage);position:relative;margin-top:20px;}
+  .season-stage {position:relative;overflow:hidden;isolation:isolate;}
+  .season-art {position:absolute;inset:0;z-index:-1;opacity:.35;}
+  .season-art svg,.season-art img {width:100%;height:100%;object-fit:cover;color:var(--green);}
+  .season-copy {padding:100px 28px;text-align:center;background:linear-gradient(0deg,var(--paper),transparent);}
+  .season-copy p {font:13px/1.8 var(--serif);margin-bottom:24px;}
+  .season-copy h2 {font:36px/1.6 var(--serif);letter-spacing:-1px;}
+  .season-copy span {display:block;font-size:11px;margin-top:36px;}
+  .season-second {background:var(--paper);}
+  .is-cinematic {height:240svh;}
+  .is-cinematic .season-stage {position:sticky;top:0;height:calc(100svh - 56px);min-height:380px;}
+  .is-cinematic .season-art {opacity:calc(.4 - var(--scene-progress)*.22);transform:scale(calc(1 + var(--scene-progress)*.55));}
+  .is-cinematic .season-copy {position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:40px 28px;}
+  .is-cinematic .season-first {opacity:var(--first-opacity,1);transform:translateY(calc(var(--scene-progress)*-65px));}
+  .is-cinematic .season-second {background:transparent;opacity:var(--second-opacity,0);transform:translateY(calc((1 - var(--scene-progress))*60px));}
+  @media(max-width:360px){.season-copy h2{font-size:30px;}}
+</style>
