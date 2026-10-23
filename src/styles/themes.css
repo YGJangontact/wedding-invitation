@@ -1,0 +1,52 @@
+.theme-picker { display:flex; justify-content:center; background:var(--paper); border-bottom:1px solid var(--line); gap:4px; padding:10px 8px; }
+.theme-picker a { padding:9px 10px; font-size:12px; min-height:44px; display:flex; align-items:center; }
+.theme-picker a[aria-current] { color:var(--green); border-bottom:2px solid var(--green); font-weight:600; }
+.theme-intro { text-align:center; padding:34px 0 26px; }
+.theme-intro p { font-size:10px; letter-spacing:3px; }
+.theme-intro > span { display:block; font:36px/1.6 var(--serif); margin-top:22px; }
+body[data-theme="classic"] { --paper:#fffaf1; --ink:#492f31; --green:#7b4246; --sage:#f0e7db; --line:#dbccbd; --muted:#89756b; background:#e7dfd5; }
+[data-theme="classic"] .draft-banner { background:#eee1d4; }
+[data-theme="classic"] .hero { margin:22px 20px 0; padding:0 18px; border:1px solid #ad8b65; outline:1px solid #d6c3aa; outline-offset:-7px; }
+[data-theme="classic"] .hero-top { border-bottom:1px solid var(--line); font-size:11px; }
+[data-theme="classic"] .hero-photo { border-radius:0; height:310px; background:#f1e5d6; }
+[data-theme="classic"] .arch { display:none; }
+[data-theme="classic"] .photo-placeholder { padding:35px 0 0; }
+[data-theme="classic"] .photo-placeholder:before { content:'&'; display:block; font:76px/1.5 Georgia,serif; color:#a77f57; }
+[data-theme="classic"] .hero-title { bottom:34px; }
+[data-theme="classic"] .hero-title h1 { font-size:26px; letter-spacing:1px; }
+[data-theme="classic"] .hero-title p { font-size:12px; margin-bottom:10px; }
+[data-theme="classic"] .day-section,[data-theme="classic"] .gallery { background:#f5eee3; }
+[data-theme="classic"] .gallery-placeholder { background:#e8dccb; color:#806c59; }
+[data-theme="classic"] .ornament { color:#ae8b5c; }
+[data-theme="classic"] .letter { font-size:16px; }
+body[data-theme="minimal"] { --paper:#fff; --ink:#232729; --green:#263e4d; --sage:#f1f3f4; --line:#dddfe1; --muted:#68747a; background:#e8ebee; }
+[data-theme="minimal"] h1,[data-theme="minimal"] h2,[data-theme="minimal"] .letter { font-family:var(--sans); }
+[data-theme="minimal"] .draft-banner { background:#f0f2f4; }
+[data-theme="minimal"] .hero { padding:0 30px; }
+[data-theme="minimal"] .hero-top { font-family:var(--sans); font-size:11px; border-bottom:1px solid var(--ink); }
+[data-theme="minimal"] .theme-intro { text-align:left; padding:36px 0 30px; }
+[data-theme="minimal"] .theme-intro > span { font:64px/1.15 var(--sans); letter-spacing:-5px; margin-top:14px; }
+[data-theme="minimal"] .hero-photo { border-radius:0; height:330px; background:#eff2f3; }
+[data-theme="minimal"] .arch { display:none; }
+[data-theme="minimal"] .photo-placeholder { padding-top:75px; }
+[data-theme="minimal"] .photo-placeholder:before { content:'OUR MOMENT'; display:block; font:10px/2 var(--sans); letter-spacing:4px; padding-bottom:12px; }
+[data-theme="minimal"] .hero-title { text-align:left; left:22px; right:16px; bottom:25px; }
+[data-theme="minimal"] .hero-title h1 { font-size:28px; letter-spacing:-1px; }
+[data-theme="minimal"] .hero-title p { font-family:var(--sans); font-size:11px; }
+[data-theme="minimal"] .hero-bottom { display:grid; grid-template-columns:1fr 1fr; gap:12px; text-align:left; font:13px/2 var(--sans); }
+[data-theme="minimal"] .hero-bottom p+p { margin:0; }
+[data-theme="minimal"] .ornament { display:none; }
+[data-theme="minimal"] section { text-align:left; padding-top:60px; padding-bottom:60px; }
+[data-theme="minimal"] .day-section,[data-theme="minimal"] .gallery { background:#f5f6f7; }
+[data-theme="minimal"] .gallery-placeholder { background:#e7ebed; color:#69777f; }
+[data-theme="minimal"] .invitation h2 { font-size:29px; line-height:1.6; }
+[data-theme="minimal"] .calendar { margin-left:0; }
+[data-theme="minimal"] .venue-card { background:none; border:0; border-top:1px solid var(--ink); padding:24px 0; }
+[data-theme="minimal"] .venue-symbol { display:none; }
+[data-theme="minimal"] .venue-card p { margin-left:0; }
+[data-theme="minimal"] .desktop-note { color:#52646d; }
+.naver-map-shell { margin-top:20px; border:1px solid var(--line); }
+#venue-map { height:300px; width:100%; background:var(--sage); }
+.map-status { font-size:12px; padding:12px; line-height:1.6; }
+.map-pin { background:#fff; color:#263e4d; padding:8px 12px; border:1px solid #263e4d; white-space:nowrap; font:bold 13px/1.5 sans-serif; box-shadow:0 3px 10px #0002; }
+@media(max-width:360px){[data-theme="classic"] .hero {margin-left:14px;margin-right:14px;padding:0 14px;} [data-theme="minimal"] .hero{padding:0 24px;} .theme-picker a{font-size:11px;padding:9px 8px;}}

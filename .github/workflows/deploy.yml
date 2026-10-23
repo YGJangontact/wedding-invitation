@@ -12,6 +12,8 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      PUBLIC_NAVER_MAP_CLIENT_ID: ${{ vars.PUBLIC_NAVER_MAP_CLIENT_ID }}
     steps:
       - uses: actions/checkout@v7
       - uses: withastro/action@v6

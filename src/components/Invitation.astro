@@ -1,0 +1,66 @@
+---
+import { wedding as w } from '../data/wedding';
+import '../styles/global.css';
+import Location from './Location.astro';
+import '../styles/themes.css';
+const { theme = 'garden' } = Astro.props;
+const choices = [{id:'garden',name:'봄의 정원'},{id:'classic',name:'클래식 초대장'},{id:'minimal',name:'미니멀'}];
+const themeName = choices.find(t=>t.id===theme)?.name;
+const asset = (path: string) => path.startsWith('/') ? import.meta.env.BASE_URL.replace(/\/$/, '') + path : path;
+const names = w.names.every(Boolean) ? w.names.join(' · ') : '두 사람의 이름';
+const date = new Date(w.date);
+const year = Number(new Intl.DateTimeFormat('en',{timeZone:'Asia/Seoul',year:'numeric'}).format(date));
+const month = Number(new Intl.DateTimeFormat('en',{timeZone:'Asia/Seoul',month:'numeric'}).format(date));
+const day = Number(new Intl.DateTimeFormat('en',{timeZone:'Asia/Seoul',day:'numeric'}).format(date));
+const fullDate = new Intl.DateTimeFormat('ko-KR',{timeZone:'Asia/Seoul',year:'numeric',month:'long',day:'numeric',weekday:'long'}).format(date);
+const time = new Intl.DateTimeFormat('ko-KR',{timeZone:'Asia/Seoul',hour:'numeric',minute:'2-digit'}).format(date);
+const offset = new Date(Date.UTC(year,month-1,1)).getUTCDay();
+const days = new Date(Date.UTC(year,month,0)).getUTCDate();
+---
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex,nofollow" />
+    <title>{w.names.every(Boolean) ? `${names}의 결혼식` : '우리의 시작 — 모바일 청첩장 시안'}</title>
+    <meta name="description" content={`${fullDate} ${time}, ${w.city} ${w.venue}에서 함께해 주세요.`} />
+  </head>
+  <body data-theme={theme}>
+    <a class="skip" href="#invitation">본문으로 이동</a>
+    <aside class="desktop-note"><span class="small-flower">✳</span><p>우리의 시작을<br/>한 장에 담아.</p><span>모바일 청첩장 · {themeName}</span></aside>
+    <main>
+      <nav class="theme-picker" aria-label="디자인 비교">{choices.map(t=><a href={`${import.meta.env.BASE_URL}designs/${t.id}/`} aria-current={theme===t.id?'page':undefined}>{t.name}</a>)}</nav>
+      <div class="draft-banner">미리보기 <span>이름과 사진은 준비 중이에요</span></div>
+      <header class="hero">
+        <div class="hero-top"><span>우리의 시작</span><span>{year}. {String(month).padStart(2,'0')}. {String(day).padStart(2,'0')}</span></div>
+        {theme !== 'garden' && <div class="theme-intro"><p>{theme==='classic'?'THE WEDDING INVITATION':'SAVE OUR DATE'}</p><span>{theme==='classic'?'초대합니다':'05 / 09'}</span></div>}
+        <div class:list={['hero-photo', { 'has-photo': w.heroPhoto }]}>
+          {w.heroPhoto ? <img src={asset(w.heroPhoto)} alt="두 사람의 대표 사진" fetchpriority="high" /> : <div class="photo-placeholder"><div class="arch"><span class="stem stem-one"></span><span class="stem stem-two"></span><span class="flower flower-one">✳</span><span class="flower flower-two">✳</span><span class="little-star">✧</span></div><span>이곳에 우리의 사진이 들어갑니다</span></div>}
+          <div class="hero-title"><p>함께 맞이할 모든 계절</p><h1>{names}</h1></div>
+        </div>
+        <div class="hero-bottom"><p>{fullDate}<br/><strong>{time}</strong></p><p>{w.city} {w.venue}<br/><span>{w.hall || '상세 홀 안내는 곧 전해드릴게요'}</span></p></div>
+        <a class="scroll-link" href="#invitation">초대의 글 <span>↓</span></a>
+      </header>
+      <section class="invitation" id="invitation"><span class="ornament">✳</span><p class="eyebrow">소중한 분들께</p><h2>우리의 첫날에<br/>함께해 주세요.</h2><div class="letter">{w.invitation.map(line=>line ? <p>{line}</p> : <br/>)}</div><p class="muted names-note">{w.names.every(Boolean) ? names : '이름과 가족 소개를 나중에 넣을 자리예요'}</p></section>
+      <section class="day-section" id="day"><p class="eyebrow">기억해 주세요</p><h2>{year}. {String(month).padStart(2,'0')}. {String(day).padStart(2,'0')}</h2><p>{fullDate.split(' ').at(-1)} {time}</p><div class="calendar" role="table" aria-label={`${year}년 ${month}월 예식 달력`}><div class="calendar-row week" role="row">{['일','월','화','수','목','금','토'].map(d=><span role="columnheader">{d}</span>)}</div><div class="calendar-grid">{Array.from({length:offset},()=> <span aria-hidden="true"></span>)}{Array.from({length:days},(_,i)=><span class:list={{selected:i+1===day}} aria-label={i+1===day ? `${month}월 ${day}일 예식일` : undefined}>{i+1}</span>)}</div></div><p class="date-caption">달력에 작은 약속 하나, 함께해 주세요.</p></section>
+      <Location />
+      <section class="gallery" id="gallery"><p class="eyebrow">오래 기억할 장면</p><h2>우리의 순간들</h2><p class="muted">함께한 시간을 사진으로 전할게요.</p><div class="photo-grid">{w.photos.length ? w.photos.map((photo,i)=><button class:list={['gallery-item',{wide:i===0}]} data-photo={asset(photo.src)} data-alt={photo.alt}><img src={asset(photo.src)} alt={photo.alt} loading="lazy"/></button>) : <><div class="gallery-placeholder wide"><span>✧</span><p>가장 좋아하는 한 장</p></div><div class="gallery-placeholder"><span>01</span><p>함께 웃던 날</p></div><div class="gallery-placeholder"><span>02</span><p>기억하고 싶은 순간</p></div></>}</div></section>
+      {(w.contacts.length>0 || w.accounts.length>0) && <section class="contact"><h2>마음을 전하는 방법</h2>{w.contacts.map(c=><a class="contact-link" href={`tel:${c.phone}`}>{c.label}에게 연락하기</a>)}{w.accounts.map(a=><details><summary>{a.label}</summary><p>{a.bank} {a.number}<br/>{a.holder}</p><button data-copy={`${a.bank} ${a.number}`}>계좌번호 복사</button></details>)}</section>}
+      <footer><span class="ornament">✳</span><h2>그날, 반갑게 만나요.</h2><p>소중한 걸음과 마음을<br/>오래도록 기억하겠습니다.</p><button id="share" class="share-button">청첩장 공유하기 <span>↗</span></button><p class="local-note">이름과 사진을 준비 중인 청첩장 시안입니다.</p><small>{year}. {String(month).padStart(2,'0')}. {String(day).padStart(2,'0')} · {w.venue}</small></footer>
+    </main>
+    <nav class="bottom-nav" aria-label="청첩장 바로가기"><a href="#day">예식 안내</a><span></span><a href="#location">오시는 길</a><span></span><a href="#gallery">사진첩</a></nav>
+    <dialog id="lightbox"><button id="close-photo" aria-label="사진 닫기">×</button><img id="large-photo" alt=""/></dialog>
+    <p id="toast" role="status" aria-live="polite"></p>
+    <script>
+      const toast = document.querySelector<HTMLElement>('#toast')!;
+      let timer: ReturnType<typeof setTimeout>;
+      const notify=(message:string)=>{toast.textContent=message;toast.classList.add('visible');clearTimeout(timer);timer=setTimeout(()=>toast.classList.remove('visible'),3500)};
+      document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach(button=>button.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(button.dataset.copy!);notify('복사했어요.')}catch{notify('복사하지 못했어요. 표시된 내용을 직접 복사해 주세요.')}}));
+      document.querySelector('#share')?.addEventListener('click',async()=>{if(['localhost','127.0.0.1'].includes(location.hostname)){notify('로컬 미리보기예요. 배포 후 공유 링크를 사용할 수 있어요.');return;}try{if(navigator.share)await navigator.share({title:document.title,url:location.href});else{await navigator.clipboard.writeText(location.href);notify('청첩장 링크를 복사했어요.')}}catch(e){if(!(e instanceof Error&&e.name==='AbortError'))notify('공유하지 못했어요. 주소창의 링크를 복사해 주세요.')}});
+      const dialog=document.querySelector<HTMLDialogElement>('#lightbox')!;
+      document.querySelectorAll<HTMLButtonElement>('[data-photo]').forEach(button=>button.addEventListener('click',()=>{const img=document.querySelector<HTMLImageElement>('#large-photo')!;img.src=button.dataset.photo!;img.alt=button.dataset.alt||'';dialog.showModal()}));
+      document.querySelector('#close-photo')?.addEventListener('click',()=>dialog.close());
+      dialog.addEventListener('click',e=>{if(e.target===dialog)dialog.close()});
+    </script>
+  </body>
+</html>

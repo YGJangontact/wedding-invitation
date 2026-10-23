@@ -1,0 +1,6 @@
+---
+import Invitation from '../../components/Invitation.astro';
+export function getStaticPaths(){ return ['garden','classic','minimal'].map(theme=>({params:{theme}})); }
+const {theme}=Astro.params;
+---
+<Invitation theme={theme} />

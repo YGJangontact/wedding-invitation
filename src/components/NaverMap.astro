@@ -1,0 +1,59 @@
+---
+import { wedding } from '../data/wedding';
+const clientId = import.meta.env.PUBLIC_NAVER_MAP_CLIENT_ID || '';
+---
+<div class="naver-map-shell" data-map-client={clientId} data-map-address={wedding.address}>
+  <div id="venue-map" aria-label="아벤티움 위치를 표시하는 네이버 지도"></div>
+  <p class="map-status" role="status">네이버 지도를 불러오는 중입니다.</p>
+</div>
+<script>
+  // Browser SDK Client ID only. Never embed the Naver Client Secret.
+  const shell = document.querySelector<HTMLElement>('.naver-map-shell')!;
+  const status = shell.querySelector<HTMLElement>('.map-status')!;
+  const host = document.querySelector<HTMLElement>('#venue-map')!;
+  const win = window as any;
+  let failed = false;
+  let timer: ReturnType<typeof setTimeout>;
+  const fail = () => {
+    failed = true;
+    clearTimeout(timer);
+    host.hidden = true;
+    status.textContent = '지도를 불러오지 못했어요. 아래 네이버 지도에서 위치와 길찾기를 확인해 주세요.';
+  };
+  function start() {
+    if (!shell.dataset.mapClient) { fail(); return; }
+    win.navermap_authFailure = fail;
+    timer = setTimeout(fail, 18000);
+    const script = document.createElement('script');
+    script.src = `https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${encodeURIComponent(shell.dataset.mapClient)}&submodules=geocoder&callback=initWeddingMap`;
+    script.async = true;
+    script.onerror = fail;
+    win.initWeddingMap = () => {
+      if (failed || !win.naver?.maps?.Service) { fail(); return; }
+      const n = win.naver.maps;
+      n.Service.geocode({query:shell.dataset.mapAddress}, (code:any, response:any) => {
+        if (failed) return;
+        const addresses = response?.v2?.addresses;
+        if (code !== n.Service.Status.OK || addresses?.length !== 1) { fail(); return; }
+        const address = addresses[0];
+        if (!address.roadAddress?.includes('청파로 464')) { fail(); return; }
+        const point = new n.LatLng(Number(address.y), Number(address.x));
+        const map = new n.Map(host, {center:point,zoom:16,scrollWheel:false,zoomControl:true,zoomControlOptions:{position:n.Position.TOP_RIGHT}});
+        new n.Marker({map,position:point,title:'아벤티움 · 브라운스톤서울 3층',icon:{content:'<div class="map-pin">아벤티움 · 3층</div>',anchor:new n.Point(75,38)}});
+        n.Event.once(map,'tilesloaded',()=>{
+          if(failed) return;
+          clearTimeout(timer);
+          status.textContent = '브라운스톤서울 3층 · 확대하거나 움직여 주변을 확인하세요.';
+          host.dataset.ready = 'true';
+        });
+        new ResizeObserver(()=>map.setSize(new n.Size(host.clientWidth,host.clientHeight))).observe(host);
+      });
+    };
+    document.head.append(script);
+  }
+  // Load only when guests approach the directions section.
+  const observer = new IntersectionObserver(entries=>{
+    if(entries.some(e=>e.isIntersecting)){observer.disconnect();start();}
+  },{rootMargin:'250px'});
+  observer.observe(shell);
+</script>

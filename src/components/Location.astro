@@ -1,5 +1,6 @@
 ---
 import { wedding as w } from '../data/wedding';
+import NaverMap from './NaverMap.astro';
 const query = encodeURIComponent(w.address);
 const parkingQuery = encodeURIComponent('서울특별시 중구 칠패로 5 서소문공원 주차장');
 ---
@@ -13,6 +14,7 @@ const parkingQuery = encodeURIComponent('서울특별시 중구 칠패로 5 서�
     <p class="street-address">{w.address}<br/>{w.hall}</p>
     <button class="address-copy" data-copy={`${w.address} ${w.hall}`}>주소 복사</button>
   </div>
+  <NaverMap />
   <div class="map-links">
     <a href={`https://map.naver.com/p/search/${query}`} target="_blank" rel="noopener noreferrer">네이버 지도 ↗</a>
     <a href={`https://map.kakao.com/link/search/${query}`} target="_blank" rel="noopener noreferrer">카카오맵 ↗</a>
