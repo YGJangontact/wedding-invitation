@@ -1,0 +1,28 @@
+---
+import { wedding as w } from '../data/wedding';
+const query = encodeURIComponent(w.address);
+const parkingQuery = encodeURIComponent('서울특별시 중구 칠패로 5 서소문공원 주차장');
+---
+<section id="location" class="location">
+  <p class="eyebrow">만나는 곳</p>
+  <h2>{w.venue}</h2>
+  <p class="venue-floor">{w.hall}</p>
+  <div class="venue-card">
+    <span class="venue-symbol" aria-hidden="true">⌖</span>
+    <strong>{w.city} {w.venue}</strong>
+    <p class="street-address">{w.address}<br/>{w.hall}</p>
+    <button class="address-copy" data-copy={`${w.address} ${w.hall}`}>주소 복사</button>
+  </div>
+  <div class="map-links">
+    <a href={`https://map.naver.com/p/search/${query}`} target="_blank" rel="noopener noreferrer">네이버 지도 ↗</a>
+    <a href={`https://map.kakao.com/link/search/${query}`} target="_blank" rel="noopener noreferrer">카카오맵 ↗</a>
+  </div>
+  <div class="travel-options">
+    {w.transport.map((item,i)=><details open={i===0}>
+      <summary><span><strong>{item.title}</strong><small>{item.summary}</small></span><span class="detail-toggle" aria-hidden="true">+</span></summary>
+      <div class="travel-content"><p>{item.text}</p>{i===2 && <a class="parking-link" href={`https://map.naver.com/p/search/${parkingQuery}`} target="_blank" rel="noopener noreferrer">별관 주차장 지도 ↗</a>}</div>
+    </details>)}
+  </div>
+  <a class="venue-call" href={`tel:${w.venuePhone}`}>예식장 문의 <span>{w.venuePhone}</span></a>
+  <p class="location-source"><a href={w.locationSource} target="_blank" rel="noopener noreferrer">아벤티움 공식 오시는 길 ↗</a><br/>{w.locationChecked.replaceAll('-', '. ')}. 확인<br/>방문 전 최신 안내를 확인해 주세요.</p>
+</section>
