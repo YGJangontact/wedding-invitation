@@ -6,7 +6,7 @@ import {themes,sitePath} from '../../data/themes';
 <body>
   <main>
     <header><a href={sitePath('')}>기본 청첩장으로</a><p class="date">2027년 5월 9일 · 서울 아벤티움</p><h1>어떤 모습으로<br/>초대할까요.</h1><p>같은 이야기, 여섯 가지 분위기.<br/>시안을 누르면 전체 청첩장과 지도를 볼 수 있습니다.</p><p class="note">이름과 사진은 아직 넣지 않았습니다. 사진을 넣으면 인상이 달라질 수 있어요.</p></header>
-    {[true,false].map(fresh=><section aria-label={fresh?'새로운 후보':'기존 시안'}><h2>{fresh?'새로운 후보':'기존 시안도 남겨두었어요'}</h2><div class="design-grid">{themes.filter(t=>t.fresh===fresh).map(t=><article><a class="design-title" href={sitePath(`designs/${t.id}/`)}><h3>{t.name}</h3><span>전체 보기 ↗</span></a><p>{t.description}</p><a class="preview" href={sitePath(`designs/${t.id}/`)} aria-label={`${t.name} 전체 화면 열기`}><iframe src={sitePath(`designs/${t.id}/`)} title={`${t.name} 미리보기`} loading="lazy" tabindex="-1" aria-hidden="true"></iframe></a></article>)}</div></section>)}
+    {[true,false].map(fresh=><section aria-label={fresh?'새로운 후보':'기존 시안'}><h2>{fresh?'새로운 후보':'기존 시안도 남겨두었어요'}</h2><div class="design-grid">{themes.filter(t=>t.fresh===fresh).map(t=><article><a class="design-title" href={sitePath(`designs/${t.id}/`)}><h3>{t.name}</h3><span>전체 보기 ↗</span></a><p>{t.description}</p><a class="preview" href={sitePath(`designs/${t.id}/`)} aria-label={`${t.name} 전체 화면 열기`}><iframe src={sitePath(`designs/${t.id}/`) + "?motion=off"} title={`${t.name} 미리보기`} loading="lazy" tabindex="-1" aria-hidden="true"></iframe></a></article>)}</div></section>)}
     <footer>세 후보의 차이는 계절감, 편지 같은 단정함, 사진의 비중입니다.<br/>마음에 드는 화면을 열어 아래쪽 안내까지 비교해 보세요.</footer>
   </main>
 </body></html>

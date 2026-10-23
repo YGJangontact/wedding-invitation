@@ -5,6 +5,7 @@ import Location from './Location.astro';
 import '../styles/themes.css';
 import '../styles/new-themes.css';
 import NewHero from './NewHero.astro';
+import InvitationMotion from './InvitationMotion.astro';
 import {themes as choices,sitePath} from '../data/themes';
 const { theme = 'garden' } = Astro.props;
 const fresh = choices.some(t=>t.id===theme && t.fresh);
@@ -54,6 +55,7 @@ const days = new Date(Date.UTC(year,month,0)).getUTCDate();
     <nav class="bottom-nav" aria-label="청첩장 바로가기"><a href="#day">예식 안내</a><span></span><a href="#location">오시는 길</a><span></span><a href="#gallery">사진첩</a></nav>
     <dialog id="lightbox"><button id="close-photo" aria-label="사진 닫기">×</button><img id="large-photo" alt=""/></dialog>
     <p id="toast" role="status" aria-live="polite"></p>
+    <InvitationMotion />
     <script>
       const toast = document.querySelector<HTMLElement>('#toast')!;
       let timer: ReturnType<typeof setTimeout>;
