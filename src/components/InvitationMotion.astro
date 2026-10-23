@@ -1,6 +1,5 @@
 <script>
-  // Static previews and reduced-motion visitors get the complete, still invitation.
-  const preference = matchMedia('(prefers-reduced-motion: reduce)');
+  // Full invitations play automatically; comparison thumbnails stay still.
   const hero = document.querySelector<HTMLElement>('.new-hero, .hero');
   if (hero && document.body.dataset.theme !== 'editorial') {
     const petals=document.createElement('div');
@@ -19,8 +18,8 @@
     cleanup();
     if (!hero) return;
     const preview = new URLSearchParams(location.search).get('motion') === 'off';
-    hero.dataset.motion = preference.matches ? 'reduced' : preview ? 'preview' : 'active';
-    if (preference.matches || preview) return;
+    hero.dataset.motion = preview ? 'preview' : 'active';
+    if (preview) return;
     const animations: Animation[] = [];
     const enter = (element: Element, delay: number) => {
       animations.push(element.animate([
@@ -78,7 +77,6 @@
     };
   };
   start();
-  preference.addEventListener('change', start);
   window.addEventListener('pagehide', () => cleanup());
   window.addEventListener('pageshow', event => { if (event.persisted) start(); });
 </script>
@@ -105,6 +103,5 @@
   }
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto !important; }
-    .scroll-picture > * { transform: none !important; }
   }
 </style>

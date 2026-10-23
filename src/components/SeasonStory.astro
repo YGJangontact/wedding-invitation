@@ -13,11 +13,10 @@ const {asset}=Astro.props;
 </div>
 <script>
   const story=document.querySelector<HTMLElement>('.season-story');
-  const reduced=matchMedia('(prefers-reduced-motion: reduce)');
   let stop=()=>{};
   const setup=()=>{
     stop();
-    if(!story || reduced.matches || new URLSearchParams(location.search).get('motion')==='off') return;
+    if(!story || new URLSearchParams(location.search).get('motion')==='off') return;
     const stage=story.querySelector<HTMLElement>('.season-stage')!;
     let frame=0;
     const update=()=>{
@@ -33,7 +32,7 @@ const {asset}=Astro.props;
     window.addEventListener('scroll',schedule,{passive:true});window.addEventListener('resize',schedule);
     stop=()=>{cancelAnimationFrame(frame);window.removeEventListener('scroll',schedule);window.removeEventListener('resize',schedule);story.classList.remove('is-cinematic');story.removeAttribute('style')};
   };
-  setup();reduced.addEventListener('change',setup);
+  setup();
   window.addEventListener('pagehide',()=>stop());window.addEventListener('pageshow',e=>{if(e.persisted)setup()});
 </script>
 <style is:global>
