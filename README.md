@@ -27,10 +27,14 @@ GitHub Actions 빌드에서만 `/wedding-invitation` 경로를 적용하며 로�
 공개 전: 이름·사진·문구 확정, 주소·홀·교통 공식 확인, 실제 휴대폰 검증, 공유 미리보기 이미지 설정, 시안 배너와 noindex 제거 여부 결정. 현재 방명록·사진 업로드·참석 응답 저장 기능은 없습니다. Google Fonts 로드 실패 시 시스템 기본 서체를 사용합니다.
 # 디자인 비교와 네이버 지도
 
+- `/designs/`: 여섯 테마 비교. 기존 기본 화면과 URL은 유지합니다.
+- `/designs/garden-refined/`: 식물 선화와 간결한 첫 화면의 봄의 정원 개선안
+- `/designs/ribbon/`: 리본과 편지 형태의 화이트 리본
+- `/designs/editorial/`: 큰 대표 사진 영역과 좌측 정렬의 에디토리얼 포토
 - `/` 또는 `/designs/garden/`: 봄의 정원
 - `/designs/classic/`: 클래식 초대장
 - `/designs/minimal/`: 미니멀
-- 세 화면은 `src/components/Invitation.astro`와 `src/data/wedding.ts`를 공유합니다. 상단에서 디자인을 바꿀 수 있습니다.
+- 여섯 화면은 `src/components/Invitation.astro`와 `src/data/wedding.ts`를 공유합니다. 상단의 접힌 메뉴에서 디자인을 바꿀 수 있습니다. 테마 목록은 `src/data/themes.ts`, 추가 시안의 표지는 `NewHero.astro`에서 관리합니다.
 - 지도는 기존 네이버 클라우드 `realestate` 앱의 Dynamic Map/Geocoding을 재사용합니다. 경매 사이트 설정은 유지하고 `https://ygjangontact.github.io`, `http://127.0.0.1:4325`를 추가했습니다.
 - 로컬은 무시되는 `.env`의 `PUBLIC_NAVER_MAP_CLIENT_ID`, 배포는 같은 이름의 GitHub Actions repository variable을 사용합니다. 브라우저용 Client ID이며 Client Secret은 필요하지 않습니다.
 - 오시는 길에 접근할 때 SDK를 불러옵니다. 공식 주소를 지오코딩해 일치하는 단일 결과에만 마커를 표시합니다. 로드 실패 시 주소와 외부 길찾기 링크를 제공합니다.

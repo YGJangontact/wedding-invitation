@@ -1,0 +1,16 @@
+---
+import {themes,sitePath} from '../../data/themes';
+---
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><meta name="robots" content="noindex,nofollow"/><title>여섯 가지 청첩장 비교</title></head>
+<body>
+  <main>
+    <header><a href={sitePath('')}>기본 청첩장으로</a><p class="date">2027년 5월 9일 · 서울 아벤티움</p><h1>어떤 모습으로<br/>초대할까요.</h1><p>같은 이야기, 여섯 가지 분위기.<br/>시안을 누르면 전체 청첩장과 지도를 볼 수 있습니다.</p><p class="note">이름과 사진은 아직 넣지 않았습니다. 사진을 넣으면 인상이 달라질 수 있어요.</p></header>
+    {[true,false].map(fresh=><section aria-label={fresh?'새로운 후보':'기존 시안'}><h2>{fresh?'새로운 후보':'기존 시안도 남겨두었어요'}</h2><div class="design-grid">{themes.filter(t=>t.fresh===fresh).map(t=><article><a class="design-title" href={sitePath(`designs/${t.id}/`)}><h3>{t.name}</h3><span>전체 보기 ↗</span></a><p>{t.description}</p><a class="preview" href={sitePath(`designs/${t.id}/`)} aria-label={`${t.name} 전체 화면 열기`}><iframe src={sitePath(`designs/${t.id}/`)} title={`${t.name} 미리보기`} loading="lazy" tabindex="-1" aria-hidden="true"></iframe></a></article>)}</div></section>)}
+    <footer>세 후보의 차이는 계절감, 편지 같은 단정함, 사진의 비중입니다.<br/>마음에 드는 화면을 열어 아래쪽 안내까지 비교해 보세요.</footer>
+  </main>
+</body></html>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Gowun+Batang&family=Noto+Sans+KR:wght@400;500;600&display=swap');
+  *{box-sizing:border-box}body{margin:0;background:#f2f3ef;color:#303b32;font:14px/1.8 'Noto Sans KR',sans-serif}main{max-width:1280px;margin:auto;padding:44px 30px 64px}header{margin-bottom:50px}header>a{font-size:12px}h1{font:42px/1.4 'Gowun Batang',serif;margin:20px 0}h2{font:25px/1.6 'Gowun Batang',serif;margin:0 0 22px}h3{font-size:17px;font-weight:500;margin:0}p{margin:12px 0}.date{margin-top:40px;font-size:12px}.note{font-size:12px;color:#60695d}a{color:inherit;text-decoration:none}a:focus-visible{outline:3px solid #4c6650;outline-offset:5px}.design-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:26px}section+section{margin-top:60px}.design-title{display:flex;min-height:48px;align-items:center;justify-content:space-between;gap:10px}.design-title>span{font-size:11px;white-space:nowrap}article>p{min-height:50px;font-size:13px;color:#60695d}.preview{display:block;height:740px;border:1px solid #d2d9ce;background:#fff;overflow:hidden;border-radius:14px;position:relative}.preview iframe{display:block;width:100%;height:100%;border:0;pointer-events:none}.preview:after{content:'';position:absolute;inset:0}footer{margin-top:60px;font-size:13px;color:#60695d}@media(max-width:900px){.design-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:600px){main{padding:24px 20px 40px}.design-grid{grid-template-columns:1fr;gap:36px}h1{font-size:35px}article>p{min-height:0}.preview{height:700px}header{margin-bottom:36px}}
+</style>
