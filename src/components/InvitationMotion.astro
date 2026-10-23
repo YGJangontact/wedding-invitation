@@ -25,17 +25,17 @@
       animations.push(element.animate([
         { opacity: 0, transform: 'translateY(34px)' },
         { opacity: 1, transform: 'translateY(0)' },
-      ], { duration: 1150, delay, easing: 'cubic-bezier(.22,1,.36,1)', fill: 'backwards' }));
+      ], { duration: 850, delay, easing: 'cubic-bezier(.22,1,.36,1)', fill: 'backwards' }));
     };
     // Don't replay an entrance when opening a deep link or restoring scroll position.
     if (!location.hash && window.scrollY < 40) {
-      Array.from(hero.children).filter(element=>!element.classList.contains('may-petals')).forEach((element, i) => enter(element, Math.min(i * 170, 850)));
+      Array.from(hero.children).filter(element=>!element.classList.contains('may-petals')).forEach((element, i) => enter(element, Math.min(i * 100, 480)));
       hero.querySelectorAll<SVGPathElement>('.botanical path, .ribbon-drawing path, .ribbon-drawing ellipse').forEach(path => {
         const length = path.getTotalLength();
         animations.push(path.animate([
           { strokeDasharray: `${length}`, strokeDashoffset: length },
           { strokeDasharray: `${length}`, strokeDashoffset: 0 },
-        ], { duration: 1900, delay: 80, easing: 'ease-in-out' }));
+        ], { duration: 1500, delay: 80, easing: 'ease-in-out' }));
       });
     }
     // Keep content visible before JS runs; animate only when it enters view.

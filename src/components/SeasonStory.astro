@@ -28,8 +28,9 @@ const garden=!ribbon&&!editorial;
       const r=story.getBoundingClientRect();
       const p=Math.max(0,Math.min(1,-r.top/Math.max(1,r.height-stage.offsetHeight)));
       story.style.setProperty('--scene-progress',String(p));
-      story.style.setProperty('--first-opacity',String(Math.max(0,1-p*3)));
-      story.style.setProperty('--second-opacity',String(Math.max(0,Math.min(1,(p-.4)*2.5))));
+      // Hold each sentence at full contrast; keep the hand-off short and non-overlapping.
+      story.style.setProperty('--first-opacity',String(Math.max(0,Math.min(1,(.4-p)/.15))));
+      story.style.setProperty('--second-opacity',String(Math.max(0,Math.min(1,(p-.4)/.15))));
     };
     const schedule=()=>{if(!frame)frame=requestAnimationFrame(update)};
     story.classList.add('is-cinematic'); update();
@@ -49,7 +50,7 @@ const garden=!ribbon&&!editorial;
   .season-copy h2 {font:36px/1.6 var(--serif);letter-spacing:-1px;}
   .season-copy span {display:block;font-size:11px;margin-top:36px;}
   .season-second {background:var(--paper);}
-  .is-cinematic {height:240svh;}
+  .is-cinematic {height:200svh;}
   .is-cinematic .season-stage {position:sticky;top:0;height:calc(100svh - 56px);min-height:380px;}
   .is-cinematic .season-art {opacity:calc(.4 - var(--scene-progress)*.22);transform:scale(calc(1 + var(--scene-progress)*.55));}
   .is-cinematic .season-copy {position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:40px 28px;}
@@ -79,9 +80,9 @@ const garden=!ribbon&&!editorial;
   .editorial-shadow span {font:18px/1.8 var(--serif);color:#2f3b31;}
   .next-page {transform:translateX(calc((1 - var(--scene-progress,0))*30%)) rotate(calc((1 - var(--scene-progress,0))*5deg));display:flex;flex-direction:column;padding:24px;}
   .next-page>span {font-size:11px;border-bottom:1px solid #6b7568;padding-bottom:12px;}
-  .next-page>div {height:30%;background:#dce1d6;margin:20px 0;}
-  .next-page p {font:26px/1.5 var(--serif);}
-  .next-page small {margin-top:auto;font-size:10px;}
-  @media(max-height:650px){.story-ribbon .season-copy h2,.story-editorial .season-copy h2{font-size:24px;}.is-cinematic.story-ribbon .season-copy,.is-cinematic.story-editorial .season-copy{padding-top:4svh;}.story-ribbon .season-copy span,.story-editorial .season-copy span{display:none;}}
+  .next-page>div {flex:1;min-height:20px;max-height:30%;background:#dce1d6;margin:16px 0;}
+  .next-page p {font:26px/1.5 var(--serif);margin:0;flex-shrink:0;}
+  .next-page small {margin-top:auto;padding-top:12px;font-size:10px;flex-shrink:0;}
+  @media(max-height:650px){.story-ribbon .season-copy h2,.story-editorial .season-copy h2{font-size:24px;}.is-cinematic.story-ribbon .season-copy,.is-cinematic.story-editorial .season-copy{padding-top:4svh;}.story-ribbon .season-copy span,.story-editorial .season-copy span{display:none;}.next-page{padding:16px;}.next-page p{font-size:21px;line-height:1.4;}.next-page>div{margin:10px 0;}.next-page small{padding-top:8px;}.letter-sheet{padding:16px;}.letter-sheet i{margin:14px 0;}}
   @media(max-width:360px){.season-copy h2{font-size:30px;}}
 </style>
