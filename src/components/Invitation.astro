@@ -7,6 +7,7 @@ import '../styles/new-themes.css';
 import NewHero from './NewHero.astro';
 import InvitationMotion from './InvitationMotion.astro';
 import SeasonStory from './SeasonStory.astro';
+import ShareMeta from './ShareMeta.astro';
 import {themes as choices,sitePath} from '../data/themes';
 const { theme = 'garden' } = Astro.props;
 const fresh = choices.some(t=>t.id===theme && t.fresh);
@@ -27,6 +28,7 @@ const days = new Date(Date.UTC(year,month,0)).getUTCDate();
   <head>
     <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex,nofollow" />
+    <ShareMeta />
     <title>{w.names.every(Boolean) ? `${names}의 결혼식` : `${themeName} — 모바일 청첩장 시안`}</title>
     <meta name="description" content={`${fullDate} ${time}, ${w.city} ${w.venue}에서 함께해 주세요.`} />
   </head>
