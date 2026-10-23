@@ -1,0 +1,65 @@
+---
+import {wedding as w} from '../data/wedding';
+const {asset,fullDate,time}=Astro.props;
+---
+<header class="sealed-intro">
+  <p class="sealed-eyebrow">A LETTER FOR YOU</p>
+  <h1>우리의 다음 장을<br/>열어주세요</h1>
+  <p class="sealed-subtitle">소중한 당신에게 보내는 초대</p>
+  <div class="envelope-space">
+    <div class="sealed-envelope">
+      <div class="envelope-back"></div>
+      <div class="reveal-card" id="revealed-photo" aria-hidden="true">
+        <div class="sealed-photo">{w.heroPhoto?<img src={asset(w.heroPhoto)} alt="두 사람의 사진"/>:<span>사진 자리</span>}</div>
+        <p>{w.names.every(Boolean)?w.names.join(' · '):'신랑 이름 · 신부 이름'}</p>
+        <small>함께 써 내려갈 우리의 이야기</small>
+      </div>
+      <div class="envelope-front"></div>
+      <div class="sealed-flap"></div>
+      <div class="silk-band"></div>
+      <button class="wax-seal" aria-label="봉인을 풀고 사진 보기" aria-controls="revealed-photo" aria-expanded="false"><span aria-hidden="true">❦</span></button>
+    </div>
+  </div>
+  <p class="seal-hint" aria-live="polite">봉인을 눌러 초대장을 열어주세요</p>
+  <div class="sealed-date"><p>{fullDate}<br/>{time} · {w.venue}</p><a href="#invitation">초대의 글 읽기 ↓</a></div>
+  <noscript><p>신랑 이름 · 신부 이름 — 소중한 당신을 초대합니다.</p></noscript>
+</header>
+<script>
+ const intro=document.querySelector<HTMLElement>('.sealed-intro');
+ const seal=intro?.querySelector<HTMLButtonElement>('.wax-seal');
+ seal?.addEventListener('click',()=>{
+   if(!intro||intro.classList.contains('is-open'))return;
+   intro.classList.add('is-open');
+   seal.setAttribute('aria-expanded','true');
+   seal.setAttribute('aria-label','초대장이 열렸습니다');
+   intro.querySelector('#revealed-photo')?.setAttribute('aria-hidden','false');
+   const hint=intro.querySelector('.seal-hint');
+   if(hint)hint.textContent='우리의 새로운 시작에 함께해 주세요';
+ });
+</script>
+<style>
+ .sealed-intro{padding:48px 24px 32px;text-align:center;background:radial-gradient(ellipse at 20% 20%,#fffefa,#f2ede5);color:#625540;overflow:hidden;}
+ .sealed-eyebrow{font:10px/1.5 sans-serif;letter-spacing:3px;margin:0 0 22px;}
+ h1{font:32px/1.65 var(--serif);letter-spacing:-1px;margin:0;}
+ .sealed-subtitle{font:13px/1.8 var(--serif);margin:12px 0 0;color:#857867;}
+ .envelope-space{height:350px;display:flex;align-items:flex-end;justify-content:center;padding-bottom:30px;perspective:1100px;}
+ .sealed-envelope{position:relative;width:100%;max-width:340px;height:210px;isolation:isolate;}
+ .envelope-back{position:absolute;inset:0;background:#e8dfd1;border:1px solid #dacdbc;box-shadow:0 18px 35px #69543d20;}
+ .envelope-front{position:absolute;inset:0;z-index:3;background:linear-gradient(32deg,#f4eee3 49.7%,transparent 50%),linear-gradient(-32deg,#e9dfd0 49.7%,#f9f4eb 50%);border:1px solid #ded2c1;transition:opacity .5s 1.4s;}
+ .sealed-flap{position:absolute;inset:0;z-index:4;background:#fff9ee;clip-path:polygon(0 0,100% 0,50% 62%);transform-origin:top;transition:transform 1s .35s,z-index 0s .85s;backface-visibility:hidden;}
+ .silk-band{position:absolute;inset:0 auto 0 45%;width:10%;z-index:5;background:linear-gradient(90deg,#e6dfd3,#fffdf7 45%,#ede6da);box-shadow:1px 0 3px #8b776b20;transition:transform .85s .1s,opacity .6s;}
+ .wax-seal{position:absolute;z-index:6;left:calc(50% - 31px);top:85px;width:62px;height:62px;border-radius:48% 52% 47% 53%;border:4px double #cfb98c;background:radial-gradient(circle at 30% 25%,#e8d4a5,#b6955e);color:#786039;box-shadow:0 5px 12px #7b603640,inset 0 0 0 3px #f6e1b850;font:32px Georgia;cursor:pointer;transition:transform .6s,opacity .6s;}
+ .wax-seal:focus-visible{outline:3px solid #806841;outline-offset:6px;}
+ .reveal-card{position:absolute;z-index:2;inset:10px 20px auto;padding:12px 12px 16px;background:#fffdfa;box-shadow:0 8px 20px #725c3c20;opacity:0;transform:translateY(25px) scale(.92);transition:transform 1.3s .85s,opacity .6s .7s;}
+ .sealed-photo{height:170px;display:grid;place-items:center;background:linear-gradient(135deg,#e5dfd5,#f5f0e8);font:13px var(--serif);color:#9a8e7d;}
+ .sealed-photo img{width:100%;height:100%;object-fit:cover;}
+ .reveal-card p{font:17px var(--serif);margin:15px 0 9px;}.reveal-card small{font:10px var(--serif);color:#9a8e7d;}
+ .is-open .wax-seal{opacity:0;transform:translateY(35px) rotate(18deg) scale(.75);pointer-events:none;}
+ .is-open .silk-band{transform:translateX(160px) rotate(28deg);opacity:0;}
+ .is-open .sealed-flap{transform:rotateX(180deg);z-index:1;}
+ .is-open .reveal-card{opacity:1;transform:translateY(-105px) rotate(-3deg);z-index:5;transition:transform 1.3s .85s,opacity .6s .7s,z-index 0s 1.2s;}
+ .is-open .envelope-front{opacity:1;}
+ .seal-hint{font:12px/1.8 var(--serif);color:#88785e;min-height:22px;margin:8px 0 22px;}
+ .sealed-date{border-top:1px solid #dbd1c1;padding-top:18px;font:13px/1.9 var(--serif);}.sealed-date a{display:inline-block;margin-top:14px;color:inherit;font-size:12px;}
+ @media(max-width:360px){h1{font-size:28px}.sealed-intro{padding-inline:20px}.sealed-envelope{height:190px}.envelope-space{height:335px}.sealed-photo{height:150px}.wax-seal{top:73px}}
+</style>

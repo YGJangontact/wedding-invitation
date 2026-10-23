@@ -8,8 +8,9 @@ import NewHero from './NewHero.astro';
 import InvitationMotion from './InvitationMotion.astro';
 import SeasonStory from './SeasonStory.astro';
 import ShareMeta from './ShareMeta.astro';
+import SealedHero from './SealedHero.astro';
 import {themes as choices,sitePath} from '../data/themes';
-const { theme = 'garden' } = Astro.props;
+const { theme = 'garden', sealed = false } = Astro.props;
 const fresh = choices.some(t=>t.id===theme && t.fresh);
 const themeName = choices.find(t=>t.id===theme)?.name;
 const asset = (path: string) => path.startsWith('/') ? import.meta.env.BASE_URL.replace(/\/$/, '') + path : path;
@@ -28,7 +29,7 @@ const days = new Date(Date.UTC(year,month,0)).getUTCDate();
   <head>
     <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex,nofollow" />
-    <ShareMeta />
+    <ShareMeta {...(sealed ? {title:'우리의 다음 장을 열어주세요',image:'/images/share-sealed-preview.png',width:1728,height:910} : {})} />
     <title>{w.names.every(Boolean) ? `${names}의 결혼식` : `${themeName} — 모바일 청첩장 시안`}</title>
     <meta name="description" content={`${fullDate} ${time}, ${w.city} ${w.venue}에서 함께해 주세요.`} />
   </head>
@@ -38,7 +39,7 @@ const days = new Date(Date.UTC(year,month,0)).getUTCDate();
     <main>
       <details class="theme-menu"><summary><span>{themeName}</span><span>디자인 바꾸기</span></summary><nav aria-label="디자인 비교">{[true,false].map(group=><div><p>{group?'새로운 후보':'기존 시안'}</p>{choices.filter(t=>t.fresh===group).map(t=><a href={sitePath(`designs/${t.id}/`)} aria-current={theme===t.id?'page':undefined}>{t.name}</a>)}</div>)}<a class="compare-all" href={sitePath('designs/')}>여섯 가지 한눈에 비교</a></nav></details>
       <div class="draft-banner">청첩장 시안 <span>이름과 사진은 준비 중이에요</span></div>
-      {fresh ? <NewHero theme={theme} names={names} fullDate={fullDate} time={time} asset={asset}/> : <header class="hero">
+      {sealed ? <SealedHero asset={asset} fullDate={fullDate} time={time}/> : fresh ? <NewHero theme={theme} names={names} fullDate={fullDate} time={time} asset={asset}/> : <header class="hero">
         <div class="hero-top"><span>우리의 시작</span><span>{year}. {String(month).padStart(2,'0')}. {String(day).padStart(2,'0')}</span></div>
         {theme !== 'garden' && <div class="theme-intro"><p>{theme==='classic'?'THE WEDDING INVITATION':'SAVE OUR DATE'}</p><span>{theme==='classic'?'초대합니다':'05 / 09'}</span></div>}
         <div class:list={['hero-photo', { 'has-photo': w.heroPhoto }]}>

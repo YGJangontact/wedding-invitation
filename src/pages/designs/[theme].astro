@@ -4,4 +4,4 @@ import {themes} from '../../data/themes';
 export function getStaticPaths(){ return themes.map(theme=>({params:{theme:theme.id}})); }
 const {theme}=Astro.params;
 ---
-<Invitation theme={theme} />
+<Invitation theme={theme} sealed={theme === 'ribbon'} />
