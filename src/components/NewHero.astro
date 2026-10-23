@@ -1,11 +1,13 @@
 ---
 import {wedding as w} from '../data/wedding';
+import Pollen from './Pollen.astro';
 const {theme,names,fullDate,time,asset}=Astro.props;
 ---
 <header class:list={['new-hero',`new-hero-${theme}`]}>
   {theme==='garden-refined' && <>
     <p class="hero-whisper">함께 맞이할 모든 계절</p>
     <div class="refined-photo">
+      <Pollen />
       {w.heroPhoto ? <img src={asset(w.heroPhoto)} alt="두 사람의 대표 사진" fetchpriority="high"/> : <>
         <svg class="botanical" viewBox="0 0 240 280" fill="none" aria-hidden="true"><g stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M115 252C122 191 84 129 103 54M117 248C125 194 161 162 167 91M114 208C88 205 72 182 71 164C94 167 110 182 114 208ZM110 174C131 156 134 134 125 118C111 131 104 150 110 174ZM100 133C75 128 64 107 66 91C86 98 98 113 100 133ZM146 166C165 166 183 148 185 132C165 137 151 149 146 166Z"/><path d="M103 58C77 47 86 28 102 38C104 11 125 16 118 38C142 31 144 53 121 56C136 75 115 88 108 67C97 87 79 73 103 58ZM167 93C148 86 152 72 165 78C166 59 182 62 178 78C195 73 197 90 180 92C188 106 172 112 169 98C161 113 148 101 167 93Z"/></g></svg>
         <span class="photo-note-ko">대표 사진이 들어갈 자리</span>

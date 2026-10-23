@@ -1,14 +1,18 @@
 ---
 import {wedding as w} from '../data/wedding';
-const {asset}=Astro.props;
+import Pollen from './Pollen.astro';
+const {asset,theme}=Astro.props;
+const ribbon=theme==='ribbon', editorial=theme==='editorial';
+const garden=!ribbon&&!editorial;
 ---
-<div class="season-story" aria-label="함께 맞이하는 오월">
+<div class:list={['season-story',{'story-ribbon':ribbon,'story-editorial':editorial}]} aria-label={ribbon?'당신께 보내는 초대':editorial?'함께 써 내려갈 이야기':'함께 맞이하는 오월'}>
   <div class="season-stage">
+    {garden && <Pollen />}
     <div class="season-art" aria-hidden="true">
-      {w.heroPhoto ? <img src={asset(w.heroPhoto)} alt="" loading="lazy"/> : <svg viewBox="0 0 400 600" fill="none"><g stroke="currentColor" stroke-width="2"><path d="M180 620Q270 380 190 180M210 470Q100 400 90 320Q200 320 210 470M214 370Q320 310 320 230Q220 255 214 370"/><g transform="translate(190 175)"><ellipse cy="-45" rx="26" ry="50"/><ellipse cy="-45" rx="26" ry="50" transform="rotate(72)"/><ellipse cy="-45" rx="26" ry="50" transform="rotate(144)"/><ellipse cy="-45" rx="26" ry="50" transform="rotate(216)"/><ellipse cy="-45" rx="26" ry="50" transform="rotate(288)"/><circle r="12"/></g></g></svg>}
+      {ribbon ? <div class="letter-scene"><div class="letter-sheet"><span>소중한 당신께</span><i></i><i></i><i></i></div><div class="envelope-pocket"></div><div class="envelope-flap"></div><svg class="story-bow" viewBox="0 0 300 140" fill="none"><path d="M145 64C98 15 43 20 57 56C68 82 115 76 145 64ZM155 64C201 15 257 20 243 56C232 82 185 76 155 64ZM143 70Q120 110 78 127M157 70Q180 110 224 131" stroke="currentColor" stroke-width="2"/></svg></div> : editorial ? <div class="editorial-spread"><div class="photo-page">{w.heroPhoto?<img src={asset(w.heroPhoto)} alt="" loading="lazy"/>:<div class="editorial-shadow"><span>사진으로 남길<br/>우리의 순간</span></div>}<span class="photo-folio">우리의 기록 — 01</span></div><div class="next-page"><span>다음 장의 시작</span><div></div><p>함께 쌓아갈<br/>날들.</p><small>우리의 기록 — 02</small></div></div> : w.heroPhoto ? <img src={asset(w.heroPhoto)} alt="" loading="lazy"/> : <svg viewBox="0 0 400 600" fill="none"><g stroke="currentColor" stroke-width="2"><path d="M180 620Q270 380 190 180M210 470Q100 400 90 320Q200 320 210 470M214 370Q320 310 320 230Q220 255 214 370"/><g transform="translate(190 175)"><ellipse cy="-45" rx="26" ry="50"/><ellipse cy="-45" rx="26" ry="50" transform="rotate(72)"/><ellipse cy="-45" rx="26" ry="50" transform="rotate(144)"/><ellipse cy="-45" rx="26" ry="50" transform="rotate(216)"/><ellipse cy="-45" rx="26" ry="50" transform="rotate(288)"/><circle r="12"/></g></g></svg>}
     </div>
-    <div class="season-copy season-first"><p>햇살이 머무는 오월</p><h2>함께 피어나는<br/>우리의 계절.</h2><span>천천히 아래로 내려보세요</span></div>
-    <div class="season-copy season-second"><p>서로의 내일이 되어</p><h2>우리의 시작에<br/>함께해 주세요.</h2></div>
+    <div class="season-copy season-first"><p>{ribbon?'마음을 접어 전합니다':editorial?'한 장의 사진, 하나의 이야기':'햇살이 머무는 오월'}</p><h2>{ribbon?<>당신께 보내는<br/>작은 초대.</>:editorial?<>우리의 이야기,<br/>다음 장으로.</>:<>함께 피어나는<br/>우리의 계절.</>}</h2><span>천천히 아래로 내려보세요</span></div>
+    <div class="season-copy season-second"><p>{ribbon?'리본을 풀고 마음을 열어':editorial?'앞으로의 페이지도 함께':'서로의 내일이 되어'}</p><h2>{ribbon?<>소중한 자리에<br/>당신을 초대합니다.</>:editorial?<>함께 써 내려갈<br/>새로운 날들.</>:<>우리의 시작에<br/>함께해 주세요.</>}</h2></div>
   </div>
 </div>
 <script>
@@ -24,8 +28,8 @@ const {asset}=Astro.props;
       const r=story.getBoundingClientRect();
       const p=Math.max(0,Math.min(1,-r.top/Math.max(1,r.height-stage.offsetHeight)));
       story.style.setProperty('--scene-progress',String(p));
-      story.style.setProperty('--first-opacity',String(Math.max(0,1-p*2)));
-      story.style.setProperty('--second-opacity',String(Math.max(0,Math.min(1,(p-.3)*2))));
+      story.style.setProperty('--first-opacity',String(Math.max(0,1-p*3)));
+      story.style.setProperty('--second-opacity',String(Math.max(0,Math.min(1,(p-.4)*2.5))));
     };
     const schedule=()=>{if(!frame)frame=requestAnimationFrame(update)};
     story.classList.add('is-cinematic'); update();
@@ -51,5 +55,33 @@ const {asset}=Astro.props;
   .is-cinematic .season-copy {position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:40px 28px;}
   .is-cinematic .season-first {opacity:var(--first-opacity,1);transform:translateY(calc(var(--scene-progress)*-65px));}
   .is-cinematic .season-second {background:transparent;opacity:var(--second-opacity,0);transform:translateY(calc((1 - var(--scene-progress))*60px));}
+  .story-ribbon {background:#f3f0ec;}
+  .story-editorial {background:#e4e5e1;}
+  .story-ribbon .season-art,.story-editorial .season-art {top:43%;bottom:8%;left:9%;right:9%;opacity:1;transform:none;}
+  .story-ribbon .season-copy,.story-editorial .season-copy {background:none;}
+  .is-cinematic.story-ribbon .season-copy,.is-cinematic.story-editorial .season-copy {justify-content:flex-start;padding-top:9svh;}
+  .story-ribbon .season-copy h2,.story-editorial .season-copy h2 {font-size:30px;}
+  .story-ribbon .season-copy p,.story-editorial .season-copy p {margin-bottom:12px;}
+  .story-ribbon .season-copy span,.story-editorial .season-copy span {margin-top:18px;}
+  .letter-scene {position:absolute;inset:22% 0 5%;perspective:900px;}
+  .letter-sheet {position:absolute;inset:0 8% 4%;padding:24px;background:#fffdf9;border:1px solid #dcd5cb;box-shadow:0 6px 22px #47382912;transform:translateY(calc(var(--scene-progress,0)*-40%));text-align:center;}
+  .letter-sheet span {font:16px var(--serif);}
+  .letter-sheet i {display:block;height:1px;background:#e7e0d7;margin:20px 0;}
+  .envelope-pocket {position:absolute;inset:30% 0 0;background:linear-gradient(30deg,#eee7dd 49.5%,transparent 50%),linear-gradient(-30deg,#e5ddd1 49.5%,#f8f3eb 50%);border:1px solid #d7cdbf;box-shadow:0 10px 24px #58483815;}
+  .envelope-flap {position:absolute;inset:30% 0 0;background:#f4eee5;clip-path:polygon(0 0,100% 0,50% 66%);transform-origin:top;transform:rotateX(calc(var(--scene-progress,0)*-165deg));backface-visibility:visible;}
+  .season-art .story-bow {position:absolute;top:30%;left:10%;width:80%;height:45%;color:#a89986;transform:translateX(calc(var(--scene-progress,0)*100%)) rotate(calc(var(--scene-progress,0)*25deg));opacity:calc(1 - var(--scene-progress,0));}
+  .editorial-spread {height:100%;position:relative;}
+  .photo-page,.next-page {position:absolute;inset:0;padding:12px 12px 32px;background:#fafaf7;box-shadow:0 8px 25px #26352a20;}
+  .photo-page {z-index:1;transform:translateX(calc(var(--scene-progress,0)*-115%)) rotate(calc(var(--scene-progress,0)*-12deg));transform-origin:bottom left;}
+  .photo-page img {height:100%;object-fit:cover;}
+  .photo-folio {position:absolute;bottom:9px;left:12px;font-size:10px;}
+  .editorial-shadow {height:100%;display:flex;align-items:flex-end;padding:20px;background:linear-gradient(130deg,#c3c8be 0%,#e9ebe4 45%,#a4afa0 46%,#cfd5c8 80%);}
+  .editorial-shadow span {font:18px/1.8 var(--serif);color:#2f3b31;}
+  .next-page {transform:translateX(calc((1 - var(--scene-progress,0))*30%)) rotate(calc((1 - var(--scene-progress,0))*5deg));display:flex;flex-direction:column;padding:24px;}
+  .next-page>span {font-size:11px;border-bottom:1px solid #6b7568;padding-bottom:12px;}
+  .next-page>div {height:30%;background:#dce1d6;margin:20px 0;}
+  .next-page p {font:26px/1.5 var(--serif);}
+  .next-page small {margin-top:auto;font-size:10px;}
+  @media(max-height:650px){.story-ribbon .season-copy h2,.story-editorial .season-copy h2{font-size:24px;}.is-cinematic.story-ribbon .season-copy,.is-cinematic.story-editorial .season-copy{padding-top:4svh;}.story-ribbon .season-copy span,.story-editorial .season-copy span{display:none;}}
   @media(max-width:360px){.season-copy h2{font-size:30px;}}
 </style>
