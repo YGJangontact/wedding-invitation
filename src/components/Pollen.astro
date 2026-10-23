@@ -1,4 +1,4 @@
-<div class="pollen" aria-hidden="true">{Array.from({length:14},(_,i)=><i style={`--x:${15+(i*23)%70}%;--y:${30+(i*17)%50}%;--delay:-${i*.67}s;--duration:${5+i%4}s;--drift:${i%2?-38:42}px;--size:${2+i%3}px`}/> )}</div>
+<div class="pollen" aria-hidden="true">{Array.from({length:14},(_,i)=><i style={`--x:${15+(i*23)%70}%;--y:${10+(i*17)%50}%;--delay:-${i*.67}s;--duration:${6+i%4}s;--drift:${i%2?-38:42}px;--size:${10+i%4}px;--turn:${100+i*29}deg`}/> )}</div>
 <script>
   const fields=document.querySelectorAll<HTMLElement>('.pollen');
   if(new URLSearchParams(location.search).get('motion')!=='off') {
@@ -9,8 +9,9 @@
 </script>
 <style>
   .pollen {position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:1;}
-  i {position:absolute;left:var(--x);top:var(--y);width:var(--size);height:var(--size);border-radius:50%;background:#c4a760;box-shadow:0 0 5px #e5ce8c80;opacity:0;}
+  i {position:absolute;left:var(--x);top:var(--y);width:var(--size);height:calc(var(--size) * 1.45);border-radius:75% 65% 75% 15%;background:linear-gradient(135deg,#fff5f2 10%,#e9bdbb 75%,#dba5a7);box-shadow:inset 1px 1px 2px #ffffff90;opacity:0;}
+  i:nth-child(3n) {background:linear-gradient(135deg,#fffdf6,#ead8cb);border-radius:65% 80% 15% 75%;}
   .pollen-visible i {animation:float-pollen var(--duration) var(--delay) ease-in-out infinite;}
   .pollen-paused i {animation-play-state:paused;}
-  @keyframes float-pollen {0%{opacity:0;transform:translate(0,15px) scale(.6)}25%{opacity:.65}75%{opacity:.4}100%{opacity:0;transform:translate(var(--drift),-100px) scale(1.1)}}
+  @keyframes float-pollen {0%{opacity:0;transform:translate3d(0,-30px,0) rotate(-30deg)}20%{opacity:.8}50%{transform:translate3d(calc(var(--drift) * -.35),55px,0) rotate(45deg)}75%{opacity:.7}100%{opacity:0;transform:translate3d(var(--drift),150px,0) rotate(var(--turn))}}
 </style>
