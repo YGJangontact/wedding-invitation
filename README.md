@@ -20,7 +20,8 @@ Node 22.23.4 이상에서 `npm.cmd ci`, `npm.cmd run dev`를 실행하고 http:/
 ## 작업과 배포
 
 `work/invitation`에서 수정하고 커밋·push해 백업합니다. 검토한 변경만 main으로 합칩니다.
-현재 배포 연동 없음. 추후 Cloudflare Pages에서 build `npm run build`, output `dist`, production `main`, preview branches `None`으로 설정합니다.
-GitHub 저장소가 비공개여도 배포한 사이트는 별도로 보호하지 않으면 공개입니다.
+GitHub Pages: https://ygjangontact.github.io/wedding-invitation/
+저장소와 사이트는 공개입니다. `.github/workflows/deploy.yml`은 main push에서만 실행됩니다. 작업 브랜치 push는 배포하지 않습니다.
+GitHub Actions 빌드에서만 `/wedding-invitation` 경로를 적용하며 로컬 주소는 그대로 사용합니다.
 
 공개 전: 이름·사진·문구 확정, 주소·홀·교통 공식 확인, 실제 휴대폰 검증, 공유 미리보기 이미지 설정, 시안 배너와 noindex 제거 여부 결정. 현재 방명록·사진 업로드·참석 응답 저장 기능은 없습니다. Google Fonts 로드 실패 시 시스템 기본 서체를 사용합니다.
