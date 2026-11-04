@@ -5,9 +5,8 @@ const clientId = import.meta.env.PUBLIC_NAVER_MAP_CLIENT_ID || '';
 <div class="naver-map-shell" data-map-client={clientId} data-map-address={wedding.address}>
   <div class="map-interaction-frame">
     <div id="venue-map" aria-label="아벤티움 위치를 표시하는 네이버 지도" inert></div>
-    <button class="map-unlock" hidden>지도를 누르면 움직일 수 있어요<span>확대 · 이동하기</span></button>
   </div>
-  <button class="map-lock" hidden>지도 조작 끝내기</button>
+  <button class="map-unlock" hidden aria-pressed="false">지도를 클릭해 이동·확대하기</button>
   <p class="map-status" role="status">네이버 지도를 불러오는 중입니다.</p>
 </div>
 <script>
@@ -16,11 +15,13 @@ const clientId = import.meta.env.PUBLIC_NAVER_MAP_CLIENT_ID || '';
   const status = shell.querySelector<HTMLElement>('.map-status')!;
   const host = document.querySelector<HTMLElement>('#venue-map')!;
   const unlock = shell.querySelector<HTMLButtonElement>('.map-unlock')!;
-  const lock = shell.querySelector<HTMLButtonElement>('.map-lock')!;
-  const reset = () => { host.inert=true; unlock.hidden=false; lock.hidden=true; };
-  unlock.addEventListener('click',()=>{host.inert=false;unlock.hidden=true;lock.hidden=false;lock.focus({preventScroll:true});});
-  lock.addEventListener('click',()=>{reset();unlock.focus({preventScroll:true});});
-  shell.addEventListener('keydown',e=>{if(e.key==='Escape'&&!lock.hidden){reset();unlock.focus({preventScroll:true});}});
+  const reset = () => { host.inert=true; unlock.hidden=false; unlock.textContent='지도를 클릭해 이동·확대하기'; unlock.setAttribute('aria-pressed','false'); };
+  const activate = () => {if(host.dataset.ready!=='true')return;host.inert=false;unlock.textContent='지도 조작 중 · 바깥을 누르면 종료돼요';unlock.setAttribute('aria-pressed','true');};
+  unlock.addEventListener('click',activate);
+  shell.querySelector('.map-interaction-frame')?.addEventListener('click',activate);
+  document.addEventListener('pointerdown',e=>{if(!host.inert&&!shell.contains(e.target as Node))reset();});
+  document.addEventListener('focusin',e=>{if(!host.inert&&!shell.contains(e.target as Node))reset();});
+  shell.addEventListener('keydown',e=>{if(e.key==='Escape'&&!host.inert){reset();unlock.focus({preventScroll:true});}});
   const win = window as any;
   let failed = false;
   let timer: ReturnType<typeof setTimeout>;
@@ -28,7 +29,7 @@ const clientId = import.meta.env.PUBLIC_NAVER_MAP_CLIENT_ID || '';
     failed = true;
     clearTimeout(timer);
     host.hidden = true;
-    unlock.hidden = true; lock.hidden = true;
+    unlock.hidden = true;
     status.textContent = '지도를 불러오지 못했어요. 아래 네이버 지도에서 위치와 길찾기를 확인해 주세요.';
   };
   function start() {
@@ -54,7 +55,7 @@ const clientId = import.meta.env.PUBLIC_NAVER_MAP_CLIENT_ID || '';
         n.Event.once(map,'tilesloaded',()=>{
           if(failed) return;
           clearTimeout(timer);
-          status.textContent = '브라운스톤서울 3층 · 지도 조작을 마치면 ‘지도 조작 끝내기’를 눌러주세요.';
+          status.textContent = '브라운스톤서울 3층';
           reset();
           host.dataset.ready = 'true';
         });
@@ -71,9 +72,8 @@ const clientId = import.meta.env.PUBLIC_NAVER_MAP_CLIENT_ID || '';
 </script>
 <style>
  .map-interaction-frame{position:relative;}
- .map-unlock{position:absolute;inset:0;z-index:2;width:100%;border:0;background:#fff8;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;font:14px/1.6 var(--serif);color:#403d35;cursor:pointer;touch-action:pan-y;}
- .map-unlock span,.map-lock{background:var(--paper,#fffdf7);border:1px solid #cfc7b8;border-radius:24px;padding:9px 17px;font-size:12px;}
- .map-lock{display:block;margin:12px auto;cursor:pointer;}
- .map-unlock[hidden],.map-lock[hidden]{display:none;}
- .map-unlock:focus-visible,.map-lock:focus-visible{outline:3px solid #766647;outline-offset:-3px;}
+ .map-interaction-frame:has([inert]){cursor:pointer;touch-action:pan-y;}
+ .map-unlock{display:block;margin:12px auto 0;padding:9px 14px;border:0;background:transparent;color:#65563e;font:12px/1.6 var(--serif);cursor:pointer;text-decoration:underline;text-underline-offset:4px;}
+ .map-unlock[hidden]{display:none;}
+ .map-unlock:focus-visible{outline:2px solid #766647;outline-offset:2px;}
 </style>

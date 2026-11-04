@@ -58,6 +58,7 @@ const days = new Date(Date.UTC(year,month,0)).getUTCDate();
       <section class="gallery" id="gallery"><p class="eyebrow">오래 기억할 장면</p><h2>우리의 순간들</h2><p class="muted">함께한 시간을 사진으로 전할게요.</p><div class="photo-grid">{w.photos.length ? w.photos.map((photo,i)=><button class:list={['gallery-item',{wide:i===0}]} data-photo={asset(photo.src)} data-alt={photo.alt}><img src={asset(photo.src)} alt={photo.alt} loading="lazy"/></button>) : <><div class="gallery-placeholder wide"><span>✧</span><p>가장 좋아하는 한 장</p></div><div class="gallery-placeholder"><span>01</span><p>함께 웃던 날</p></div><div class="gallery-placeholder"><span>02</span><p>기억하고 싶은 순간</p></div></>}</div></section>
       {(w.contacts.length>0 || w.accounts.length>0) && <section class="contact"><h2>마음을 전하는 방법</h2>{w.contacts.map(c=><a class="contact-link" href={`tel:${c.phone}`}>{c.label}에게 연락하기</a>)}{w.accounts.map(a=><details><summary>{a.label}</summary><p>{a.bank} {a.number}<br/>{a.holder}</p><button data-copy={`${a.bank} ${a.number}`}>계좌번호 복사</button></details>)}</section>}
       <footer><span class="ornament">✳</span><h2>그날, 반갑게 만나요.</h2><p>소중한 걸음과 마음을<br/>오래도록 기억하겠습니다.</p><button id="share" class="share-button">청첩장 공유하기 <span>↗</span></button><p class="local-note">이름과 사진을 준비 중인 청첩장 시안입니다.</p><small>{year}. {String(month).padStart(2,'0')}. {String(day).padStart(2,'0')} · {w.venue}</small></footer>
+      {w.music.src && <p class="music-credit">Music: <a href="https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1400037" target="_blank" rel="noopener noreferrer">“Carefree” — Kevin MacLeod (incompetech.com)</a><br/>Licensed under <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a> · 원본 음원, 재생 음량 조절·반복 재생</p>}
     </main>
     <nav class="bottom-nav" aria-label="청첩장 바로가기"><a href="#day">예식 안내</a><span></span><a href="#location">오시는 길</a><span></span><a href="#gallery">사진첩</a></nav>
     <dialog id="lightbox"><button id="close-photo" aria-label="사진 닫기">×</button><img id="large-photo" alt=""/></dialog>
@@ -77,3 +78,7 @@ const days = new Date(Date.UTC(year,month,0)).getUTCDate();
     </script>
   </body>
 </html>
+<style>
+ .music-credit{padding:16px 24px 32px;margin:0;text-align:center;font:10px/1.8 sans-serif;color:#746d60;}
+ .music-credit a{color:inherit;text-decoration:underline;}
+</style>
