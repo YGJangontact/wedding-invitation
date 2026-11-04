@@ -1,0 +1,31 @@
+---
+import {wedding as w} from '../data/wedding';
+const src=w.music.src.startsWith('/')?`${import.meta.env.BASE_URL.replace(/\/$/,'')}${w.music.src}`:w.music.src;
+---
+{src && <div class="music-control">
+  <audio id="wedding-music" src={src} loop preload="none"></audio>
+  <button id="music-toggle" type="button" aria-pressed="false" aria-label={`${w.music.title} 재생`}>♫ 음악 켜기</button>
+  <span id="music-status" role="status"></span>
+</div>}
+<script>
+ const audio=document.querySelector<HTMLAudioElement>('#wedding-music');
+ const button=document.querySelector<HTMLButtonElement>('#music-toggle');
+ const status=document.querySelector<HTMLElement>('#music-status');
+ if(audio&&button&&status){
+   let manuallyPaused=false;
+   audio.volume=.35;
+   const sync=()=>{button.textContent=audio.paused?'♫ 음악 켜기':'Ⅱ 음악 끄기';button.setAttribute('aria-pressed',String(!audio.paused));button.setAttribute('aria-label',audio.paused?'배경음악 재생':'배경음악 일시정지');};
+   const play=async()=>{try{await audio.play();status.textContent='';}catch{status.textContent='음악 버튼을 눌러 재생해 주세요.';}sync();};
+   button.addEventListener('click',()=>{if(audio.paused){manuallyPaused=false;void play();}else{manuallyPaused=true;audio.pause();}});
+   document.querySelector('.wax-seal')?.addEventListener('click',()=>{if(!manuallyPaused&&audio.paused)void play();},{once:true});
+   audio.addEventListener('play',sync);audio.addEventListener('pause',sync);
+   audio.addEventListener('error',()=>{status.textContent='음악을 불러오지 못했어요.';sync();});
+   document.addEventListener('visibilitychange',()=>{if(document.hidden)audio.pause();});
+   window.addEventListener('pagehide',()=>audio.pause());
+ }
+</script>
+<style>
+ .music-control{position:fixed;right:16px;bottom:calc(72px + env(safe-area-inset-bottom));z-index:30;text-align:right;max-width:220px;}
+ button{border:1px solid #d6cbb8;border-radius:24px;padding:11px 16px;background:#fffdf5f2;color:#65563e;font:12px/1.4 sans-serif;box-shadow:0 3px 12px #53452d12;cursor:pointer;}
+ span{display:block;background:#fffdf5;color:#65563e;font-size:11px;margin-top:5px;}span:empty{display:none;}
+</style>

@@ -9,6 +9,7 @@ import InvitationMotion from './InvitationMotion.astro';
 import SeasonStory from './SeasonStory.astro';
 import ShareMeta from './ShareMeta.astro';
 import SealedHero from './SealedHero.astro';
+import BackgroundMusic from './BackgroundMusic.astro';
 import {themes as choices,sitePath} from '../data/themes';
 const { theme = 'garden', sealed = false } = Astro.props;
 const fresh = choices.some(t=>t.id===theme && t.fresh);
@@ -61,6 +62,7 @@ const days = new Date(Date.UTC(year,month,0)).getUTCDate();
     <dialog id="lightbox"><button id="close-photo" aria-label="사진 닫기">×</button><img id="large-photo" alt=""/></dialog>
     <p id="toast" role="status" aria-live="polite"></p>
     <InvitationMotion />
+    <BackgroundMusic />
     <script>
       const toast = document.querySelector<HTMLElement>('#toast')!;
       let timer: ReturnType<typeof setTimeout>;
