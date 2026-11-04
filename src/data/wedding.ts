@@ -11,7 +11,7 @@ export const wedding = {
   locationChecked: "2026-10-23",
   heroPhoto: "",
   // public/music/ 안에 음원을 넣은 뒤 /music/파일명.mp3를 지정합니다.
-  music: { src: "", title: "배경음악" },
+  music: { src: "", title: "배경음악", youtubeId: "n6Hje7B4zcc" },
   photos: [] as { src: string; alt: string }[],
   invitation: [
     "서로의 일상에 가장 가까운 사람이 되어",

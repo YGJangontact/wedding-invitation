@@ -1,0 +1,69 @@
+---
+import {wedding as w} from '../data/wedding';
+---
+<aside class="youtube-music" data-video={w.music.youtubeId} aria-label="청첩장 음악">
+  <div class="youtube-panel" hidden>
+    <div class="youtube-heading"><span>함께 듣는 음악</span><button type="button" class="youtube-close" aria-label="음악을 끄고 플레이어 닫기">닫기 ×</button></div>
+    <div id="wedding-youtube"></div>
+    <p class="youtube-status" role="status">플레이어를 준비하고 있어요.</p>
+    <a href={`https://www.youtube.com/watch?v=${w.music.youtubeId}`} target="_blank" rel="noopener noreferrer">YouTube에서 듣기 ↗</a>
+  </div>
+  <button type="button" class="youtube-toggle" aria-expanded="false" aria-label="음악 재생">♫ 음악 켜기</button>
+</aside>
+<script>
+ const root=document.querySelector<HTMLElement>('.youtube-music');
+ if(root){
+   const panel=root.querySelector<HTMLElement>('.youtube-panel')!;
+   const toggle=root.querySelector<HTMLButtonElement>('.youtube-toggle')!;
+   const status=root.querySelector<HTMLElement>('.youtube-status')!;
+   const win=window as any;
+   let player:any,ready=false,wanted=false,started=false,manualStop=false;
+   let loadTimer:ReturnType<typeof setTimeout>;
+   const stopped=()=>{toggle.textContent='♫ 음악 켜기';toggle.setAttribute('aria-label','음악 재생');};
+   const pause=()=>{wanted=false;manualStop=true;if(ready)player.pauseVideo();stopped();};
+   const create=()=>{
+     if(player)return;
+     player=new win.YT.Player('wedding-youtube',{
+       width:'100%',height:200,videoId:root.dataset.video,host:'https://www.youtube-nocookie.com',
+       playerVars:{playsinline:1,controls:1,origin:location.origin,rel:0},
+       events:{
+         onReady:()=>{clearTimeout(loadTimer);ready=true;player.setVolume(35);status.textContent='재생 버튼으로 음악을 들을 수 있어요.';if(wanted)player.playVideo();},
+         onStateChange:(e:any)=>{
+           if(e.data===1){toggle.textContent='Ⅱ 음악 끄기';toggle.setAttribute('aria-label','음악 일시정지');status.textContent='';}
+           else if(e.data===2||e.data===0){wanted=false;stopped();}
+         },
+         onAutoplayBlocked:()=>{wanted=false;stopped();status.textContent='플레이어의 재생 버튼을 눌러주세요.';},
+         onError:()=>{clearTimeout(loadTimer);wanted=false;stopped();status.textContent='이 영상은 여기서 재생할 수 없어요. 아래 YouTube 링크로 들어주세요.';}
+       }
+     });
+   };
+   const open=()=>{
+     panel.hidden=false;toggle.setAttribute('aria-expanded','true');wanted=true;
+     toggle.textContent='Ⅱ 음악 끄기';toggle.setAttribute('aria-label','음악 일시정지');
+     if(ready){player.playVideo();return;}
+     if(started)return;
+     started=true;
+     loadTimer=setTimeout(()=>{status.textContent='연결이 늦어지고 있어요. 아래 YouTube 링크로도 들을 수 있어요.';},15000);
+     if(win.YT?.Player){create();return;}
+     win.onYouTubeIframeAPIReady=create;
+     const script=document.createElement('script');script.src='https://www.youtube.com/iframe_api';script.async=true;
+     script.onerror=()=>{clearTimeout(loadTimer);started=false;wanted=false;stopped();status.textContent='플레이어를 불러오지 못했어요. 다시 시도하거나 YouTube에서 들어주세요.';};
+     document.head.append(script);
+   };
+   toggle.addEventListener('click',()=>{if(wanted||(ready&&player.getPlayerState()===1)){pause();}else{manualStop=false;open();}});
+   root.querySelector('.youtube-close')?.addEventListener('click',()=>{pause();panel.hidden=true;toggle.setAttribute('aria-expanded','false');toggle.focus({preventScroll:true});});
+   document.querySelector('.wax-seal')?.addEventListener('click',()=>{if(!manualStop)open();},{once:true});
+   document.addEventListener('visibilitychange',()=>{if(document.hidden)pause();});
+   window.addEventListener('pagehide',pause);
+ }
+</script>
+<style>
+ .youtube-music{position:fixed;right:12px;bottom:calc(68px + env(safe-area-inset-bottom));z-index:40;width:min(300px,calc(100vw - 24px));text-align:right;pointer-events:none;}
+ button,.youtube-panel{pointer-events:auto;}
+ button{border:1px solid #d6cbb8;border-radius:22px;padding:10px 15px;background:#fffdf8;color:#65563e;cursor:pointer;font:12px/1.5 sans-serif;}
+ .youtube-panel{padding:6px;background:#fffdf8;border:1px solid #ded4c4;border-radius:12px;box-shadow:0 8px 30px #483b3026;margin-bottom:8px;text-align:left;}
+ .youtube-panel[hidden]{display:none;}.youtube-heading{display:flex;justify-content:space-between;align-items:center;padding:4px 4px 8px;font-size:12px;color:#65563e;}
+ .youtube-close{border:0;padding:5px 7px;}.youtube-status{font-size:12px;line-height:1.6;padding:0 6px;color:#65563e;margin:8px 0;}.youtube-status:empty{display:none;}
+ .youtube-panel a{display:inline-block;font-size:11px;color:#65563e;padding:8px 6px;}
+ :global(.youtube-panel iframe){display:block;width:100%;height:200px;border:0;}
+</style>
