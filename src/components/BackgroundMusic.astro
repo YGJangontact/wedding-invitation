@@ -25,7 +25,10 @@ const src=w.music.src.startsWith('/')?`${import.meta.env.BASE_URL.replace(/\/$/,
  }
 </script>
 <style>
- .music-control{position:fixed;right:16px;bottom:calc(72px + env(safe-area-inset-bottom));z-index:30;text-align:right;max-width:220px;}
+ .music-control{position:fixed;right:max(8px,calc((100vw - 480px)/2 + 8px));bottom:calc(8px + env(safe-area-inset-bottom));z-index:30;text-align:right;width:92px;}
+ :global(body:has(.music-control) .bottom-nav){padding-right:108px;}
+ :global(body:has(.music-control) .bottom-nav a){padding:17px 5px;font-size:11px;white-space:nowrap;}
+ .music-control button{width:92px;padding:9px 5px;font-size:11px;}
  button{border:1px solid #d6cbb8;border-radius:24px;padding:11px 16px;background:#fffdf5f2;color:#65563e;font:12px/1.4 sans-serif;box-shadow:0 3px 12px #53452d12;cursor:pointer;}
  span{display:block;background:#fffdf5;color:#65563e;font-size:11px;margin-top:5px;}span:empty{display:none;}
 </style>
