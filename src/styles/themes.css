@@ -48,5 +48,9 @@ body[data-theme="minimal"] { --paper:#fff; --ink:#232729; --green:#263e4d; --sag
 .naver-map-shell { margin-top:20px; border:1px solid var(--line); }
 #venue-map { height:300px; width:100%; background:var(--sage); }
 .map-status { font-size:12px; padding:12px; line-height:1.6; }
-.map-pin { background:#fff; color:#263e4d; padding:8px 12px; border:1px solid #263e4d; white-space:nowrap; font:bold 13px/1.5 sans-serif; box-shadow:0 3px 10px #0002; }
+.map-pin { position:relative; box-sizing:border-box; width:160px; height:70px; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:5px; background:#fffdf8; color:#443e33; border:1px solid #cdbf9f; border-radius:12px; white-space:nowrap; box-shadow:0 4px 16px #40362126; }
+.map-pin::after { content:''; position:absolute; bottom:-7px; left:73px; width:12px; height:12px; background:#fffdf8; border-right:1px solid #cdbf9f; border-bottom:1px solid #cdbf9f; transform:rotate(45deg); }
+.map-pin-name { display:flex; align-items:center; gap:8px; font:600 17px/1.3 var(--serif); letter-spacing:.4px; }
+.map-pin-floor { padding:3px 6px; border-radius:4px; background:#eee6d6; color:#69583a; font:600 11px/1.2 var(--sans); letter-spacing:0; }
+.map-pin-building { color:#776e5d; font:11px/1.4 var(--sans); letter-spacing:.5px; }
 @media(max-width:360px){[data-theme="classic"] .hero {margin-left:14px;margin-right:14px;padding:0 14px;} [data-theme="minimal"] .hero{padding:0 24px;} .theme-picker a{font-size:11px;padding:9px 8px;}}
