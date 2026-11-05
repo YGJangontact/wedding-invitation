@@ -7,10 +7,7 @@ const parkingQuery = encodeURIComponent('서울특별시 중구 칠패로 5 서�
 <section id="location" class="location">
   <p class="eyebrow">만나는 곳</p>
   <h2>{w.venue}</h2>
-  <p class="venue-floor">{w.hall}</p>
-  <div class="venue-card">
-    <span class="venue-symbol" aria-hidden="true">⌖</span>
-    <strong>{w.city} {w.venue}</strong>
+  <div class="venue-address-row">
     <p class="street-address">{w.address}<br/>{w.hall}</p>
     <button class="address-copy" data-copy={`${w.address} ${w.hall}`}>주소 복사</button>
   </div>
@@ -28,3 +25,9 @@ const parkingQuery = encodeURIComponent('서울특별시 중구 칠패로 5 서�
   <a class="venue-call" href={`tel:${w.venuePhone}`}>예식장 문의 <span>{w.venuePhone}</span></a>
   <p class="location-source"><a href={w.locationSource} target="_blank" rel="noopener noreferrer">아벤티움 공식 오시는 길 ↗</a><br/>{w.locationChecked.replaceAll('-', '. ')}. 확인<br/>방문 전 최신 안내를 확인해 주세요.</p>
 </section>
+<style>
+  .venue-address-row { display:flex; align-items:center; justify-content:center; gap:12px; margin:16px 0 24px; }
+  .venue-address-row .street-address { margin:0; font-size:13px; line-height:1.9; text-align:left; }
+  .venue-address-row .address-copy { flex:none; margin:0; padding:6px 9px; min-height:44px; font-size:11px; border-radius:6px; }
+  @media(max-width:360px) { .venue-address-row {gap:8px;} .venue-address-row .street-address {font-size:12px;} .venue-address-row .address-copy {padding:6px;} }
+</style>

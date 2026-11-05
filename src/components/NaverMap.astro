@@ -51,7 +51,7 @@ const clientId = import.meta.env.PUBLIC_NAVER_MAP_CLIENT_ID || '';
         if (!address.roadAddress?.includes('청파로 464')) { fail(); return; }
         const point = new n.LatLng(Number(address.y), Number(address.x));
         const map = new n.Map(host, {center:point,zoom:16,scrollWheel:false,zoomControl:true,zoomControlOptions:{position:n.Position.TOP_RIGHT}});
-        new n.Marker({map,position:point,title:'아벤티움 · 브라운스톤서울 3층',icon:{content:'<div class="map-pin"><span class="map-pin-name">아벤티움 <span class="map-pin-floor">3층</span></span><span class="map-pin-building">브라운스톤서울</span></div>',anchor:new n.Point(80,78)}});
+        new n.Marker({map,position:point,title:'아벤티움 · 브라운스톤서울 3층',icon:{content:'<div class="map-pin"><span class="map-pin-name">아벤티움</span><span class="map-pin-dot"></span></div>',anchor:new n.Point(44,43)}});
         n.Event.once(map,'tilesloaded',()=>{
           if(failed) return;
           clearTimeout(timer);
