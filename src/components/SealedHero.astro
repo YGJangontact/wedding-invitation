@@ -10,12 +10,13 @@ const {asset,fullDate,time}=Astro.props;
   <p class="sealed-subtitle">소중한 당신에게 보내는 초대</p>
     </div>
   </div>
+  <div class="sealed-date"><p>{fullDate} · {time}<br/>{w.city} {w.venue} · {w.hall}</p></div>
   <div class="envelope-space">
     <div class="sealed-envelope">
       <div class="envelope-back"></div>
       <div class="reveal-card" id="revealed-photo" aria-hidden="true">
         <div class="sealed-photo">{w.heroPhoto?<img src={asset(w.heroPhoto)} alt="두 사람의 사진"/>:<span>사진 자리</span>}</div>
-        <p>{w.names.every(Boolean)?w.names.join(' · '):'신랑 이름 · 신부 이름'}</p>
+        {w.names.every(Boolean) && <p>{w.names.join(' · ')}</p>}
         <small>함께 써 내려갈 우리의 이야기</small>
       </div>
       <div class="envelope-front"></div>
@@ -25,8 +26,8 @@ const {asset,fullDate,time}=Astro.props;
     </div>
   </div>
   <p class="seal-hint" aria-live="polite">봉인을 눌러 초대장을 열어주세요</p>
-  <div class="sealed-date"><p>{fullDate}<br/>{time} · {w.venue}</p><a href="#invitation">초대의 글 읽기 ↓</a></div>
-  <noscript><p>신랑 이름 · 신부 이름 — 소중한 당신을 초대합니다.</p></noscript>
+  <a class="letter-jump" href="#invitation">초대의 글 읽기 ↓</a>
+  <noscript><p>소중한 당신을 초대합니다.</p></noscript>
 </header>
 <script>
  const intro=document.querySelector<HTMLElement>('.sealed-intro');
@@ -46,7 +47,7 @@ const {asset,fullDate,time}=Astro.props;
  .studio-cover{position:relative;margin:-48px -24px 0;}
  .studio-cover img{display:block;width:100%;height:auto;}
  .cover-letter{position:absolute;inset:55% 0 auto;color:#433832;}
- .cover-letter h1{font-size:clamp(23px,6vw,30px);line-height:1.45;}
+ .cover-letter h1{font-size:clamp(19px,4.7vw,25px);line-height:1.45;}
  .cover-letter .sealed-subtitle{margin:10px 0 0;font-size:12px;color:#514640;}
  @media(max-width:360px){.studio-cover{margin-inline:-20px;}}
  h1{font:32px/1.65 var(--serif);letter-spacing:-1px;margin:0;}
@@ -69,6 +70,6 @@ const {asset,fullDate,time}=Astro.props;
  .is-open .reveal-card{opacity:1;transform:translateY(-105px) rotate(-3deg);z-index:5;transition:transform 1.3s .85s,opacity .6s .7s,z-index 0s 1.2s;}
  .is-open .envelope-front{opacity:1;}
  .seal-hint{font:12px/1.8 var(--serif);color:#88785e;min-height:22px;margin:8px 0 22px;}
- .sealed-date{border-top:1px solid #dbd1c1;padding-top:18px;font:13px/1.9 var(--serif);}.sealed-date a{display:inline-block;margin-top:14px;color:inherit;font-size:12px;}
+ .sealed-date{border-top:1px solid #dbd1c1;padding-top:18px;font:13px/1.9 var(--serif);}.letter-jump{display:inline-block;margin-top:14px;color:inherit;font-size:12px;}
  @media(max-width:360px){h1{font-size:28px}.sealed-intro{padding-inline:20px}.sealed-envelope{height:190px}.envelope-space{height:335px}.sealed-photo{height:150px}.wax-seal{top:73px}}
 </style>
