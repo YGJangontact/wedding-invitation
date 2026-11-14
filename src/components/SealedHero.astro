@@ -14,7 +14,7 @@ const {asset,fullDate,time,guestView}=Astro.props;
   <div class="envelope-space" id={guestView ? "invitation" : undefined}>
     <div class="sealed-envelope">
       <div class="envelope-back"></div>
-      <div class="reveal-card" id="revealed-letter" aria-hidden="true">
+      <div class="reveal-card">
         <div class="letter-body">
           {w.invitation.filter(Boolean).map(line => <p>{line}</p>)}
           {w.names.every(Boolean) && <small>{w.names.join(' · ')}</small>}
@@ -22,26 +22,43 @@ const {asset,fullDate,time,guestView}=Astro.props;
       </div>
       <div class="envelope-front"></div>
       <div class="sealed-flap"></div>
-      <div class="silk-band"></div>
-      <button class="wax-seal" aria-label="봉인을 풀고 초대글 읽기" aria-controls="revealed-letter" aria-expanded="false"><span aria-hidden="true">❦</span></button>
+      <div class="silk-band" aria-hidden="true"></div>
+      <span class="wax-seal" aria-hidden="true">❦</span>
     </div>
   </div>
-  <p class="seal-hint" aria-live="polite">봉인을 눌러 초대장을 열어주세요</p>
-
-  <noscript>{w.invitation.filter(Boolean).map(line => <p>{line}</p>)}</noscript>
 </header>
 <script>
- const intro=document.querySelector<HTMLElement>('.sealed-intro');
- const seal=intro?.querySelector<HTMLButtonElement>('.wax-seal');
- seal?.addEventListener('click',()=>{
-   if(!intro||intro.classList.contains('is-open'))return;
-   intro.classList.add('is-open');
-   seal.setAttribute('aria-expanded','true');
-   seal.setAttribute('aria-label','초대장이 열렸습니다');
-   intro.querySelector('#revealed-letter')?.setAttribute('aria-hidden','false');
-   const hint=intro.querySelector('.seal-hint');
-   if(hint)hint.textContent='';
- });
+  const envelope = document.querySelector<HTMLElement>('.sealed-envelope');
+  if (envelope) {
+    let frame = 0;
+    const clamp = (value: number) => Math.max(0, Math.min(1, value));
+    function paint() {
+      frame = 0;
+      const top = envelope!.getBoundingClientRect().top;
+      const height = window.innerHeight;
+      const progress = clamp((height * 0.86 - top) / (height * 0.38));
+      const release = clamp(progress / 0.42);
+      const unfold = clamp((progress - 0.18) / 0.48);
+      const lift = clamp((progress - 0.4) / 0.6);
+      const style = envelope!.style;
+      style.setProperty('--seal-opacity', String(1 - release));
+      style.setProperty('--thread-drift', release * 38 + 'px');
+      style.setProperty('--flap-angle', -172 * unfold + 'deg');
+      style.setProperty('--letter-y', 18 - 123 * lift + 'px');
+      style.setProperty('--letter-opacity', String(clamp(lift * 2)));
+      style.setProperty('--letter-layer', unfold > 0.58 ? '5' : '2');
+      if (progress === 1) {
+        window.removeEventListener('scroll', schedule);
+        window.removeEventListener('resize', schedule);
+      }
+    }
+    function schedule() {
+      if (!frame) frame = requestAnimationFrame(paint);
+    }
+    window.addEventListener('scroll', schedule, {passive: true});
+    window.addEventListener('resize', schedule);
+    paint();
+  }
 </script>
 <style>
  .sealed-intro{padding:48px 24px 32px;text-align:center;background:radial-gradient(ellipse at 20% 20%,#fffefa,#f2ede5);color:#625540;overflow:hidden;}
@@ -65,12 +82,12 @@ const {asset,fullDate,time,guestView}=Astro.props;
  .letter-body{padding:24px 0;color:#51473b;font:14px/1.85 var(--serif);word-break:keep-all;}
  .letter-body p{margin:0;}
  .letter-body p:last-of-type{margin-top:14px;}
- .is-open .wax-seal{opacity:0;transform:translateY(35px) rotate(18deg) scale(.75);pointer-events:none;}
- .is-open .silk-band{transform:translateX(160px) rotate(28deg);opacity:0;}
- .is-open .sealed-flap{transform:rotateX(180deg);z-index:1;}
- .is-open .reveal-card{opacity:1;transform:translateY(-105px) rotate(0deg);z-index:5;transition:transform 1.3s .85s,opacity .6s .7s,z-index 0s 1.2s;}
- .is-open .envelope-front{opacity:1;}
- .seal-hint{font:12px/1.8 var(--serif);color:#88785e;min-height:22px;margin:8px 0 22px;}
+ /* Without script, show the unfolded letter in its reading position. */
+ .wax-seal{display:grid;place-items:center;opacity:var(--seal-opacity,0);pointer-events:none;}
+ .silk-band{left:50%;width:2px;background:#a44d52;box-shadow:none;opacity:var(--seal-opacity,0);transform:translateX(var(--thread-drift,38px)) rotate(-4deg);}
+ .sealed-flap{transform:rotateX(var(--flap-angle,-172deg));}
+ .reveal-card{opacity:var(--letter-opacity,1);transform:translateY(var(--letter-y,-105px));z-index:var(--letter-layer,5);}
+ .wax-seal,.silk-band,.sealed-flap,.reveal-card{transition:none;}
  .sealed-date{border-top:1px solid #dbd1c1;padding-top:18px;font:15px/1.8 var(--serif);color:#493f33;}
  @media(max-width:360px){h1{font-size:28px}.sealed-intro{padding-inline:20px}.sealed-envelope{height:190px}.envelope-space{height:335px}.wax-seal{top:73px}}
 </style>
