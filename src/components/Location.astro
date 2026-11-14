@@ -7,11 +7,11 @@ const parkingQuery = encodeURIComponent('서울특별시 중구 칠패로 5 서�
 <section id="location" class="location">
   <p class="eyebrow">만나는 곳</p>
   <h2>{w.venue}</h2>
+  <NaverMap />
   <div class="venue-address-row">
     <p class="street-address">{w.address}<br/>{w.hall}</p>
-    <button class="address-copy" data-copy={`${w.address} ${w.hall}`}>주소 복사</button>
+    <button class="address-copy" data-copy={`${w.address} ${w.hall}`}>복사</button>
   </div>
-  <NaverMap />
   <div class="map-links">
     <a href={`https://map.naver.com/p/search/${query}`} target="_blank" rel="noopener noreferrer">네이버 지도 ↗</a>
     <a href={`https://map.kakao.com/link/search/${query}`} target="_blank" rel="noopener noreferrer">카카오맵 ↗</a>
@@ -26,8 +26,7 @@ const parkingQuery = encodeURIComponent('서울특별시 중구 칠패로 5 서�
   <p class="location-source"><a href={w.locationSource} target="_blank" rel="noopener noreferrer">아벤티움 공식 오시는 길 ↗</a><br/>{w.locationChecked.replaceAll('-', '. ')}. 확인<br/>방문 전 최신 안내를 확인해 주세요.</p>
 </section>
 <style>
-  .venue-address-row { display:flex; align-items:center; justify-content:center; gap:12px; margin:16px 0 24px; }
-  .venue-address-row .street-address { margin:0; font-size:13px; line-height:1.9; text-align:left; }
-  .venue-address-row .address-copy { flex:none; margin:0; padding:6px 9px; min-height:44px; font-size:11px; border-radius:6px; }
-  @media(max-width:360px) { .venue-address-row {gap:8px;} .venue-address-row .street-address {font-size:12px;} .venue-address-row .address-copy {padding:6px;} }
+  .venue-address-row { display:flex; align-items:center; justify-content:center; gap:10px; margin:10px 0 4px; }
+  .venue-address-row .street-address { margin:0; font-size:12px; line-height:1.6; color:var(--muted); text-align:left; }
+  .venue-address-row .address-copy { flex:none; margin:0; padding:2px 10px; min-height:30px; font-size:11px; border-radius:15px; }
 </style>
