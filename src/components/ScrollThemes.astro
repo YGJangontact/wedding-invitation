@@ -48,9 +48,14 @@
       heads.forEach((y, i) => {
         const to = i % 2 === 0 ? right : left;
         const from = i === 0 ? cx : x;
-        const top = Math.max(i === 0 ? y0 : 0, y - 100);
+        const top = Math.max(i === 0 ? y0 : 0, y - 130);
         if (i > 0) d += ` L${from} ${top}`;
-        d += ` C${from} ${top + 40} ${to} ${y - 65} ${to} ${y - 30} L${to} ${y}`;
+        // Midway across, the thread twirls once: a small loop drawn as one self-crossing curve,
+        // with matching tangents on both sides so the turn stays smooth.
+        const dir = Math.sign(to - from) || 1, L = 22, mx = (from + to) / 2, ym = (top + y - 30) / 2 + 14;
+        d += ` C${from} ${top + 30} ${mx - dir * (L + 30)} ${ym + 22} ${mx - dir * L} ${ym}`
+          + ` C${mx + dir * 2.2 * L} ${ym - 2.4 * L} ${mx - dir * 2.2 * L} ${ym - 2.4 * L} ${mx + dir * L} ${ym}`
+          + ` C${mx + dir * (L + 30)} ${ym + 22} ${to} ${y - 70} ${to} ${y - 30} L${to} ${y}`;
         stops.push({ x: to, y });
         x = to;
       });
