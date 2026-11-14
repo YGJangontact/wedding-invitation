@@ -2,7 +2,7 @@
 export const wedding = {
   names: ["", ""],
   date: "2027-05-09T11:00:00+09:00",
-  venue: "아벤티움",
+  venue: "채플웨딩홀 아벤티움",
   city: "서울",
   hall: "브라운스톤서울 3층",
   address: "서울특별시 중구 청파로 464",
