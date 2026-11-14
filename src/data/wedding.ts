@@ -37,10 +37,17 @@ export const wedding = {
     { title: "자가용 · 주차", summary: "본관 또는 서소문공원 별관 주차장", text: "본관 주차장\n브라운스톤서울 · 중구 청파로 464\n\n별관 주차장\n서소문공원 · 중구 칠패로 5\n\n예식장 공식 약도는 별관 주차장 이용도 안내하고 있습니다. 도착 후 현장 안내에 따라 주차해 주세요.\n\n무료 주차 시간과 정산 방법은 예식장에 확인해 주세요." },
   ] as { title: string; summary: string; text: string }[],
   contacts: [] as { label: string; phone: string }[],
-  accounts: [] as {
-    label: string;
-    bank: string;
-    number: string;
-    holder: string;
-  }[],
+  // 마음 전하실 곳: 이름·은행·계좌번호를 채운 사람만 하객에게 보입니다.
+  accounts: [
+    { side: "신랑측", people: [
+      { role: "신랑", name: "", bank: "", number: "" },
+      { role: "아버지", name: "", bank: "", number: "" },
+      { role: "어머니", name: "", bank: "", number: "" },
+    ] },
+    { side: "신부측", people: [
+      { role: "신부", name: "", bank: "", number: "" },
+      { role: "아버지", name: "", bank: "", number: "" },
+      { role: "어머니", name: "", bank: "", number: "" },
+    ] },
+  ] as { side: string; people: { role: string; name: string; bank: string; number: string }[] }[],
 };

@@ -1,0 +1,28 @@
+---
+// D-day under the calendar. The build fills in a value; the browser recounts it in Korea time on load.
+import { wedding as w } from '../data/wedding';
+const kstDay = (d: Date) => Date.parse(new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Seoul' }).format(d));
+const left = Math.round((kstDay(new Date(w.date)) - kstDay(new Date())) / 864e5);
+const label = (n: number) => n > 0 ? `D-${n}` : n === 0 ? 'D-DAY' : `D+${-n}`;
+const note = (n: number) => n > 0 ? `결혼식까지 <b>${n}</b>일 남았어요` : n === 0 ? '오늘, 저희 결혼합니다' : `부부가 된 지 <b>${-n}</b>일째예요`;
+---
+<div class="dday" data-date={w.date}>
+  <strong class="dday-num">{label(left)}</strong>
+  <span class="dday-note" set:html={note(left)} />
+</div>
+<script>
+  const box = document.querySelector<HTMLElement>('.dday');
+  if (box) {
+    const kstDay = (d: Date) => Date.parse(new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Seoul' }).format(d));
+    const n = Math.round((kstDay(new Date(box.dataset.date!)) - kstDay(new Date())) / 864e5);
+    box.querySelector('.dday-num')!.textContent = n > 0 ? `D-${n}` : n === 0 ? 'D-DAY' : `D+${-n}`;
+    box.querySelector('.dday-note')!.innerHTML = n > 0 ? `결혼식까지 <b>${n}</b>일 남았어요` : n === 0 ? '오늘, 저희 결혼합니다' : `부부가 된 지 <b>${-n}</b>일째예요`;
+  }
+</script>
+<style>
+  .dday { display:flex; flex-direction:column; align-items:center; gap:8px; margin:30px 0 6px; }
+  .dday-num { display:flex; align-items:center; gap:14px; font:400 27px/1 var(--serif); letter-spacing:1px; color:var(--green); font-variant-numeric:tabular-nums; }
+  .dday-num::before, .dday-num::after { content:""; width:34px; height:1px; background:currentColor; opacity:.35; }
+  .dday-note { font-size:13px; color:var(--muted); }
+  .dday-note :global(b) { font-weight:600; color:var(--ink, inherit); }
+</style>

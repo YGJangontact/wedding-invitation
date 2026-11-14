@@ -1,0 +1,47 @@
+---
+// 마음 전하실 곳: 신랑측(신랑·아버지·어머니) / 신부측(신부·아버지·어머니).
+// Guests see only people whose account number is filled in; design previews show the empty slots.
+import { wedding as w } from '../data/wedding';
+const { guestView = false } = Astro.props;
+const sides = w.accounts
+  .map(side => ({ ...side, people: guestView ? side.people.filter(p => p.number) : side.people }))
+  .filter(side => side.people.length > 0);
+---
+{sides.length > 0 && <section class="gift" id="gift">
+  <p class="eyebrow">마음 전하실 곳</p>
+  <h2>축하의 마음 전하기</h2>
+  <p class="muted">참석이 어려우신 분들을 위해 적어 두었습니다.</p>
+  <div class="gift-sides">
+    {sides.map(side => <details class="gift-side">
+      <summary><span>{side.side}</span><span class="gift-toggle" aria-hidden="true">+</span></summary>
+      <ul>
+        {side.people.map(p => <li>
+          <span class="gift-role">{p.role}</span>
+          <span class="gift-who">
+            <strong>{p.name || `${p.role} 이름`}</strong>
+            <small>{p.number ? `${p.bank} ${p.number}` : '계좌 정보를 준비 중이에요'}</small>
+          </span>
+          {p.number ? <button type="button" class="gift-copy" data-copy={`${p.bank} ${p.number} ${p.name}`}>복사</button> : <span class="gift-copy is-empty" aria-hidden="true">복사</span>}
+        </li>)}
+      </ul>
+    </details>)}
+  </div>
+</section>}
+<style>
+  .gift { text-align:center; }
+  .gift .muted { margin-top:12px; }
+  .gift-sides { display:grid; gap:10px; margin-top:28px; text-align:left; }
+  .gift-side { border:1px solid var(--line, #e4ddd3); border-radius:10px; background:transparent; }
+  .gift-side summary { display:flex; align-items:center; justify-content:space-between; min-height:52px; padding:0 18px; list-style:none; font:15px var(--serif); cursor:pointer; }
+  .gift-side summary::-webkit-details-marker { display:none; }
+  .gift-toggle { font:18px/1 var(--sans, sans-serif); color:var(--muted); transition:transform .25s; }
+  .gift-side[open] .gift-toggle { transform:rotate(45deg); }
+  .gift-side ul { margin:0; padding:0 18px 8px; list-style:none; }
+  .gift-side li { display:grid; grid-template-columns:44px minmax(0,1fr) auto; align-items:center; gap:10px; padding:12px 0; border-top:1px solid var(--line, #e4ddd3); }
+  .gift-role { font-size:12px; color:var(--green); letter-spacing:1px; }
+  .gift-who { display:flex; flex-direction:column; gap:2px; min-width:0; }
+  .gift-who strong { font:400 15px/1.4 var(--serif); }
+  .gift-who small { font-size:12px; color:var(--muted); overflow-wrap:anywhere; }
+  .gift-copy { margin:0; padding:0 10px; min-height:26px; font-size:11px; line-height:24px; border:1px solid var(--line, #d8cfc2); border-radius:13px; background:transparent; color:inherit; }
+  .gift-copy.is-empty { opacity:.35; }
+</style>
