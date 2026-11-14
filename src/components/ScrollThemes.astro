@@ -42,31 +42,21 @@
         .filter(y => y > y0 + 60 && y < yK - 200);
       // The thread leaves the photo from the centre, then crosses the page above each heading,
       // alternating left→right and right→left, and runs down the side between headings.
-      // The same soft loop as the closing knot, laid on its side: (along, across) offsets.
-      const twirl = [[[40, 0], [54, -23], [32, -23]], [[10, -23], [10, 23], [32, 23]], [[54, 23], [50, 0], [90, 0]]];
       let x = cx, d = `M${cx} ${y0}`;
       heads.forEach((y, i) => {
         const to = i % 2 === 0 ? right : left;
         const from = i === 0 ? cx : x;
         const top = Math.max(i === 0 ? y0 : 0, y - 130);
         if (i > 0) d += ` L${from} ${top}`;
-        // Across the page the thread twirls twice, then settles down the far side.
-        // Across the page the thread makes soft, open twirls (two on a full crossing, one on the
-        // short first one), stretched along the way so they read as a gentle curl, not a scribble.
-        const dir = Math.sign(to - from) || 1, ym = (top + y - 30) / 2 + 4;
-        const span = Math.abs(to - from), count = span > 240 ? 2 : 1;
-        const su = Math.min(1.05, (span * 0.3) / 90), sv = 0.5, loopLen = 90 * su;
-        const a = (from + to) / 2 - dir * loopLen * count / 2;
-        const lead = Math.min(50, Math.abs(a - from) * 0.6);
-        d += ` C${from} ${top + 30} ${a - dir * lead} ${ym} ${a} ${ym}`;
-        for (let k = 0; k < count; k++) {
-          const at = a + dir * loopLen * k;
-          twirl.forEach(seg => {
-            d += ' C' + seg.map(([u, v]) => `${at + dir * u * su} ${ym + v * sv}`).join(' ');
-          });
-        }
-        const b = a + dir * loopLen * count;
-        d += ` C${b + dir * Math.min(50, Math.abs(to - b) * 0.6)} ${ym} ${to} ${y - 70} ${to} ${y - 30} L${to} ${y}`;
+        // Midway across, the thread curls once like a pig's tail: the closing knot's curve laid
+        // on its side (offsets along / across the way), so the two ends of the page match.
+        const dir = Math.sign(to - from) || 1, ym = (top + y - 30) / 2 + 12, sc = 0.85, len = 90 * sc;
+        const curl = [[[40, 0], [54, -23], [32, -23]], [[10, -23], [10, 23], [32, 23]], [[54, 23], [50, 0], [90, 0]]];
+        const a = (from + to) / 2 - dir * len / 2, b = a + dir * len;
+        const leadIn = Math.min(60, Math.abs(a - from) * 0.5), leadOut = Math.min(60, Math.abs(to - b) * 0.5);
+        d += ` C${from} ${top + 30} ${a - dir * leadIn} ${ym} ${a} ${ym}`;
+        curl.forEach(seg => { d += ' C' + seg.map(([u, v]) => `${a + dir * u * sc} ${ym + v * sc}`).join(' '); });
+        d += ` C${b + dir * leadOut} ${ym} ${to} ${y - 70} ${to} ${y - 30} L${to} ${y}`;
         x = to;
       });
       d += ` L${x} ${yK - 150} C${x} ${yK - 60} ${cx} ${yK - 90} ${cx} ${yK}`
