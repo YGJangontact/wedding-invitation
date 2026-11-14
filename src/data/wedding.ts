@@ -9,10 +9,11 @@ export const wedding = {
   venuePhone: "02-313-2480",
   locationSource: "https://www.aventium.co.kr/map.php",
   locationChecked: "2026-10-23",
-  heroPhoto: "/photos/main-sofa.webp",
+  heroPhoto: "/images/red-thread-cover.webp",
   // public/music/ 안에 음원을 넣은 뒤 /music/파일명.mp3를 지정합니다.
   music: { src: "/music/carefree-kevin-macleod.mp3", title: "Carefree — Kevin MacLeod", youtubeId: "" },
   photos: [
+    { src: "/photos/main-sofa.webp", alt: "소파에 나란히 앉아 웃는 두 사람" },
     { src: "/photos/lift.webp", alt: "신랑이 신부를 안아 올리고 둘이 웃는 사진" },
     { src: "/photos/bouquet.webp", alt: "부케를 든 신부와 신랑이 마주 보며 웃는 사진" },
     { src: "/photos/pine.webp", alt: "소나무 창가에 나란히 앉아 웃는 두 사람" },

@@ -392,6 +392,10 @@ section {
 .gallery-item.wide {
   aspect-ratio: 1.4;
 }
+.gallery-item.lead {
+  grid-column: 1 / -1;
+  aspect-ratio: 3 / 2;
+}
 .gallery-item img {
   position: absolute;
   inset: 0;

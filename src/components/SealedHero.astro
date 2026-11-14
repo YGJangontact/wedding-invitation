@@ -7,7 +7,7 @@ const {asset,fullDate,time,guestView}=Astro.props;
     {[5,89,12,95,8,84].map((x,i) => <i style={`left:${x}%;top:${i*13}%;animation-delay:-${i*1.7}s`}/>)}
   </div>
   <div class="studio-cover">
-    <img src={asset(w.heroPhoto)} width="2000" height="1333" fetchpriority="high" alt="두 사람의 대표 사진" />
+    <img src={asset(w.heroPhoto)} width="1100" height="1540" fetchpriority="high" alt="두 사람의 손을 하나로 잇는 붉은 실" />
     <div class="cover-letter">
   <h1>우리의 다음 장을<br/>열어주세요</h1>
 
@@ -87,7 +87,7 @@ const {asset,fullDate,time,guestView}=Astro.props;
  .sealed-intro{padding:48px 24px 32px;text-align:center;background:radial-gradient(ellipse at 20% 20%,#fffefa,#f2ede5);color:#625540;overflow:hidden;}
  .studio-cover{position:relative;margin:-48px -24px 0;}
  .studio-cover img{display:block;width:100%;height:auto;}
- .cover-letter{position:relative;margin-top:30px;color:#433832;}
+ .cover-letter{position:absolute;inset:55% 0 auto;color:#433832;}
  .cover-letter h1{font-size:clamp(19px,4.7vw,25px);line-height:1.45;}
  .cover-letter .sealed-subtitle{margin:10px 0 0;font-size:12px;color:#514640;}
  @media(max-width:360px){.studio-cover{margin-inline:-20px;}}
