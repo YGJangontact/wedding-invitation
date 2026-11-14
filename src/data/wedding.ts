@@ -15,6 +15,9 @@ export const wedding = {
   photos: [
     { src: "/photos/lift.webp", alt: "신랑이 신부를 안아 올리고 둘이 웃는 사진" },
     { src: "/photos/bouquet.webp", alt: "부케를 든 신부와 신랑이 마주 보며 웃는 사진" },
+    { src: "/photos/pine.webp", alt: "소나무 창가에 나란히 앉아 웃는 두 사람" },
+    { src: "/photos/veil.webp", alt: "베일을 함께 들고 웃는 두 사람" },
+    { src: "/photos/standing.webp", alt: "예복을 입고 나란히 선 두 사람" },
   ] as { src: string; alt: string }[],
   invitation: [
     "서로의 일상에 가장 가까운 사람이 되어",
