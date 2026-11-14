@@ -12,9 +12,12 @@ import ShareMeta from './ShareMeta.astro';
 import SealedHero from './SealedHero.astro';
 import BackgroundMusic from './BackgroundMusic.astro';
 import YouTubeMusic from './YouTubeMusic.astro';
-import {themes as choices,sitePath} from '../data/themes';
+import {themes as choices,sitePath,scrollThemes} from '../data/themes';
+import ScrollThemes from './ScrollThemes.astro';
+import '../styles/scroll-themes.css';
 const { theme = 'garden', sealed = false, guestView = false } = Astro.props;
 const showGallery = !guestView || w.photos.length > 0;
+const scrollTheme = scrollThemes.includes(theme);
 const fresh = choices.some(t=>t.id===theme && t.fresh);
 const themeName = choices.find(t=>t.id===theme)?.name;
 const asset = (path: string) => path.startsWith('/') ? import.meta.env.BASE_URL.replace(/\/$/, '') + path : path;
@@ -41,7 +44,7 @@ const days = new Date(Date.UTC(year,month,0)).getUTCDate();
     <a class="skip" href="#invitation">본문으로 이동</a>
     <aside class="desktop-note"><span class="small-flower">✳</span><p>우리의 시작을<br/>한 장에 담아.</p><span>모바일 청첩장 · {themeName}</span></aside>
     <main>
-      {!guestView && <details class="theme-menu"><summary><span>{themeName}</span><span>디자인 바꾸기</span></summary><nav aria-label="디자인 비교">{[true,false].map(group=><div><p>{group?'새로운 후보':'기존 시안'}</p>{choices.filter(t=>t.fresh===group).map(t=><a href={sitePath(`designs/${t.id}/`)} aria-current={theme===t.id?'page':undefined}>{t.name}</a>)}</div>)}<a class="compare-all" href={sitePath('designs/')}>여섯 가지 한눈에 비교</a></nav></details>}
+      {!guestView && <details class="theme-menu"><summary><span>{themeName}</span><span>디자인 바꾸기</span></summary><nav aria-label="디자인 비교">{[true,false].map(group=><div><p>{group?'새로운 후보':'기존 시안'}</p>{choices.filter(t=>t.fresh===group).map(t=><a href={sitePath(`designs/${t.id}/`)} aria-current={theme===t.id?'page':undefined}>{t.name}</a>)}</div>)}<a class="compare-all" href={sitePath('designs/')}>{choices.length}가지 한눈에 비교</a></nav></details>}
       {!guestView && <div class="draft-banner">청첩장 시안 <span>이름은 준비 중이에요</span></div>}
       {sealed ? <SealedHero guestView={guestView} asset={asset} fullDate={fullDate} time={time}/> : fresh ? <NewHero theme={theme} names={names} fullDate={fullDate} time={time} asset={asset}/> : <header class="hero">
         <div class="hero-top"><span>우리의 시작</span><span>{year}. {String(month).padStart(2,'0')}. {String(day).padStart(2,'0')}</span></div>
@@ -53,7 +56,7 @@ const days = new Date(Date.UTC(year,month,0)).getUTCDate();
         <div class="hero-bottom"><p>{fullDate}<br/><strong>{time}</strong></p><p>{w.city} {w.venue}<br/><span>{w.hall || '상세 홀 안내는 곧 전해드릴게요'}</span></p></div>
         <a class="scroll-link" href="#invitation">초대의 글 <span>↓</span></a>
       </header>}
-      {!guestView && <SeasonStory asset={asset} theme={theme}/>}
+      {!guestView && !scrollTheme && <SeasonStory asset={asset} theme={theme}/>}
       {!(guestView && sealed) && <section class="invitation" id="invitation"><span class="ornament">✳</span><p class="eyebrow">소중한 분들께</p><h2>우리의 첫날에<br/>함께해 주세요.</h2><div class="letter">{w.invitation.map(line=>line ? <p>{line}</p> : <br/>)}</div>{(w.names.every(Boolean) || !guestView) && <p class="muted names-note">{w.names.every(Boolean) ? names : '이름과 가족 소개를 나중에 넣을 자리예요'}</p>}</section>}
       <section class="day-section" id="day"><p class="eyebrow">기억해 주세요</p><h2>{year}. {String(month).padStart(2,'0')}. {String(day).padStart(2,'0')}</h2><p>{fullDate.split(' ').at(-1)} {time}</p><div class="calendar" role="group" aria-label={`${year}년 ${month}월 예식 달력`}><div class="calendar-row week">{['일','월','화','수','목','금','토'].map(d=><span >{d}</span>)}</div><div class="calendar-grid">{Array.from({length:offset},()=> <span aria-hidden="true"></span>)}{Array.from({length:days},(_,i)=><span class:list={{selected:i+1===day}} aria-label={i+1===day ? `${month}월 ${day}일 예식일` : undefined}>{i+1}</span>)}</div></div><p class="date-caption">달력에 작은 약속 하나, 함께해 주세요.</p></section>
       {showGallery && <section class="gallery" id="gallery"><p class="eyebrow">오래 기억할 장면</p><h2>우리의 순간들</h2><p class="muted">함께한 시간을 사진으로 전할게요.</p><div class="photo-grid">{w.photos.length ? w.photos.map((photo,i)=><button class:list={['gallery-item',{wide:i===0}]} data-photo={asset(photo.src)} data-alt={photo.alt}><img src={asset(photo.src)} alt={photo.alt} loading="lazy"/></button>) : <><div class="gallery-placeholder wide"><span>✧</span><p>가장 좋아하는 한 장</p></div><div class="gallery-placeholder"><span>01</span><p>함께 웃던 날</p></div><div class="gallery-placeholder"><span>02</span><p>기억하고 싶은 순간</p></div></>}</div></section>}
@@ -66,7 +69,7 @@ const days = new Date(Date.UTC(year,month,0)).getUTCDate();
     <nav class="bottom-nav" aria-label="청첩장 바로가기"><a href="#day">예식 안내</a><span></span><a href="#location">오시는 길</a>{showGallery && <><span></span><a href="#gallery">사진첩</a></>}</nav>
     <dialog id="lightbox"><button id="close-photo" aria-label="사진 닫기">×</button><img id="large-photo" alt=""/></dialog>
     <p id="toast" role="status" aria-live="polite"></p>
-    <InvitationMotion />
+    {scrollTheme ? <ScrollThemes theme={theme}/> : <InvitationMotion />}
     {w.music.youtubeId ? <YouTubeMusic /> : <BackgroundMusic />}
     <script>
       const toast = document.querySelector<HTMLElement>('#toast')!;

@@ -1,0 +1,61 @@
+@import url("https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400&display=swap");
+
+/* ── 붉은 실 스크롤 ───────────────────────────── */
+body[data-theme="thread"] {--paper:#fbf8f2;--ink:#2e2a28;--muted:#655e57;--green:#a3333a;--sage:#f2ede5;--line:#e4ddd3;background:#ece8e1;}
+[data-theme="thread"] main {position:relative;}
+[data-theme="thread"] .thread-line {position:absolute;left:0;top:0;pointer-events:none;z-index:0;overflow:visible;}
+[data-theme="thread"] .thread-line path {fill:none;stroke:#a3333a;stroke-width:1.4;stroke-linecap:round;}
+[data-theme="thread"] .thread-line circle {fill:var(--paper);stroke:#a3333a;stroke-width:1.2;transition:fill .3s;}
+[data-theme="thread"] .thread-line circle.reached {fill:#a3333a;}
+[data-theme="thread"] main > * {position:relative;z-index:1;}
+[data-theme="thread"] main > .thread-line {position:absolute;z-index:0;}
+.new-hero-thread {padding:0 0 8px;}
+.thread-photo {height:min(72vh,600px);background:var(--sage);display:flex;align-items:center;justify-content:center;}
+.thread-photo img {object-position:center 25%;}
+.thread-photo>span {font:13px var(--serif);color:var(--muted);}
+.new-hero-thread h1 {margin-top:34px;font-size:26px;}
+.new-hero-thread .new-hero-details {padding:0 28px;}
+[data-theme="thread"] section {padding-left:44px;padding-right:28px;}
+[data-theme="thread"] .eyebrow {color:#a3333a;letter-spacing:2px;}
+[data-theme="thread"] .invitation h2 {font-size:24px;line-height:1.7;}
+[data-theme="thread"] .invitation .letter {font-size:17px;line-height:2.3;word-break:keep-all;}
+[data-theme="thread"] .invitation .letter p {transition:opacity .2s linear;}
+[data-theme="thread"] .day-section,[data-theme="thread"] .gallery {background:transparent;}
+[data-theme="thread"] .calendar {border-color:var(--line);}
+[data-theme="thread"] .gallery-placeholder {background:#efe9e0;color:#7a6f64;}
+[data-theme="thread"] .venue-card {background:transparent;border:1px solid var(--line);}
+[data-theme="thread"] footer {padding-top:200px;}
+
+/* ── 먹과 여백 ───────────────────────────────── */
+body[data-theme="mono"] {--paper:#fff;--ink:#1f1f1f;--muted:#5e5e5e;--green:#1f1f1f;--sage:#f4f4f4;--line:#e3e3e3;--serif:"Noto Serif KR",serif;background:#f1f1f1;}
+.new-hero-mono {padding:56px 40px 8px;}
+.mono-date {display:flex;flex-direction:column;align-items:center;gap:8px;margin:0;font:300 64px/1 var(--serif);letter-spacing:-2px;}
+.mono-date i {display:block;width:28px;height:1px;background:var(--ink);}
+.mono-date small {margin-top:16px;font:400 12px/1 var(--sans);letter-spacing:4px;color:var(--muted);}
+.mono-photo {--open:1;width:100%;aspect-ratio:5/7;margin-top:40px;background:var(--sage);display:flex;align-items:center;justify-content:center;overflow:hidden;
+  clip-path:inset(calc((1 - var(--open)) * 9%) calc((1 - var(--open)) * 13%));}
+.mono-photo img {transform:scale(calc(1.08 - var(--open) * .08));}
+.mono-photo>span {font:13px var(--serif);color:var(--muted);}
+.new-hero-mono h1 {margin-top:36px;font:400 19px/1.7 var(--serif);letter-spacing:0;}
+.new-hero-mono .new-hero-details {font-size:14px;}
+[data-theme="mono"] section,[data-theme="mono"] footer {position:relative;}
+[data-theme="mono"] section::before,[data-theme="mono"] footer::before {content:"";display:block;width:28px;height:1px;margin:0 auto 52px;background:var(--ink);}
+[data-theme="mono"] .eyebrow {font-size:13px;letter-spacing:4px;color:var(--ink);}
+[data-theme="mono"] h2 {font-weight:300;}
+[data-theme="mono"] .letter {font-weight:300;font-size:17px;}
+[data-theme="mono"] .day-section,[data-theme="mono"] .gallery {background:transparent;}
+[data-theme="mono"] .calendar {border-color:var(--line);}
+[data-theme="mono"] .calendar-grid span:nth-child(7n + 1) {color:var(--ink);}
+[data-theme="mono"] .calendar-grid .selected {background:transparent;color:var(--ink) !important;box-shadow:inset 0 0 0 1px var(--ink);}
+[data-theme="mono"] .gallery-placeholder {background:#f4f4f4;color:#6b6b6b;}
+[data-theme="mono"] .venue-card {background:transparent;border:1px solid var(--line);}
+[data-theme="mono"] .address-copy {border-color:#bdbdbd;}
+[data-theme="mono"] .guestbook input,[data-theme="mono"] .guestbook textarea {background:#fff;}
+
+/* Mono motion: only when the script allows it (no JS / reduced motion = static page). */
+.mono-motion [data-theme="mono"] main > section > *,
+.mono-motion [data-theme="mono"] main > footer > * {opacity:0;transform:translateY(18px);transition:opacity .8s cubic-bezier(.22,1,.36,1) var(--rise-delay,0ms),transform .8s cubic-bezier(.22,1,.36,1) var(--rise-delay,0ms);}
+.mono-motion [data-theme="mono"] main > .is-in > * {opacity:1;transform:none;}
+.mono-motion [data-theme="mono"] main > section::before,
+.mono-motion [data-theme="mono"] main > footer::before {transform:scaleX(0);transition:transform 1s cubic-bezier(.22,1,.36,1);}
+.mono-motion [data-theme="mono"] main > .is-in::before {transform:scaleX(1);}

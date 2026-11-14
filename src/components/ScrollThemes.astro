@@ -1,0 +1,127 @@
+---
+// Scroll-driven motion for the 'thread' and 'mono' designs.
+// Content is fully visible without JS; motion is added only when allowed.
+---
+<script>
+  const theme = document.body.dataset.theme;
+  const main = document.querySelector<HTMLElement>('main')!;
+  // ?motion=off: still thumbnails. ?motion=on: play even when the device asks for reduced motion (for reviewing).
+  const motionParam = new URLSearchParams(location.search).get('motion');
+  const still = motionParam !== 'on'
+    && (motionParam === 'off' || matchMedia('(prefers-reduced-motion: reduce)').matches);
+  const clamp = (v: number) => Math.max(0, Math.min(1, v));
+  const SVG = 'http://www.w3.org/2000/svg';
+
+  // ── Red thread: a line drawn down the page as you scroll, tied in a knot at the end.
+  const setupThread = () => {
+    const svg = document.createElementNS(SVG, 'svg');
+    svg.classList.add('thread-line');
+    svg.setAttribute('aria-hidden', 'true');
+    const path = document.createElementNS(SVG, 'path');
+    svg.append(path);
+    main.prepend(svg);
+    let marks: { el: SVGCircleElement; y: number }[] = [];
+    let table: { y: number; len: number }[] = [];
+    let total = 1;
+    const lines = Array.from(document.querySelectorAll<HTMLElement>('.invitation h2, .invitation .letter p'));
+
+    const layout = () => {
+      const base = main.getBoundingClientRect().top;
+      const width = main.clientWidth;
+      const cx = width / 2, g = 18;
+      const hero = document.querySelector<HTMLElement>('.new-hero')!;
+      const footerTitle = document.querySelector<HTMLElement>('footer h2')!;
+      const y0 = hero.getBoundingClientRect().bottom - base - 8;
+      const yK = footerTitle.getBoundingClientRect().top - base - 120;
+      const d = `M${cx} ${y0} C${cx} ${y0 + 90} ${g} ${y0 + 70} ${g} ${y0 + 170} L${g} ${yK - 150}`
+        + ` C${g} ${yK - 60} ${cx} ${yK - 90} ${cx} ${yK}`
+        + ` C${cx} ${yK + 40} ${cx - 23} ${yK + 54} ${cx - 23} ${yK + 32} C${cx - 23} ${yK + 10} ${cx + 23} ${yK + 10} ${cx + 23} ${yK + 32} C${cx + 23} ${yK + 54} ${cx} ${yK + 50} ${cx} ${yK + 90}`;
+      svg.setAttribute('width', String(width));
+      svg.setAttribute('height', String(main.scrollHeight));
+      path.setAttribute('d', d);
+      total = path.getTotalLength();
+      path.style.strokeDasharray = `${total}`;
+      table = Array.from({ length: 301 }, (_, i) => {
+        const len = (total * i) / 300;
+        return { len, y: path.getPointAtLength(len).y };
+      });
+      marks.forEach(m => m.el.remove());
+      marks = Array.from(main.querySelectorAll<HTMLElement>(':scope > section')).map(section => {
+        const head = section.querySelector<HTMLElement>('.eyebrow, h2') ?? section;
+        const r = head.getBoundingClientRect();
+        const y = r.top + r.height / 2 - base;
+        const el = document.createElementNS(SVG, 'circle');
+        el.setAttribute('cx', String(g)); el.setAttribute('cy', String(y)); el.setAttribute('r', '4');
+        svg.append(el);
+        return { el, y };
+      }).filter(m => m.y > y0 + 190 && m.y < yK - 150);
+      update();
+    };
+
+    const update = () => {
+      frame = 0;
+      if (still) {
+        path.style.strokeDashoffset = '0';
+        marks.forEach(m => m.el.classList.add('reached'));
+        return;
+      }
+      const base = main.getBoundingClientRect().top;
+      const vh = innerHeight;
+      const left = document.documentElement.scrollHeight - vh - scrollY;
+      // Reach the knot by the time the bottom of the page is in view.
+      const tip = vh * (0.7 + 0.3 * clamp(1 - left / vh)) - base;
+      const hit = table.find(p => p.y > tip);
+      const drawn = hit ? hit.len : total;
+      path.style.strokeDashoffset = String(total - drawn);
+      marks.forEach(m => m.el.classList.toggle('reached', m.y <= tip));
+      // Invitation lines brighten one by one as they pass the reading line.
+      const read = vh * 0.62;
+      lines.forEach(line => {
+        const r = line.getBoundingClientRect();
+        line.style.opacity = String(0.18 + 0.82 * clamp((read - (r.top + r.height / 2)) / 70));
+      });
+    };
+
+    let frame = 0;
+    const schedule = () => { if (!frame) frame = requestAnimationFrame(update); };
+    new ResizeObserver(() => layout()).observe(main);
+    addEventListener('scroll', schedule, { passive: true });
+    document.fonts?.ready.then(layout);
+    layout();
+  };
+
+  // ── Mono: the photo opens from a smaller frame, short rules draw in, and each block rises quietly.
+  const setupMono = () => {
+    const photo = document.querySelector<HTMLElement>('.mono-photo');
+    const blocks = Array.from(main.querySelectorAll<HTMLElement>(':scope > section, :scope > footer'));
+    const observer = new IntersectionObserver(entries => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        entry.target.classList.add('is-in');
+        observer.unobserve(entry.target);
+      }
+    }, { threshold: 0.18 });
+    blocks.forEach(block => {
+      Array.from(block.children).forEach((child, i) => (child as HTMLElement).style.setProperty('--rise-delay', `${Math.min(i, 6) * 90}ms`));
+      observer.observe(block);
+    });
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      if (!photo) return;
+      const r = photo.getBoundingClientRect();
+      const p = clamp((innerHeight * 0.95 - r.top) / (innerHeight * 0.65));
+      photo.style.setProperty('--open', String(p));
+    };
+    const schedule = () => { if (!frame) frame = requestAnimationFrame(update); };
+    addEventListener('scroll', schedule, { passive: true });
+    addEventListener('resize', schedule);
+    update();
+  };
+
+  if (theme === 'thread') setupThread();
+  if (theme === 'mono' && !still) {
+    document.documentElement.classList.add('mono-motion');
+    setupMono();
+  }
+</script>
