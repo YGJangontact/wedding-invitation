@@ -1,10 +1,13 @@
 ---
 // 마음 전하실 곳: 신랑측(신랑·아버지·어머니) / 신부측(신부·아버지·어머니).
-// Guests see only people whose account number is filled in; design previews show the empty slots.
+// Slots without an account show a 'being prepared' note.
 import { wedding as w } from '../data/wedding';
 const { guestView = false } = Astro.props;
+// Until any account is filled in, every slot is shown with a 'being prepared' note; once some are filled,
+// guests see only the filled ones.
+const anyFilled = w.accounts.some(side => side.people.some(p => p.number));
 const sides = w.accounts
-  .map(side => ({ ...side, people: guestView ? side.people.filter(p => p.number) : side.people }))
+  .map(side => ({ ...side, people: guestView && anyFilled ? side.people.filter(p => p.number) : side.people }))
   .filter(side => side.people.length > 0);
 ---
 {sides.length > 0 && <section class="gift" id="gift">
