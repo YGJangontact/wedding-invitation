@@ -47,7 +47,7 @@ GitHub Actions 빌드에서만 `/wedding-invitation` 경로를 적용하며 로�
 - 글 아래 수정·삭제에서 작성 당시 비밀번호로 확인합니다. 비밀번호 복구 기능은 없으며, 비밀번호 없는 기존 글은 관리자만 삭제할 수 있습니다.
 - 비밀번호는 글별 무작위 salt와 PBKDF2-SHA256(100,000회)로 저장하고 목록에는 반환하지 않습니다.
 - 글쓰기 IP별 분당 3회, 수정·삭제 인증 IP별 분당 5회 제한입니다. Cloudflare Rate Limiting은 위치별 근사 제한이며 엄격한 전역 잠금은 아닙니다.
-- 관리자: 방명록 관리 → 해당 글의 관리자 삭제 → 별도 관리자 키 입력 → 삭제 확인. 키는 브라우저 저장소에 저장하지 않습니다.
+- 관리자: 관리자 전용 → 해당 글의 관리자 삭제 → 별도 관리자 키 입력 → 삭제 확인. 키는 브라우저 저장소에 저장하지 않습니다.
 - 관리자 키는 Worker의 ADMIN_TOKEN secret입니다. 공개 코드·GitHub 변수에 넣지 않습니다. 변경: npx wrangler secret put ADMIN_TOKEN --config guestbook/wrangler.jsonc
 - 기존 DB에는 guestbook/migrations/0001_passwords.sql을 한 번 적용합니다. 새 DB는 guestbook/schema.sql로 생성합니다. 두 파일을 같은 DB에 중복 적용하지 않습니다.
 - Worker 배포는 npx wrangler deploy --config guestbook/wrangler.jsonc로 별도 수행합니다. main push 자동 배포는 정적 청첩장에 적용됩니다.

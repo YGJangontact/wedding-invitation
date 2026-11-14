@@ -15,10 +15,15 @@
   <p role="status" class="status"></p>
   <ul aria-label="축하 글" tabindex="-1"></ul>
   <nav class="pages" aria-label="축하 글 페이지" hidden></nav>
-  <button type="button" class="admin-toggle">방명록 관리</button>
+  <button type="button" class="admin-toggle">관리자 전용</button>
   <dialog aria-labelledby="manage-title">
     <form class="manage-form">
       <h3 id="manage-title">축하글 수정·삭제</h3>
+      <div class="delete-preview" hidden>
+        <span>삭제할 축하글</span>
+        <strong class="preview-author"></strong>
+        <p class="preview-message"></p>
+      </div>
       <label class="edit-field">이름<input name="editName" maxlength="20" required /></label>
       <label class="edit-field">한마디<textarea name="editMessage" maxlength="200" rows="4" required></textarea></label>
       <label><span class="secret-label">글 관리 비밀번호</span><input name="secret" type="password" required maxlength="128" autocomplete="off" /></label>
@@ -65,13 +70,16 @@
   const adminToggle = section.querySelector<HTMLButtonElement>('.admin-toggle')!;
   adminToggle.addEventListener('click', () => {
     adminMode = !adminMode;
-    adminToggle.textContent = adminMode ? '관리 종료' : '방명록 관리';
+    adminToggle.textContent = adminMode ? '관리 종료' : '관리자 전용';
     loadMessages(currentPage);
   });
   section.querySelector('.close-manage')!.addEventListener('click',()=>dialog.close());
   dialog.addEventListener('close',()=>{field('secret').value='';});
   function openManage(data:Entry) {
     selected=data;
+    manage.querySelector<HTMLElement>('.delete-preview')!.hidden=!adminMode;
+    manage.querySelector('.preview-author')!.textContent=data.name;
+    manage.querySelector('.preview-message')!.textContent=data.message;
     field('editName').value=data.name;
     field('editMessage').value=data.message;
     field('secret').value='';
@@ -199,7 +207,14 @@
   .guestbook dialog form{margin:0;}
   dialog h3{margin:0 0 20px;}
   .manage-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;}
-  .manage-actions button{flex:1;}
+  .manage-actions button{flex:1;min-height:44px;border-radius:4px;}
+  .guestbook .delete-entry{background:transparent;border:1px solid #a7786c;color:#805348;}
+  .guestbook .close-manage{background:transparent;color:#756b61;}
+  .guestbook .delete-entry:hover{background:#f8eee9;}
+  .delete-preview{padding:14px 16px;margin:0 0 20px;border:1px solid #e8dfd2;border-radius:8px;background:#f7f2eb;word-break:keep-all;overflow-wrap:anywhere;}
+  .delete-preview span{display:block;margin-bottom:8px;font:12px var(--sans);color:#756b61;}
+  .delete-preview strong{font:600 14px/1.6 var(--sans);}
+  .delete-preview p{margin:8px 0 0;font:16px/1.7 var(--serif);white-space:pre-wrap;}
   .manage-status{font-size:13px;}
   [hidden]{display:none!important;}
 </style>
