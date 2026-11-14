@@ -48,15 +48,17 @@
         const from = i === 0 ? cx : x;
         const top = Math.max(i === 0 ? y0 : 0, y - 130);
         if (i > 0) d += ` L${from} ${top}`;
-        // Midway across, the thread curls once like a pig's tail: the closing knot's curve laid
-        // on its side (offsets along / across the way), so the two ends of the page match.
-        const dir = Math.sign(to - from) || 1, ym = (top + y - 30) / 2 + 12, sc = 0.85, len = 90 * sc;
-        const curl = [[[40, 0], [54, -23], [32, -23]], [[10, -23], [10, 23], [32, 23]], [[54, 23], [50, 0], [90, 0]]];
-        const a = (from + to) / 2 - dir * len / 2, b = a + dir * len;
-        const leadIn = Math.min(60, Math.abs(a - from) * 0.5), leadOut = Math.min(60, Math.abs(to - b) * 0.5);
-        d += ` C${from} ${top + 30} ${a - dir * leadIn} ${ym} ${a} ${ym}`;
-        curl.forEach(seg => { d += ' C' + seg.map(([u, v]) => `${a + dir * u * sc} ${ym + v * sc}`).join(' '); });
-        d += ` C${b + dir * leadOut} ${ym} ${to} ${y - 70} ${to} ${y - 30} L${to} ${y}`;
+        // Midway across, the thread makes one round curl: up and around a circle, then down
+        // across its own strand and out a few pixels lower, so a small gap shows between them.
+        const dir = Math.sign(to - from) || 1, ym = (top + y - 30) / 2 + 14;
+        const r = 15, g = 7, k = r * 0.5523, kd = (r + g) * 0.5523, lx = (from + to) / 2;
+        const leadIn = Math.min(60, Math.abs(lx - from) * 0.5), leadOut = Math.min(60, Math.abs(to - lx) * 0.5);
+        d += ` C${from} ${top + 30} ${lx - dir * leadIn} ${ym} ${lx} ${ym}`
+          + ` C${lx + dir * k} ${ym} ${lx + dir * r} ${ym - r + k} ${lx + dir * r} ${ym - r}`
+          + ` C${lx + dir * r} ${ym - r - k} ${lx + dir * k} ${ym - 2 * r} ${lx} ${ym - 2 * r}`
+          + ` C${lx - dir * k} ${ym - 2 * r} ${lx - dir * r} ${ym - r - k} ${lx - dir * r} ${ym - r}`
+          + ` C${lx - dir * r} ${ym - r + kd} ${lx - dir * k} ${ym + g} ${lx} ${ym + g}`
+          + ` C${lx + dir * leadOut} ${ym + g} ${to} ${y - 70} ${to} ${y - 30} L${to} ${y}`;
         x = to;
       });
       d += ` L${x} ${yK - 150} C${x} ${yK - 60} ${cx} ${yK - 90} ${cx} ${yK}`
