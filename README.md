@@ -24,7 +24,7 @@ GitHub Pages: https://ygjangontact.github.io/wedding-invitation/
 저장소와 사이트는 공개입니다. `.github/workflows/deploy.yml`은 main push에서만 실행됩니다. 작업 브랜치 push는 배포하지 않습니다.
 GitHub Actions 빌드에서만 `/wedding-invitation` 경로를 적용하며 로컬 주소는 그대로 사용합니다.
 
-공개 전: 이름·사진·문구 확정, 주소·홀·교통 공식 확인, 실제 휴대폰 검증, 공유 미리보기 이미지 설정, 시안 배너와 noindex 제거 여부 결정. 현재 방명록·사진 업로드·참석 응답 저장 기능은 없습니다. Google Fonts 로드 실패 시 시스템 기본 서체를 사용합니다.
+공개 전: 이름·사진·문구 확정, 주소·홀·교통 공식 확인, 실제 휴대폰 검증, 공유 미리보기 이미지 설정, 시안 배너와 noindex 제거 여부 결정. 방명록은 Cloudflare Worker와 D1에 저장합니다. 사진 업로드·참석 응답 저장 기능은 없습니다. Google Fonts 로드 실패 시 시스템 기본 서체를 사용합니다.
 # 디자인 비교와 네이버 지도
 
 - `/designs/`: 여섯 테마 비교. 기존 기본 화면과 URL은 유지합니다.
@@ -40,3 +40,15 @@ GitHub Actions 빌드에서만 `/wedding-invitation` 경로를 적용하며 로�
 - 오시는 길에 접근할 때 SDK를 불러옵니다. 공식 주소를 지오코딩해 일치하는 단일 결과에만 마커를 표시합니다. 로드 실패 시 주소와 외부 길찾기 링크를 제공합니다.
 - 기존 앱의 사용량을 공유합니다. 사용량/한도는 네이버 클라우드 콘솔에서 확인하세요.
 - `work/invitation`은 백업 브랜치이며 `main` push만 GitHub Pages를 배포합니다.
+
+
+## 방명록 관리
+- 하객은 로그인 없이 이름·한마디·관리용 비밀번호(6~128자)를 입력합니다.
+- 글 아래 수정·삭제에서 작성 당시 비밀번호로 확인합니다. 비밀번호 복구 기능은 없으며, 비밀번호 없는 기존 글은 관리자만 삭제할 수 있습니다.
+- 비밀번호는 글별 무작위 salt와 PBKDF2-SHA256(100,000회)로 저장하고 목록에는 반환하지 않습니다.
+- 글쓰기 IP별 분당 3회, 수정·삭제 인증 IP별 분당 5회 제한입니다. Cloudflare Rate Limiting은 위치별 근사 제한이며 엄격한 전역 잠금은 아닙니다.
+- 관리자: 방명록 관리 → 해당 글의 관리자 삭제 → 별도 관리자 키 입력 → 삭제 확인. 키는 브라우저 저장소에 저장하지 않습니다.
+- 관리자 키는 Worker의 ADMIN_TOKEN secret입니다. 공개 코드·GitHub 변수에 넣지 않습니다. 변경: npx wrangler secret put ADMIN_TOKEN --config guestbook/wrangler.jsonc
+- 기존 DB에는 guestbook/migrations/0001_passwords.sql을 한 번 적용합니다. 새 DB는 guestbook/schema.sql로 생성합니다. 두 파일을 같은 DB에 중복 적용하지 않습니다.
+- Worker 배포는 npx wrangler deploy --config guestbook/wrangler.jsonc로 별도 수행합니다. main push 자동 배포는 정적 청첩장에 적용됩니다.
+- 로컬 API 검증: Node 24 이상에서 node --test guestbook/worker.test.mjs (메모리 SQLite, 운영 데이터 변경 없음).

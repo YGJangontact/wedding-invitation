@@ -4,6 +4,7 @@
   <form>
     <label>이름<input name="name" required maxlength="20" autocomplete="name" /></label>
     <label>한마디<textarea name="message" required maxlength="200" rows="2"></textarea></label>
+    <label>글 관리 비밀번호<input name="password" type="password" required minlength="6" maxlength="128" autocomplete="new-password" /><small>6자 이상 · 수정·삭제할 때 필요해요. 다른 곳에서 쓰는 비밀번호는 피해주세요.</small></label>
     <div class="emoji-picks" role="group" aria-label="축하 이모지">
       {[['🤍','하얀 하트'], ['💐','꽃다발'], ['💍','반지'], ['🥂','건배']].map(([emoji, name]) =>
         <button type="button" data-emoji={emoji} aria-label={name + ' 넣기'}>{emoji}</button>
@@ -14,6 +15,21 @@
   <p role="status" class="status"></p>
   <ul aria-label="축하 글" tabindex="-1"></ul>
   <nav class="pages" aria-label="축하 글 페이지" hidden></nav>
+  <button type="button" class="admin-toggle">방명록 관리</button>
+  <dialog aria-labelledby="manage-title">
+    <form class="manage-form">
+      <h3 id="manage-title">축하글 수정·삭제</h3>
+      <label class="edit-field">이름<input name="editName" maxlength="20" required /></label>
+      <label class="edit-field">한마디<textarea name="editMessage" maxlength="200" rows="4" required></textarea></label>
+      <label><span class="secret-label">글 관리 비밀번호</span><input name="secret" type="password" required maxlength="128" autocomplete="off" /></label>
+      <p class="manage-status" role="status"></p>
+      <div class="manage-actions">
+        <button type="submit" class="save-edit">수정 저장</button>
+        <button type="button" class="delete-entry">삭제</button>
+        <button type="button" class="close-manage">취소</button>
+      </div>
+    </form>
+  </dialog>
 </section>
 <script>
   const section = document.querySelector<HTMLElement>('#guestbook')!;
@@ -37,13 +53,73 @@
     });
   }
   const endpoint = 'https://wedding-guestbook.ygjang.workers.dev/messages';
-  function entry(name: string, message: string) {
+  type Entry = {id:number; name:string; message:string; editable:number};
+  let adminMode = false;
+  let currentPage = 1;
+  let selected: Entry | null = null;
+  let pending = false;
+  const dialog = section.querySelector('dialog')!;
+  const manage = section.querySelector<HTMLFormElement>('.manage-form')!;
+  const feedback = section.querySelector<HTMLElement>('.manage-status')!;
+  const field = (name:string) => manage.elements.namedItem(name) as HTMLInputElement;
+  const adminToggle = section.querySelector<HTMLButtonElement>('.admin-toggle')!;
+  adminToggle.addEventListener('click', () => {
+    adminMode = !adminMode;
+    adminToggle.textContent = adminMode ? '관리 종료' : '방명록 관리';
+    loadMessages(currentPage);
+  });
+  section.querySelector('.close-manage')!.addEventListener('click',()=>dialog.close());
+  dialog.addEventListener('close',()=>{field('secret').value='';});
+  function openManage(data:Entry) {
+    selected=data;
+    field('editName').value=data.name;
+    field('editMessage').value=data.message;
+    field('secret').value='';
+    feedback.textContent='';
+    manage.querySelectorAll<HTMLElement>('.edit-field,.save-edit').forEach(el=>el.hidden=adminMode);
+    field('editName').required=!adminMode;
+    field('editMessage').required=!adminMode;
+    section.querySelector('.secret-label')!.textContent=adminMode ? '관리자 키' : '글 관리 비밀번호';
+    section.querySelector('#manage-title')!.textContent=adminMode ? '관리자 글 삭제' : '축하글 수정·삭제';
+    dialog.showModal();
+  }
+  async function changeEntry(remove=false) {
+    if(pending || !selected || !manage.reportValidity()) return;
+    if(remove && !confirm('이 축하글을 삭제할까요? 삭제하면 되돌릴 수 없습니다.')) return;
+    pending=true;
+    manage.querySelectorAll<HTMLButtonElement>('button').forEach(b=>b.disabled=true);
+    try {
+      const payload = adminMode ? {adminToken:field('secret').value} : {password:field('secret').value,name:field('editName').value,message:field('editMessage').value};
+      const result=await fetch(endpoint+'/'+selected.id,{method:remove?'DELETE':'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+      if(!result.ok) {
+        feedback.textContent=result.status===429 ? '시도가 많아요. 1분 뒤 다시 시도해 주세요.' : result.status===404 ? '이미 삭제된 글입니다.' : result.status===403 ? '비밀번호 또는 관리자 키를 확인해 주세요.' : '입력 내용과 연결을 확인해 주세요.';
+        return;
+      }
+      dialog.close();
+      status.textContent=remove?'글을 삭제했습니다.':'글을 수정했습니다.';
+      await loadMessages(currentPage);
+    } catch {feedback.textContent='연결을 확인하고 다시 시도해 주세요.';}
+    finally {pending=false;manage.querySelectorAll<HTMLButtonElement>('button').forEach(b=>b.disabled=false);}
+  }
+  manage.addEventListener('submit',event=>{event.preventDefault();changeEntry();});
+  section.querySelector('.delete-entry')!.addEventListener('click',()=>changeEntry(true));
+  function entry(data: Entry) {
+    const {name,message}=data;
     const item = document.createElement('li');
     const author = document.createElement('strong');
     const text = document.createElement('p');
     author.textContent = name;
     text.textContent = message;
     item.append(author, text);
+    if(data.editable || adminMode) {
+      const action=document.createElement('button');
+      action.type='button';
+      action.className='entry-manage';
+      action.textContent=adminMode?'관리자 삭제':'수정 · 삭제';
+      action.setAttribute('aria-label',name+'님의 글 '+action.textContent);
+      action.addEventListener('click',()=>openManage(data));
+      item.append(action);
+    }
     return item;
   }
   const pages = section.querySelector<HTMLElement>('.pages')!;
@@ -53,9 +129,10 @@
     try {
       const response = await fetch(endpoint + '?page=' + number);
       if (!response.ok) throw new Error();
-      const data: {items: {name:string; message:string}[]; page:number; pages:number} = await response.json();
+      const data: {items: Entry[]; page:number; pages:number} = await response.json();
       if (request !== latestRequest) return;
-      list.replaceChildren(...data.items.map(item => entry(item.name, item.message)));
+      currentPage=data.page;
+      list.replaceChildren(...data.items.map(item => entry(item)));
       pages.replaceChildren();
       pages.hidden = data.pages <= 1;
       const add = (label: string, target: number) => {
@@ -114,4 +191,15 @@
   .pages[hidden]{display:none;}
   .pages :global(button){width:auto;min-width:40px;min-height:44px;padding:6px;color:var(--ink);background:transparent;border:0;border-radius:6px;cursor:pointer;}
   .pages :global([aria-current="page"]){background:#eee6da;font-weight:700;}
+  .guestbook small{font:12px/1.6 var(--sans);color:#756b61;}
+  .guestbook :global(.entry-manage),.guestbook .admin-toggle{width:auto;background:transparent;color:#756b61;font-size:12px;min-height:44px;padding:10px 0;}
+  .guestbook .admin-toggle{margin-top:20px;}
+  dialog{box-sizing:border-box;width:min(92vw,400px);max-height:90dvh;overflow:auto;padding:24px;border:1px solid #e8dfd2;border-radius:12px;background:#fffcf7;color:#372f2a;}
+  dialog::backdrop{background:#0006;}
+  .guestbook dialog form{margin:0;}
+  dialog h3{margin:0 0 20px;}
+  .manage-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;}
+  .manage-actions button{flex:1;}
+  .manage-status{font-size:13px;}
+  [hidden]{display:none!important;}
 </style>

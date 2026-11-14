@@ -1,0 +1,32 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {DatabaseSync} from 'node:sqlite';
+import worker from './worker.js';
+test('guestbook password and admin authorization',async()=>{
+ const db=new DatabaseSync(':memory:');
+ db.exec('CREATE TABLE messages(id INTEGER PRIMARY KEY,name TEXT,message TEXT,password_hash TEXT,salt TEXT)');
+ let allowed=true;
+ const limiter={limit:async()=>({success:allowed})};
+ const env={ADMIN_TOKEN:'test-admin-key',POST_LIMIT:limiter,AUTH_LIMIT:limiter,DB:{prepare(sql){
+  const stmt=db.prepare(sql);
+  const wrap=(args=[])=>({bind:(...a)=>wrap(a),first:async()=>stmt.get(...args),all:async()=>({results:stmt.all(...args)}),run:async()=>stmt.run(...args)});
+  return wrap();
+ }}};
+ const req=(method,path='',body,origin='https://ygjangontact.github.io')=>worker.fetch(new Request('https://test/messages'+path,{method,headers:{Origin:origin,'Content-Type':'application/json'},...(body?{body:JSON.stringify(body)}:{})}),env);
+ assert.equal((await req('POST','',{name:'A',message:'Hello',password:'short'})).status,400);
+ assert.equal((await req('POST','',{name:'A',message:'Hello',password:'secret123'})).status,201);
+ const row=db.prepare('select * from messages').get();assert.notEqual(row.password_hash,'secret123');assert.equal(row.password_hash.length,64);
+ const listed=await (await req('GET','?page=1')).json();assert.equal(listed.items[0].editable,1);assert.equal('password_hash' in listed.items[0],false);assert.equal('salt' in listed.items[0],false);
+ assert.equal((await req('PATCH','/1',{name:'B',message:'Changed',password:'wrong123'})).status,403);
+ assert.equal((await req('PATCH','/1',{name:'B',message:'Changed',password:'secret123'})).status,200);
+ assert.equal(db.prepare('select message from messages').get().message,'Changed');
+ assert.equal((await req('DELETE','/1',{password:'secret123'},'https://evil.test')).status,403);
+ allowed=false;assert.equal((await req('DELETE','/1',{password:'secret123'})).status,429);allowed=true;
+ assert.equal((await req('DELETE','/1',{password:'secret123'})).status,200);
+ db.exec("insert into messages(id,name,message) values(2,'Old','Legacy')");
+ assert.equal((await req('DELETE','/2',{password:'secret123'})).status,403);
+ assert.equal((await req('DELETE','/2',{adminToken:'wrong'})).status,403);
+ assert.equal((await req('DELETE','/2',{adminToken:'test-admin-key'})).status,200);
+ assert.equal((await req('DELETE','/2',{adminToken:'test-admin-key'})).status,404);
+ db.close();
+});
