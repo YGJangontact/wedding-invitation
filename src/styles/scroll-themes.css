@@ -5,8 +5,6 @@ body[data-theme="thread"] {--paper:#fbf8f2;--ink:#2e2a28;--muted:#655e57;--green
 [data-theme="thread"] main {position:relative;}
 [data-theme="thread"] .thread-line {position:absolute;left:0;top:0;pointer-events:none;z-index:0;overflow:visible;}
 [data-theme="thread"] .thread-line path {fill:none;stroke:#a3333a;stroke-width:1.4;stroke-linecap:round;}
-[data-theme="thread"] .thread-line circle {fill:var(--paper);stroke:#a3333a;stroke-width:1.2;transition:fill .3s;}
-[data-theme="thread"] .thread-line circle.reached {fill:#a3333a;}
 [data-theme="thread"] main > * {position:relative;z-index:1;}
 [data-theme="thread"] main > .thread-line {position:absolute;z-index:0;}
 .new-hero-thread {padding:0 0 8px;}

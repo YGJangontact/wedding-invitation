@@ -20,7 +20,6 @@
     const path = document.createElementNS(SVG, 'path');
     svg.append(path);
     main.prepend(svg);
-    let marks: { el: SVGCircleElement; y: number }[] = [];
     let table: { y: number; len: number }[] = [];
     let total = 1;
     const lines = Array.from(document.querySelectorAll<HTMLElement>('.invitation h2, .invitation .letter p'));
@@ -43,20 +42,31 @@
         .filter(y => y > y0 + 60 && y < yK - 200);
       // The thread leaves the photo from the centre, then crosses the page above each heading,
       // alternating left→right and right→left, and runs down the side between headings.
+      // The same soft loop as the closing knot, laid on its side: (along, across) offsets.
+      const twirl = [[[40, 0], [54, -23], [32, -23]], [[10, -23], [10, 23], [32, 23]], [[54, 23], [50, 0], [90, 0]]];
       let x = cx, d = `M${cx} ${y0}`;
-      const stops: { x: number; y: number }[] = [];
       heads.forEach((y, i) => {
         const to = i % 2 === 0 ? right : left;
         const from = i === 0 ? cx : x;
         const top = Math.max(i === 0 ? y0 : 0, y - 130);
         if (i > 0) d += ` L${from} ${top}`;
-        // Midway across, the thread twirls once: a small loop drawn as one self-crossing curve,
-        // with matching tangents on both sides so the turn stays smooth.
-        const dir = Math.sign(to - from) || 1, L = 22, mx = (from + to) / 2, ym = (top + y - 30) / 2 + 14;
-        d += ` C${from} ${top + 30} ${mx - dir * (L + 30)} ${ym + 22} ${mx - dir * L} ${ym}`
-          + ` C${mx + dir * 2.2 * L} ${ym - 2.4 * L} ${mx - dir * 2.2 * L} ${ym - 2.4 * L} ${mx + dir * L} ${ym}`
-          + ` C${mx + dir * (L + 30)} ${ym + 22} ${to} ${y - 70} ${to} ${y - 30} L${to} ${y}`;
-        stops.push({ x: to, y });
+        // Across the page the thread twirls twice, then settles down the far side.
+        // Across the page the thread makes soft, open twirls (two on a full crossing, one on the
+        // short first one), stretched along the way so they read as a gentle curl, not a scribble.
+        const dir = Math.sign(to - from) || 1, ym = (top + y - 30) / 2 + 4;
+        const span = Math.abs(to - from), count = span > 240 ? 2 : 1;
+        const su = Math.min(1.05, (span * 0.3) / 90), sv = 0.5, loopLen = 90 * su;
+        const a = (from + to) / 2 - dir * loopLen * count / 2;
+        const lead = Math.min(50, Math.abs(a - from) * 0.6);
+        d += ` C${from} ${top + 30} ${a - dir * lead} ${ym} ${a} ${ym}`;
+        for (let k = 0; k < count; k++) {
+          const at = a + dir * loopLen * k;
+          twirl.forEach(seg => {
+            d += ' C' + seg.map(([u, v]) => `${at + dir * u * su} ${ym + v * sv}`).join(' ');
+          });
+        }
+        const b = a + dir * loopLen * count;
+        d += ` C${b + dir * Math.min(50, Math.abs(to - b) * 0.6)} ${ym} ${to} ${y - 70} ${to} ${y - 30} L${to} ${y}`;
         x = to;
       });
       d += ` L${x} ${yK - 150} C${x} ${yK - 60} ${cx} ${yK - 90} ${cx} ${yK}`
@@ -66,17 +76,9 @@
       path.setAttribute('d', d);
       total = path.getTotalLength();
       path.style.strokeDasharray = `${total}`;
-      table = Array.from({ length: 401 }, (_, i) => {
-        const len = (total * i) / 400;
+      table = Array.from({ length: 601 }, (_, i) => {
+        const len = (total * i) / 600;
         return { len, y: path.getPointAtLength(len).y };
-      });
-      // Rebuild every marker on each layout so earlier positions never linger.
-      svg.querySelectorAll('circle').forEach(circle => circle.remove());
-      marks = stops.map(({ x: mx, y }) => {
-        const el = document.createElementNS(SVG, 'circle');
-        el.setAttribute('cx', String(mx)); el.setAttribute('cy', String(y)); el.setAttribute('r', '4');
-        svg.append(el);
-        return { el, y };
       });
       update();
     };
@@ -85,7 +87,6 @@
       frame = 0;
       if (still) {
         path.style.strokeDashoffset = '0';
-        marks.forEach(m => m.el.classList.add('reached'));
         return;
       }
       const base = main.getBoundingClientRect().top;
@@ -96,7 +97,6 @@
       const hit = table.find(p => p.y > tip);
       const drawn = hit ? hit.len : total;
       path.style.strokeDashoffset = String(total - drawn);
-      marks.forEach(m => m.el.classList.toggle('reached', m.y <= tip));
       // Invitation lines brighten one by one as they pass the reading line.
       const read = vh * 0.62;
       lines.forEach(line => {
