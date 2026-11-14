@@ -28,33 +28,51 @@
     const layout = () => {
       const base = main.getBoundingClientRect().top;
       const width = main.clientWidth;
-      const cx = width / 2, g = 18;
+      const cx = width / 2, left = 18, right = width - 18;
       const hero = document.querySelector<HTMLElement>('.new-hero')!;
       const footerTitle = document.querySelector<HTMLElement>('footer h2')!;
       const y0 = hero.getBoundingClientRect().bottom - base - 8;
       const yK = footerTitle.getBoundingClientRect().top - base - 120;
-      const d = `M${cx} ${y0} C${cx} ${y0 + 90} ${g} ${y0 + 70} ${g} ${y0 + 170} L${g} ${yK - 150}`
-        + ` C${g} ${yK - 60} ${cx} ${yK - 90} ${cx} ${yK}`
+      // One heading per visible section; hidden sections report a zero-size box and are skipped.
+      const heads = Array.from(main.querySelectorAll<HTMLElement>(':scope > section'))
+        .filter(section => section.offsetHeight > 0)
+        .map(section => {
+          const r = (section.querySelector<HTMLElement>('.eyebrow, h2') ?? section).getBoundingClientRect();
+          return r.top + r.height / 2 - base;
+        })
+        .filter(y => y > y0 + 60 && y < yK - 200);
+      // The thread leaves the photo from the centre, then crosses the page above each heading,
+      // alternating left→right and right→left, and runs down the side between headings.
+      let x = cx, d = `M${cx} ${y0}`;
+      const stops: { x: number; y: number }[] = [];
+      heads.forEach((y, i) => {
+        const to = i % 2 === 0 ? right : left;
+        const from = i === 0 ? cx : x;
+        const top = Math.max(i === 0 ? y0 : 0, y - 100);
+        if (i > 0) d += ` L${from} ${top}`;
+        d += ` C${from} ${top + 40} ${to} ${y - 65} ${to} ${y - 30} L${to} ${y}`;
+        stops.push({ x: to, y });
+        x = to;
+      });
+      d += ` L${x} ${yK - 150} C${x} ${yK - 60} ${cx} ${yK - 90} ${cx} ${yK}`
         + ` C${cx} ${yK + 40} ${cx - 23} ${yK + 54} ${cx - 23} ${yK + 32} C${cx - 23} ${yK + 10} ${cx + 23} ${yK + 10} ${cx + 23} ${yK + 32} C${cx + 23} ${yK + 54} ${cx} ${yK + 50} ${cx} ${yK + 90}`;
       svg.setAttribute('width', String(width));
       svg.setAttribute('height', String(main.scrollHeight));
       path.setAttribute('d', d);
       total = path.getTotalLength();
       path.style.strokeDasharray = `${total}`;
-      table = Array.from({ length: 301 }, (_, i) => {
-        const len = (total * i) / 300;
+      table = Array.from({ length: 401 }, (_, i) => {
+        const len = (total * i) / 400;
         return { len, y: path.getPointAtLength(len).y };
       });
-      marks.forEach(m => m.el.remove());
-      marks = Array.from(main.querySelectorAll<HTMLElement>(':scope > section')).map(section => {
-        const head = section.querySelector<HTMLElement>('.eyebrow, h2') ?? section;
-        const r = head.getBoundingClientRect();
-        const y = r.top + r.height / 2 - base;
+      // Rebuild every marker on each layout so earlier positions never linger.
+      svg.querySelectorAll('circle').forEach(circle => circle.remove());
+      marks = stops.map(({ x: mx, y }) => {
         const el = document.createElementNS(SVG, 'circle');
-        el.setAttribute('cx', String(g)); el.setAttribute('cy', String(y)); el.setAttribute('r', '4');
+        el.setAttribute('cx', String(mx)); el.setAttribute('cy', String(y)); el.setAttribute('r', '4');
         svg.append(el);
         return { el, y };
-      }).filter(m => m.y > y0 + 190 && m.y < yK - 150);
+      });
       update();
     };
 

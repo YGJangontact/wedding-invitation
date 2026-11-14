@@ -15,7 +15,8 @@ body[data-theme="thread"] {--paper:#fbf8f2;--ink:#2e2a28;--muted:#655e57;--green
 .thread-photo>span {font:13px var(--serif);color:var(--muted);}
 .new-hero-thread h1 {margin-top:34px;font-size:26px;}
 .new-hero-thread .new-hero-details {padding:0 28px;}
-[data-theme="thread"] section {padding-left:44px;padding-right:28px;}
+[data-theme="thread"] section {padding-left:44px;padding-right:44px;}
+[data-theme="thread"] .invitation {padding-top:120px;}
 [data-theme="thread"] .eyebrow {color:#a3333a;letter-spacing:2px;}
 [data-theme="thread"] .invitation h2 {font-size:24px;line-height:1.7;}
 [data-theme="thread"] .invitation .letter {font-size:17px;line-height:2.3;word-break:keep-all;}
