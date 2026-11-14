@@ -8,6 +8,7 @@ const clientId = import.meta.env.PUBLIC_NAVER_MAP_CLIENT_ID || '';
   </div>
   <button class="map-unlock" hidden aria-pressed="false">지도를 클릭해 이동·확대하기</button>
   <p class="map-status" role="status">네이버 지도를 불러오는 중입니다.</p>
+  <slot />
 </div>
 <script>
   // Browser SDK Client ID only. Never embed the Naver Client Secret.
@@ -55,7 +56,7 @@ const clientId = import.meta.env.PUBLIC_NAVER_MAP_CLIENT_ID || '';
         n.Event.once(map,'tilesloaded',()=>{
           if(failed) return;
           clearTimeout(timer);
-          status.textContent = '브라운스톤서울 3층';
+          status.textContent = ''; status.hidden = true; // the address row below the map already names the hall
           reset();
           host.dataset.ready = 'true';
         });
