@@ -18,6 +18,10 @@ export const wedding = {
     { src: "/photos/pine.webp", alt: "소나무 창가에 나란히 앉아 웃는 두 사람" },
     { src: "/photos/veil.webp", alt: "베일을 함께 들고 웃는 두 사람" },
     { src: "/photos/standing.webp", alt: "예복을 입고 나란히 선 두 사람" },
+    { src: "/photos/sky.jpg", alt: "파란 하늘 아래 부케를 들고 안은 두 사람" },
+    { src: "/photos/gown-sofa.jpg", alt: "드레스 자락을 펼치고 소파에 앉은 신부와 곁에 앉은 신랑" },
+    { src: "/photos/garden.jpg", alt: "정원에서 손을 잡고 걷는 두 사람" },
+    { src: "/photos/bride-sofa.jpg", alt: "부케 옆 소파에 기대 웃는 신부" },
   ] as { src: string; alt: string }[],
   invitation: [
     "서로의 일상에 가장 가까운 사람이 되어",
