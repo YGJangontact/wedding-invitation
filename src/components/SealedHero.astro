@@ -32,24 +32,37 @@ const {asset,fullDate,time,guestView}=Astro.props;
   if (envelope) {
     let frame = 0;
     const clamp = (value: number) => Math.max(0, Math.min(1, value));
-    function paint() {
+    let progress: number | undefined;
+    let previousTime = performance.now();
+    function ease(value: number) {
+      const t = clamp(value);
+      return t * t * (3 - 2 * t);
+    }
+    function paint(now: number) {
       frame = 0;
       const top = envelope!.getBoundingClientRect().top;
       const height = window.innerHeight;
-      const progress = clamp((height * 0.86 - top) / (height * 0.38));
-      const release = clamp(progress / 0.42);
-      const unfold = clamp((progress - 0.18) / 0.48);
-      const lift = clamp((progress - 0.4) / 0.6);
+      const target = clamp((height * 0.91 - top) / (height * 0.58));
+      const elapsed = Math.min(48, now - previousTime);
+      previousTime = now;
+      const current = progress ?? target;
+      progress = Math.abs(target - current) < 0.002 ? target :
+        current + (target - current) * (1 - Math.exp(-elapsed / 85));
+      const release = ease(progress / 0.48);
+      const unfold = ease((progress - 0.15) / 0.52);
+      const lift = ease((progress - 0.34) / 0.66);
       const style = envelope!.style;
       style.setProperty('--seal-opacity', String(1 - release));
       style.setProperty('--thread-drift', release * 38 + 'px');
       style.setProperty('--flap-angle', -172 * unfold + 'deg');
       style.setProperty('--letter-y', 18 - 123 * lift + 'px');
-      style.setProperty('--letter-opacity', String(clamp(lift * 2)));
-      style.setProperty('--letter-layer', unfold > 0.58 ? '5' : '2');
+      style.setProperty('--letter-opacity', String(ease((progress - 0.45) / 0.36)));
+      style.setProperty('--letter-layer', progress >= 0.45 ? '5' : '2');
       if (progress === 1) {
         window.removeEventListener('scroll', schedule);
         window.removeEventListener('resize', schedule);
+      } else if (progress !== target) {
+        schedule();
       }
     }
     function schedule() {
@@ -57,7 +70,7 @@ const {asset,fullDate,time,guestView}=Astro.props;
     }
     window.addEventListener('scroll', schedule, {passive: true});
     window.addEventListener('resize', schedule);
-    paint();
+    paint(performance.now());
   }
 </script>
 <style>

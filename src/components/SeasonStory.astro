@@ -22,16 +22,20 @@ const garden=!ribbon&&!editorial;
     stop();
     if(!story || new URLSearchParams(location.search).get('motion')==='off') return;
     const stage=story.querySelector<HTMLElement>('.season-stage')!;
+    const ease = (value: number) => {
+      const t = Math.max(0, Math.min(1, value));
+      return t * t * (3 - 2 * t);
+    };
     let frame=0;
     const update=()=>{
       frame=0;
       const r=story.getBoundingClientRect();
       const p=Math.max(0,Math.min(1,-r.top/Math.max(1,r.height-stage.offsetHeight)));
       // Leave a still moment at the beginning and after the artwork has finished moving.
-      story.style.setProperty('--scene-progress',String(Math.max(0,Math.min(1,(p-.12)/.7))));
+      story.style.setProperty('--scene-progress',String(ease((p-.08)/.78)));
       // Give both sentences time to be read, with a short, non-overlapping hand-off.
-      story.style.setProperty('--first-opacity',String(Math.max(0,Math.min(1,(.5-p)/.08))));
-      story.style.setProperty('--second-opacity',String(Math.max(0,Math.min(1,(p-.5)/.1))));
+      story.style.setProperty('--first-opacity',String(ease((.5-p)/.16)));
+      story.style.setProperty('--second-opacity',String(ease((p-.5)/.16)));
     };
     const schedule=()=>{if(!frame)frame=requestAnimationFrame(update)};
     story.classList.add('is-cinematic'); update();
