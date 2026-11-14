@@ -4,7 +4,6 @@
   <form>
     <label>이름<input name="name" required maxlength="20" autocomplete="name" /></label>
     <label>한마디<textarea name="message" required maxlength="200" rows="2"></textarea></label>
-    <label>글 관리 비밀번호<input name="password" type="password" required minlength="6" maxlength="128" autocomplete="new-password" /><small>6자 이상 · 수정·삭제할 때 필요해요. 다른 곳에서 쓰는 비밀번호는 피해주세요.</small></label>
     <div class="emoji-picks" role="group" aria-label="축하 이모지">
       {[['🤍','하얀 하트'], ['💐','꽃다발'], ['💍','반지'], ['🥂','건배']].map(([emoji, name]) =>
         <button type="button" data-emoji={emoji} aria-label={name + ' 넣기'}>{emoji}</button>
@@ -144,7 +143,7 @@
     author.textContent = name;
     text.textContent = message;
     item.append(author, text);
-    if(data.editable || adminMode) {
+    if(adminMode) {
       const action=document.createElement('button');
       action.type='button';
       action.className='entry-manage';
@@ -192,6 +191,8 @@
     if (button.disabled) return;
     button.disabled = true;
     const data = new FormData(form);
+    // The guestbook service still expects a per-post secret; guests no longer pick one, so a random one is sent and only the admin key can delete.
+    data.set('password', Array.from(crypto.getRandomValues(new Uint8Array(18)),b=>b.toString(16).padStart(2,'0')).join(''));
     try {
       const response = await fetch(endpoint, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(Object.fromEntries(data))});
       if (!response.ok) {
