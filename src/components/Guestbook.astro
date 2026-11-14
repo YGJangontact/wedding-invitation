@@ -4,6 +4,11 @@
   <form>
     <label>이름<input name="name" required maxlength="20" autocomplete="name" /></label>
     <label>한마디<textarea name="message" required maxlength="200" rows="2"></textarea></label>
+    <div class="emoji-picks" role="group" aria-label="축하 이모지">
+      {[['🤍','하얀 하트'], ['💐','꽃다발'], ['💍','반지'], ['🥂','건배']].map(([emoji, name]) =>
+        <button type="button" data-emoji={emoji} aria-label={name + ' 넣기'}>{emoji}</button>
+      )}
+    </div>
     <button type="submit">한마디 남기기</button>
   </form>
   <p role="status" class="status"></p>
@@ -14,7 +19,22 @@
   const form = section.querySelector('form')!;
   const status = section.querySelector<HTMLElement>('.status')!;
   const list = section.querySelector('ul')!;
-  const button = form.querySelector('button')!;
+  const button = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+  const message = form.querySelector('textarea')!;
+  for (const pick of form.querySelectorAll<HTMLButtonElement>('[data-emoji]')) {
+    pick.addEventListener('click', () => {
+      const emoji = pick.dataset.emoji!;
+      const start = message.selectionStart;
+      const end = message.selectionEnd;
+      if (message.value.length - (end - start) + emoji.length > message.maxLength) {
+        status.textContent = '한마디가 길어요. 글을 조금 줄이면 이모지를 넣을 수 있어요.';
+        return;
+      }
+      message.setRangeText(emoji, start, end, 'end');
+      message.focus({preventScroll:true});
+      status.textContent = '';
+    });
+  }
   const endpoint = 'https://wedding-guestbook.ygjang.workers.dev/messages';
   function entry(name: string, message: string) {
     const item = document.createElement('li');
@@ -57,6 +77,9 @@
   .guestbook input,.guestbook textarea{box-sizing:border-box;width:100%;padding:10px 12px;background:#fffdfa;border:1px solid var(--line);color:var(--ink);font:16px/1.5 var(--serif);border-radius:4px;}
   .guestbook button{width:100%;padding:12px;background:var(--ink);color:var(--paper);border:0;font:14px var(--serif);cursor:pointer;}
   .guestbook>p{margin-top:12px;font-size:13px;}
+  .emoji-picks{display:flex;gap:4px;margin:-8px 0 12px;}
+  .emoji-picks button{width:44px;height:44px;padding:0;background:transparent;color:var(--ink);font-size:20px;border-radius:50%;}
+  .emoji-picks button:hover,.emoji-picks button:focus-visible{background:#f4efe7;}
   .guestbook ul{padding:0;list-style:none;}
   .guestbook :global(li){padding:14px 0;border-top:1px solid var(--line);white-space:pre-wrap;overflow-wrap:anywhere;}
 </style>
