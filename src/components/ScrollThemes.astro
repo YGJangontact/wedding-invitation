@@ -19,6 +19,15 @@
     svg.setAttribute('aria-hidden', 'true');
     const path = document.createElementNS(SVG, 'path');
     svg.append(path);
+    const TIP = 48;
+    const tips = Array.from({ length: 10 }, (_, i) => {
+      const tip = document.createElementNS(SVG, 'path');
+      tip.classList.add('tip');
+      tip.style.strokeWidth = String(1.4 * (1 - (0.7 * (i + 1)) / 10));
+      tip.style.opacity = String(1 - (0.9 * (i + 1)) / 10);
+      svg.append(tip);
+      return tip;
+    });
     main.prepend(svg);
     let table: { y: number; len: number }[] = [];
     let total = 1;
@@ -27,46 +36,27 @@
     const layout = () => {
       const base = main.getBoundingClientRect().top;
       const width = main.clientWidth;
-      const cx = width / 2, left = 18, right = width - 18;
+      const cx = width / 2, left = 18;
       const hero = document.querySelector<HTMLElement>('.new-hero')!;
       const footerTitle = document.querySelector<HTMLElement>('footer h2')!;
       const y0 = hero.getBoundingClientRect().bottom - base - 8;
       const yK = footerTitle.getBoundingClientRect().top - base - 120;
-      // One heading per visible section; hidden sections report a zero-size box and are skipped.
-      const heads = Array.from(main.querySelectorAll<HTMLElement>(':scope > section'))
-        .filter(section => section.offsetHeight > 0)
-        .map(section => {
-          const r = (section.querySelector<HTMLElement>('.eyebrow, h2') ?? section).getBoundingClientRect();
-          return r.top + r.height / 2 - base;
-        })
-        .filter(y => y > y0 + 60 && y < yK - 200);
-      // The thread leaves the photo from the centre, then crosses the page above each heading,
-      // alternating left→right and right→left, and runs down the side between headings.
-      let x = cx, d = `M${cx} ${y0}`;
-      heads.forEach((y, i) => {
-        const to = i % 2 === 0 ? right : left;
-        const from = i === 0 ? cx : x;
-        const top = Math.max(i === 0 ? y0 : 0, y - 130);
-        if (i > 0) d += ` L${from} ${top}`;
-        // Midway across, the thread makes the same curl as the closing knot, laid on its side and
-        // a little larger: (along, across) offsets, with level tangents in and out.
-        const dir = Math.sign(to - from) || 1, ym = (top + y - 30) / 2 + 14;
-        const sc = Math.min(1.6, (Math.abs(to - from) * 0.5) / 90), len = 90 * sc;
-        const curl = [[[40, 0], [54, -23], [32, -23]], [[10, -23], [10, 23], [32, 23]], [[54, 23], [50, 0], [90, 0]]];
-        const a = (from + to) / 2 - dir * len / 2, b = a + dir * len;
-        const leadIn = Math.min(70, Math.abs(a - from) * 0.6), leadOut = Math.min(70, Math.abs(to - b) * 0.6);
-        d += ` C${from} ${top + 34} ${a - dir * leadIn} ${ym} ${a} ${ym}`;
-        curl.forEach(seg => { d += ' C' + seg.map(([u, v]) => `${a + dir * u * sc} ${ym + v * sc}`).join(' '); });
-        d += ` C${b + dir * leadOut} ${ym} ${to} ${y - 74} ${to} ${y - 30} L${to} ${y}`;
-        x = to;
-      });
+      // The thread leaves the photo from the centre, settles into the left margin and sways gently
+      // there (inside the section padding, clear of the text), then returns to the centre for the knot.
+      let d = `M${cx} ${y0} C${cx} ${y0 + 110} ${left} ${y0 + 70} ${left} ${y0 + 180}`;
+      let x = left, y = y0 + 180, k = 0;
+      while (y + 280 < yK - 150) {
+        const nx = k++ % 2 === 0 ? left + 13 : left;
+        d += ` C${x} ${y + 120} ${nx} ${y + 160} ${nx} ${y + 280}`;
+        x = nx; y += 280;
+      }
       d += ` L${x} ${yK - 150} C${x} ${yK - 60} ${cx} ${yK - 90} ${cx} ${yK}`
         + ` C${cx} ${yK + 40} ${cx - 23} ${yK + 54} ${cx - 23} ${yK + 32} C${cx - 23} ${yK + 10} ${cx + 23} ${yK + 10} ${cx + 23} ${yK + 32} C${cx + 23} ${yK + 54} ${cx} ${yK + 50} ${cx} ${yK + 90}`;
       svg.setAttribute('width', String(width));
       svg.setAttribute('height', String(main.scrollHeight));
       path.setAttribute('d', d);
+      tips.forEach(tip => tip.setAttribute('d', d));
       total = path.getTotalLength();
-      path.style.strokeDasharray = `${total}`;
       table = Array.from({ length: 601 }, (_, i) => {
         const len = (total * i) / 600;
         return { len, y: path.getPointAtLength(len).y };
@@ -77,7 +67,8 @@
     const update = () => {
       frame = 0;
       if (still) {
-        path.style.strokeDashoffset = '0';
+        path.style.strokeDasharray = 'none';
+        tips.forEach(tip => { tip.style.visibility = 'hidden'; });
         return;
       }
       const base = main.getBoundingClientRect().top;
@@ -87,10 +78,20 @@
       const tip = vh * (0.58 + 0.42 * clamp(1 - left / vh)) - base;
       const hit = table.find(p => p.y > tip);
       target = hit ? hit.len : total;
-      // Ease toward the target instead of jumping, so the thread follows the scroll slowly.
-      drawn += (target - drawn) * 0.07;
-      if (Math.abs(target - drawn) < 0.5) drawn = target;
-      path.style.strokeDashoffset = String(total - drawn);
+      // A damped spring toward the target: it follows the scroll, then glides to a stop.
+      vel = (vel + (target - drawn) * 0.015) * 0.83;
+      drawn = Math.max(0, Math.min(total, drawn + vel));
+      if (Math.abs(target - drawn) < 0.3 && Math.abs(vel) < 0.05) { drawn = target; vel = 0; }
+      // The last stretch tapers from full width to a fine, faint end, like thread pulled off a spool.
+      const done = drawn >= total - 0.5;
+      path.style.visibility = drawn < 1 ? 'hidden' : 'visible';
+      path.style.strokeDasharray = `${done ? total : Math.max(0, drawn - TIP)} ${total * 2}`;
+      tips.forEach((tip, i) => {
+        const start = Math.max(0, drawn - TIP + (i * TIP) / tips.length);
+        const len = Math.max(0, Math.min(TIP / tips.length + 0.8, drawn - start));
+        tip.style.visibility = done || len <= 0 ? 'hidden' : 'visible';
+        tip.style.strokeDasharray = `0 ${start} ${len} ${total * 2}`;
+      });
       if (drawn !== target) schedule();
       // Invitation lines brighten one by one as they pass the reading line.
       const read = vh * 0.62;
@@ -100,7 +101,7 @@
       });
     };
 
-    let frame = 0, drawn = 0, target = 0;
+    let frame = 0, drawn = 0, target = 0, vel = 0;
     const schedule = () => { if (!frame) frame = requestAnimationFrame(update); };
     new ResizeObserver(() => layout()).observe(main);
     addEventListener('scroll', schedule, { passive: true });
