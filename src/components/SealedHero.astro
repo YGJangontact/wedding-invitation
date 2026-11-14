@@ -3,6 +3,9 @@ import {wedding as w} from '../data/wedding';
 const {asset,fullDate,time,guestView}=Astro.props;
 ---
 <header class="sealed-intro">
+  <div class="ivory-petals" aria-hidden="true">
+    {[5,89,12,95,8,84].map((x,i) => <i style={`left:${x}%;top:${i*13}%;animation-delay:-${i*1.7}s`}/>)}
+  </div>
   <div class="studio-cover">
     <img src={asset(w.heroPhoto)} width="1100" height="1540" fetchpriority="high" alt="두 사람의 손을 하나로 잇는 붉은 실" />
     <div class="cover-letter">
@@ -74,6 +77,13 @@ const {asset,fullDate,time,guestView}=Astro.props;
   }
 </script>
 <style>
+ .sealed-intro{position:relative;isolation:isolate;}
+ .studio-cover{animation:studio-light 1.45s ease-out both;}
+ @keyframes studio-light{from{filter:brightness(.69)}to{filter:brightness(1)}}
+ .ivory-petals{position:absolute;inset:0;z-index:2;pointer-events:none;overflow:hidden;}
+ .ivory-petals i{position:absolute;width:9px;height:16px;border-radius:75% 22% 70% 35%;background:linear-gradient(125deg,#fff,#fffdf1 55%,#e3decb);box-shadow:0 1px 3px #6c60422b;animation:ivory-drift 9s ease-in-out infinite;}
+ @keyframes ivory-drift{0%{opacity:0;transform:translateY(-45px) rotate(-35deg)}18%{opacity:.85}65%{transform:translate(10px,105px) rotate(55deg)}100%{opacity:0;transform:translate(-7px,180px) rotate(100deg)}}
+
  .sealed-intro{padding:48px 24px 32px;text-align:center;background:radial-gradient(ellipse at 20% 20%,#fffefa,#f2ede5);color:#625540;overflow:hidden;}
  .studio-cover{position:relative;margin:-48px -24px 0;}
  .studio-cover img{display:block;width:100%;height:auto;}

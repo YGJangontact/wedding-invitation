@@ -1,0 +1,62 @@
+<section class="guestbook" id="guestbook">
+  <h2>축하 한마디</h2>
+  <p>남겨주신 이름과 글은 하객들과 함께 봅니다.</p>
+  <form>
+    <label>이름<input name="name" required maxlength="20" autocomplete="name" /></label>
+    <label>한마디<textarea name="message" required maxlength="200" rows="2"></textarea></label>
+    <button type="submit">한마디 남기기</button>
+  </form>
+  <p role="status" class="status"></p>
+  <ul aria-label="최근 축하 글"></ul>
+</section>
+<script>
+  const section = document.querySelector<HTMLElement>('#guestbook')!;
+  const form = section.querySelector('form')!;
+  const status = section.querySelector<HTMLElement>('.status')!;
+  const list = section.querySelector('ul')!;
+  const button = form.querySelector('button')!;
+  const endpoint = 'https://wedding-guestbook.ygjang.workers.dev/messages';
+  function entry(name: string, message: string) {
+    const item = document.createElement('li');
+    const author = document.createElement('strong');
+    const text = document.createElement('p');
+    author.textContent = name;
+    text.textContent = message;
+    item.append(author, text);
+    return item;
+  }
+  async function loadMessages() {
+    const response = await fetch(endpoint);
+    if (!response.ok) throw new Error();
+    const items: {name:string; message:string}[] = await response.json();
+    list.replaceChildren(...items.map(item => entry(item.name, item.message)));
+  }
+  loadMessages().catch(() => {status.textContent = '글을 불러오지 못했어요. 새로고침해 주세요.';});
+  form.addEventListener('submit', async event => {
+    event.preventDefault();
+    if (button.disabled) return;
+    button.disabled = true;
+    const data = new FormData(form);
+    try {
+      const response = await fetch(endpoint, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(Object.fromEntries(data))});
+      if (!response.ok) {
+        status.textContent = response.status === 429 ? '잠시 후 다시 남겨 주세요.' : '이름과 한마디를 확인한 뒤 다시 시도해 주세요.';
+        return;
+      }
+      const saved = await response.json();
+      list.prepend(entry(saved.name, saved.message));
+      form.reset();
+      status.textContent = '축하 글을 남겼습니다.';
+    } catch { status.textContent = '연결을 확인하고 다시 시도해 주세요.'; }
+    finally {button.disabled = false;}
+  });
+</script>
+<style>
+  .guestbook form,.guestbook ul{max-width:360px;margin:24px auto 0;text-align:left;}
+  .guestbook label{display:grid;gap:6px;margin-bottom:14px;font-size:13px;}
+  .guestbook input,.guestbook textarea{box-sizing:border-box;width:100%;padding:10px 12px;background:#fffdfa;border:1px solid var(--line);color:var(--ink);font:16px/1.5 var(--serif);border-radius:4px;}
+  .guestbook button{width:100%;padding:12px;background:var(--ink);color:var(--paper);border:0;font:14px var(--serif);cursor:pointer;}
+  .guestbook>p{margin-top:12px;font-size:13px;}
+  .guestbook ul{padding:0;list-style:none;}
+  .guestbook :global(li){padding:14px 0;border-top:1px solid var(--line);white-space:pre-wrap;overflow-wrap:anywhere;}
+</style>

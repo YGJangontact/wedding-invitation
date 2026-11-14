@@ -1,0 +1,23 @@
+{
+  "name": "wedding-guestbook",
+  "main": "worker.js",
+  "compatibility_date": "2026-11-01",
+  "workers_dev": true,
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "wedding-guestbook",
+      "database_id": "2d1540ba-6ca0-4ff8-a714-751eb2fc9028"
+    }
+  ],
+  "ratelimits": [
+    {
+      "name": "POST_LIMIT",
+      "namespace_id": "1009",
+      "simple": {
+        "limit": 3,
+        "period": 60
+      }
+    }
+  ]
+}

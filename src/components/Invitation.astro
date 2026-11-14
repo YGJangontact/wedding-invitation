@@ -1,6 +1,7 @@
 ---
 import { wedding as w } from '../data/wedding';
 import '../styles/global.css';
+import Guestbook from './Guestbook.astro';
 import Location from './Location.astro';
 import '../styles/themes.css';
 import '../styles/new-themes.css';
@@ -55,8 +56,9 @@ const days = new Date(Date.UTC(year,month,0)).getUTCDate();
       {!guestView && <SeasonStory asset={asset} theme={theme}/>}
       {!(guestView && sealed) && <section class="invitation" id="invitation"><span class="ornament">✳</span><p class="eyebrow">소중한 분들께</p><h2>우리의 첫날에<br/>함께해 주세요.</h2><div class="letter">{w.invitation.map(line=>line ? <p>{line}</p> : <br/>)}</div>{(w.names.every(Boolean) || !guestView) && <p class="muted names-note">{w.names.every(Boolean) ? names : '이름과 가족 소개를 나중에 넣을 자리예요'}</p>}</section>}
       <section class="day-section" id="day"><p class="eyebrow">기억해 주세요</p><h2>{year}. {String(month).padStart(2,'0')}. {String(day).padStart(2,'0')}</h2><p>{fullDate.split(' ').at(-1)} {time}</p><div class="calendar" role="group" aria-label={`${year}년 ${month}월 예식 달력`}><div class="calendar-row week">{['일','월','화','수','목','금','토'].map(d=><span >{d}</span>)}</div><div class="calendar-grid">{Array.from({length:offset},()=> <span aria-hidden="true"></span>)}{Array.from({length:days},(_,i)=><span class:list={{selected:i+1===day}} aria-label={i+1===day ? `${month}월 ${day}일 예식일` : undefined}>{i+1}</span>)}</div></div><p class="date-caption">달력에 작은 약속 하나, 함께해 주세요.</p></section>
-      <Location />
       {showGallery && <section class="gallery" id="gallery"><p class="eyebrow">오래 기억할 장면</p><h2>우리의 순간들</h2><p class="muted">함께한 시간을 사진으로 전할게요.</p><div class="photo-grid">{w.photos.length ? w.photos.map((photo,i)=><button class:list={['gallery-item',{wide:i===0}]} data-photo={asset(photo.src)} data-alt={photo.alt}><img src={asset(photo.src)} alt={photo.alt} loading="lazy"/></button>) : <><div class="gallery-placeholder wide"><span>✧</span><p>가장 좋아하는 한 장</p></div><div class="gallery-placeholder"><span>01</span><p>함께 웃던 날</p></div><div class="gallery-placeholder"><span>02</span><p>기억하고 싶은 순간</p></div></>}</div></section>}
+      <Location />
+      <Guestbook />
       {(w.contacts.length>0 || w.accounts.length>0) && <section class="contact"><h2>마음을 전하는 방법</h2>{w.contacts.map(c=><a class="contact-link" href={`tel:${c.phone}`}>{c.label}에게 연락하기</a>)}{w.accounts.map(a=><details><summary>{a.label}</summary><p>{a.bank} {a.number}<br/>{a.holder}</p><button data-copy={`${a.bank} ${a.number}`}>계좌번호 복사</button></details>)}</section>}
       <footer><span class="ornament">✳</span><h2>그날, 반갑게 만나요.</h2><p>소중한 걸음과 마음을<br/>오래도록 기억하겠습니다.</p><button id="share" class="share-button">청첩장 공유하기 <span>↗</span></button>{!guestView && <p class="local-note">이름을 준비 중인 청첩장 시안입니다.</p>}<small>{year}. {String(month).padStart(2,'0')}. {String(day).padStart(2,'0')} · {w.venue}</small></footer>
       {w.music.src && <p class="music-credit">Music: <a href="https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1400037" target="_blank" rel="noopener noreferrer">“Carefree” — Kevin MacLeod (incompetech.com)</a><br/>Licensed under <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a> · 원본 음원, 재생 음량 조절·반복 재생</p>}
