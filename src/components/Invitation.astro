@@ -45,7 +45,7 @@ const days = new Date(Date.UTC(year,month,0)).getUTCDate();
   </head>
   <body data-theme={theme} class:list={{'fresh-theme':fresh}}>
     <a class="skip" href="#invitation">본문으로 이동</a>
-    <aside class="desktop-note"><span class="small-flower">✳</span><p>우리의 시작을<br/>한 장에 담아.</p><span>모바일 청첩장 · {themeName}</span></aside>
+    <aside class="desktop-note"><span class="small-flower">✳</span><p>우리의 시작을<br/>한 장에 담아.</p><span>모바일 청첩장 · {guestView ? fullDate : themeName}</span></aside>
     <main>
       {!guestView && <details class="theme-menu"><summary><span>{themeName}</span><span>디자인 바꾸기</span></summary><nav aria-label="디자인 비교">{[true,false].map(group=><div><p>{group?'새로운 후보':'기존 시안'}</p>{choices.filter(t=>t.fresh===group).map(t=><a href={sitePath(`designs/${t.id}/`)} aria-current={theme===t.id?'page':undefined}>{t.name}</a>)}</div>)}<a class="compare-all" href={sitePath('designs/')}>{choices.length}가지 한눈에 비교</a></nav></details>}
       {!guestView && <div class="draft-banner">청첩장 시안 <span>이름은 준비 중이에요</span></div>}
