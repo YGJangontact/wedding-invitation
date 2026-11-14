@@ -11,6 +11,19 @@ export default {
     if (new URL(request.url).pathname !== '/messages') return reply({}, 404);
     if (request.method === 'OPTIONS') return new Response(null, {status: 204, headers});
     if (request.method === 'GET') {
+      const requested = new URL(request.url).searchParams.get('page');
+      if (requested !== null) {
+        const number = Number(requested);
+        if (!Number.isSafeInteger(number) || number < 1) return reply({}, 400);
+        const pageSize = 5;
+        const {total} = await env.DB.prepare('SELECT COUNT(*) AS total FROM messages').first();
+        const pages = Math.max(1, Math.ceil(total / pageSize));
+        const page = Math.min(number, pages);
+        const {results} = await env.DB.prepare(
+          'SELECT name, message FROM messages ORDER BY id DESC LIMIT ? OFFSET ?'
+        ).bind(pageSize, (page - 1) * pageSize).all();
+        return reply({items: results, page, pages});
+      }
       const {results} = await env.DB.prepare('SELECT name, message FROM messages ORDER BY id DESC LIMIT 30').all();
       return reply(results);
     }

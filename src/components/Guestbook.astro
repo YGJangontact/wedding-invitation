@@ -12,7 +12,8 @@
     <button type="submit">한마디 남기기</button>
   </form>
   <p role="status" class="status"></p>
-  <ul aria-label="최근 축하 글"></ul>
+  <ul aria-label="축하 글" tabindex="-1"></ul>
+  <nav class="pages" aria-label="축하 글 페이지" hidden></nav>
 </section>
 <script>
   const section = document.querySelector<HTMLElement>('#guestbook')!;
@@ -45,13 +46,37 @@
     item.append(author, text);
     return item;
   }
-  async function loadMessages() {
-    const response = await fetch(endpoint);
-    if (!response.ok) throw new Error();
-    const items: {name:string; message:string}[] = await response.json();
-    list.replaceChildren(...items.map(item => entry(item.name, item.message)));
+  const pages = section.querySelector<HTMLElement>('.pages')!;
+  let latestRequest = 0;
+  async function loadMessages(number = 1, focusList = false) {
+    const request = ++latestRequest;
+    try {
+      const response = await fetch(endpoint + '?page=' + number);
+      if (!response.ok) throw new Error();
+      const data: {items: {name:string; message:string}[]; page:number; pages:number} = await response.json();
+      if (request !== latestRequest) return;
+      list.replaceChildren(...data.items.map(item => entry(item.name, item.message)));
+      pages.replaceChildren();
+      pages.hidden = data.pages <= 1;
+      const add = (label: string, target: number) => {
+        const control = document.createElement('button');
+        control.type = 'button';
+        control.textContent = label;
+        control.setAttribute('aria-label', label === '이전' || label === '다음' ? label + ' 페이지' : target + '페이지');
+        if (target === data.page) control.setAttribute('aria-current', 'page');
+        else control.addEventListener('click', () => loadMessages(target, true));
+        pages.append(control);
+      };
+      const start = Math.max(1, Math.min(data.page - 1, data.pages - 2));
+      if (data.page > 1) add('이전', data.page - 1);
+      for (let i = start; i <= Math.min(data.pages, start + 2); i++) add(String(i), i);
+      if (data.page < data.pages) add('다음', data.page + 1);
+      if (focusList) list.focus();
+    } catch {
+      if (request === latestRequest) status.textContent = '글 목록을 불러오지 못했어요. 새로고침해 주세요.';
+    }
   }
-  loadMessages().catch(() => {status.textContent = '글을 불러오지 못했어요. 새로고침해 주세요.';});
+  loadMessages();
   form.addEventListener('submit', async event => {
     event.preventDefault();
     if (button.disabled) return;
@@ -63,10 +88,10 @@
         status.textContent = response.status === 429 ? '잠시 후 다시 남겨 주세요.' : '이름과 한마디를 확인한 뒤 다시 시도해 주세요.';
         return;
       }
-      const saved = await response.json();
-      list.prepend(entry(saved.name, saved.message));
+
       form.reset();
       status.textContent = '축하 글을 남겼습니다.';
+      await loadMessages(1);
     } catch { status.textContent = '연결을 확인하고 다시 시도해 주세요.'; }
     finally {button.disabled = false;}
   });
@@ -81,5 +106,12 @@
   .emoji-picks button{width:44px;height:44px;padding:0;background:transparent;color:var(--ink);font-size:20px;border-radius:50%;}
   .emoji-picks button:hover,.emoji-picks button:focus-visible{background:#f4efe7;}
   .guestbook ul{padding:0;list-style:none;}
-  .guestbook :global(li){padding:14px 0;border-top:1px solid var(--line);white-space:pre-wrap;overflow-wrap:anywhere;}
+  .guestbook :global(li){margin:12px 0;padding:16px 18px;background:#fffcf7;border:1px solid #e8dfd2;border-radius:8px;overflow-wrap:anywhere;}
+  .guestbook :global(li strong){display:block;color:#6b5144;font:600 13px/1.6 var(--sans);}
+  .guestbook :global(li strong)::before{content:"보낸 이";font-weight:400;color:#756b61;margin-right:8px;}
+  .guestbook :global(li p){margin:8px 0 0;color:#372f2a;font:16px/1.7 var(--serif);white-space:pre-wrap;}
+  .pages{display:flex;justify-content:center;gap:2px;margin:16px auto 0;}
+  .pages[hidden]{display:none;}
+  .pages :global(button){width:auto;min-width:40px;min-height:44px;padding:6px;color:var(--ink);background:transparent;border:0;border-radius:6px;cursor:pointer;}
+  .pages :global([aria-current="page"]){background:#eee6da;font-weight:700;}
 </style>
