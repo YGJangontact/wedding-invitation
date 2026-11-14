@@ -1,33 +1,34 @@
 ---
 import {wedding as w} from '../data/wedding';
-const {asset,fullDate,time}=Astro.props;
+const {asset,fullDate,time,guestView}=Astro.props;
 ---
 <header class="sealed-intro">
   <div class="studio-cover">
     <img src={asset(w.heroPhoto)} width="1100" height="1540" fetchpriority="high" alt="두 사람의 손을 하나로 잇는 붉은 실" />
     <div class="cover-letter">
   <h1>우리의 다음 장을<br/>열어주세요</h1>
-  <p class="sealed-subtitle">소중한 당신에게 보내는 초대</p>
+
     </div>
   </div>
   <div class="sealed-date"><p>{fullDate} · {time}<br/>{w.city} {w.venue} · {w.hall}</p></div>
-  <div class="envelope-space">
+  <div class="envelope-space" id={guestView ? "invitation" : undefined}>
     <div class="sealed-envelope">
       <div class="envelope-back"></div>
-      <div class="reveal-card" id="revealed-photo" aria-hidden="true">
-        <div class="sealed-photo">{w.heroPhoto?<img src={asset(w.heroPhoto)} alt="두 사람의 사진"/>:<span>사진 자리</span>}</div>
-        {w.names.every(Boolean) && <p>{w.names.join(' · ')}</p>}
-        <small>함께 써 내려갈 우리의 이야기</small>
+      <div class="reveal-card" id="revealed-letter" aria-hidden="true">
+        <div class="letter-body">
+          {w.invitation.filter(Boolean).map(line => <p>{line}</p>)}
+          {w.names.every(Boolean) && <small>{w.names.join(' · ')}</small>}
+        </div>
       </div>
       <div class="envelope-front"></div>
       <div class="sealed-flap"></div>
       <div class="silk-band"></div>
-      <button class="wax-seal" aria-label="봉인을 풀고 사진 보기" aria-controls="revealed-photo" aria-expanded="false"><span aria-hidden="true">❦</span></button>
+      <button class="wax-seal" aria-label="봉인을 풀고 초대글 읽기" aria-controls="revealed-letter" aria-expanded="false"><span aria-hidden="true">❦</span></button>
     </div>
   </div>
   <p class="seal-hint" aria-live="polite">봉인을 눌러 초대장을 열어주세요</p>
-  <a class="letter-jump" href="#invitation">초대의 글 읽기 ↓</a>
-  <noscript><p>소중한 당신을 초대합니다.</p></noscript>
+
+  <noscript>{w.invitation.filter(Boolean).map(line => <p>{line}</p>)}</noscript>
 </header>
 <script>
  const intro=document.querySelector<HTMLElement>('.sealed-intro');
@@ -37,9 +38,9 @@ const {asset,fullDate,time}=Astro.props;
    intro.classList.add('is-open');
    seal.setAttribute('aria-expanded','true');
    seal.setAttribute('aria-label','초대장이 열렸습니다');
-   intro.querySelector('#revealed-photo')?.setAttribute('aria-hidden','false');
+   intro.querySelector('#revealed-letter')?.setAttribute('aria-hidden','false');
    const hint=intro.querySelector('.seal-hint');
-   if(hint)hint.textContent='우리의 새로운 시작에 함께해 주세요';
+   if(hint)hint.textContent='';
  });
 </script>
 <style>
@@ -61,15 +62,15 @@ const {asset,fullDate,time}=Astro.props;
  .wax-seal{position:absolute;z-index:6;left:calc(50% - 31px);top:85px;width:62px;height:62px;border-radius:48% 52% 47% 53%;border:4px double #cfb98c;background:radial-gradient(circle at 30% 25%,#e8d4a5,#b6955e);color:#786039;box-shadow:0 5px 12px #7b603640,inset 0 0 0 3px #f6e1b850;font:32px Georgia;cursor:pointer;transition:transform .6s,opacity .6s;}
  .wax-seal:focus-visible{outline:3px solid #806841;outline-offset:6px;}
  .reveal-card{position:absolute;z-index:2;inset:10px 20px auto;padding:12px 12px 16px;background:#fffdfa;box-shadow:0 8px 20px #725c3c20;opacity:0;transform:translateY(25px) scale(.92);transition:transform 1.3s .85s,opacity .6s .7s;}
- .sealed-photo{height:170px;display:grid;place-items:center;background:linear-gradient(135deg,#e5dfd5,#f5f0e8);font:13px var(--serif);color:#9a8e7d;}
- .sealed-photo img{width:100%;height:100%;object-fit:cover;}
- .reveal-card p{font:17px var(--serif);margin:15px 0 9px;}.reveal-card small{font:10px var(--serif);color:#9a8e7d;}
+ .letter-body{padding:24px 0;color:#51473b;font:14px/1.85 var(--serif);word-break:keep-all;}
+ .letter-body p{margin:0;}
+ .letter-body p:last-of-type{margin-top:14px;}
  .is-open .wax-seal{opacity:0;transform:translateY(35px) rotate(18deg) scale(.75);pointer-events:none;}
  .is-open .silk-band{transform:translateX(160px) rotate(28deg);opacity:0;}
  .is-open .sealed-flap{transform:rotateX(180deg);z-index:1;}
- .is-open .reveal-card{opacity:1;transform:translateY(-105px) rotate(-3deg);z-index:5;transition:transform 1.3s .85s,opacity .6s .7s,z-index 0s 1.2s;}
+ .is-open .reveal-card{opacity:1;transform:translateY(-105px) rotate(0deg);z-index:5;transition:transform 1.3s .85s,opacity .6s .7s,z-index 0s 1.2s;}
  .is-open .envelope-front{opacity:1;}
  .seal-hint{font:12px/1.8 var(--serif);color:#88785e;min-height:22px;margin:8px 0 22px;}
- .sealed-date{border-top:1px solid #dbd1c1;padding-top:18px;font:13px/1.9 var(--serif);}.letter-jump{display:inline-block;margin-top:14px;color:inherit;font-size:12px;}
- @media(max-width:360px){h1{font-size:28px}.sealed-intro{padding-inline:20px}.sealed-envelope{height:190px}.envelope-space{height:335px}.sealed-photo{height:150px}.wax-seal{top:73px}}
+ .sealed-date{border-top:1px solid #dbd1c1;padding-top:18px;font:15px/1.8 var(--serif);color:#493f33;}
+ @media(max-width:360px){h1{font-size:28px}.sealed-intro{padding-inline:20px}.sealed-envelope{height:190px}.envelope-space{height:335px}.wax-seal{top:73px}}
 </style>
