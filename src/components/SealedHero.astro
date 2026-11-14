@@ -3,9 +3,13 @@ import {wedding as w} from '../data/wedding';
 const {asset,fullDate,time}=Astro.props;
 ---
 <header class="sealed-intro">
-  <p class="sealed-eyebrow">A LETTER FOR YOU</p>
+  <div class="studio-cover">
+    <img src={asset(w.heroPhoto)} width="1100" height="1540" fetchpriority="high" alt="두 사람의 손을 하나로 잇는 붉은 실" />
+    <div class="cover-letter">
   <h1>우리의 다음 장을<br/>열어주세요</h1>
   <p class="sealed-subtitle">소중한 당신에게 보내는 초대</p>
+    </div>
+  </div>
   <div class="envelope-space">
     <div class="sealed-envelope">
       <div class="envelope-back"></div>
@@ -39,7 +43,12 @@ const {asset,fullDate,time}=Astro.props;
 </script>
 <style>
  .sealed-intro{padding:48px 24px 32px;text-align:center;background:radial-gradient(ellipse at 20% 20%,#fffefa,#f2ede5);color:#625540;overflow:hidden;}
- .sealed-eyebrow{font:10px/1.5 sans-serif;letter-spacing:3px;margin:0 0 22px;}
+ .studio-cover{position:relative;margin:-48px -24px 0;}
+ .studio-cover img{display:block;width:100%;height:auto;}
+ .cover-letter{position:absolute;inset:55% 0 auto;color:#433832;}
+ .cover-letter h1{font-size:clamp(23px,6vw,30px);line-height:1.45;}
+ .cover-letter .sealed-subtitle{margin:10px 0 0;font-size:12px;color:#514640;}
+ @media(max-width:360px){.studio-cover{margin-inline:-20px;}}
  h1{font:32px/1.65 var(--serif);letter-spacing:-1px;margin:0;}
  .sealed-subtitle{font:13px/1.8 var(--serif);margin:12px 0 0;color:#857867;}
  .envelope-space{height:350px;display:flex;align-items:flex-end;justify-content:center;padding-bottom:30px;perspective:1100px;}

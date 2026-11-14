@@ -9,7 +9,7 @@ export const wedding = {
   venuePhone: "02-313-2480",
   locationSource: "https://www.aventium.co.kr/map.php",
   locationChecked: "2026-10-23",
-  heroPhoto: "",
+  heroPhoto: "/images/red-thread-cover.webp",
   // public/music/ 안에 음원을 넣은 뒤 /music/파일명.mp3를 지정합니다.
   music: { src: "/music/carefree-kevin-macleod.mp3", title: "Carefree — Kevin MacLeod", youtubeId: "" },
   photos: [] as { src: string; alt: string }[],
