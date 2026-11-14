@@ -37,7 +37,7 @@ const label = left > 0 ? `D-${left}` : left === 0 ? 'D-DAY' : `D+${-left}`;
   .dday { display:flex; flex-direction:column; align-items:center; gap:8px; margin:30px 0 6px; }
   .dday-num { display:flex; align-items:center; gap:14px; font:400 27px/1 var(--serif); letter-spacing:1px; color:var(--green); font-variant-numeric:tabular-nums; }
   .dday-num::before, .dday-num::after { content:""; width:34px; height:1px; background:currentColor; opacity:.35; }
-  .dday-line { font-size:12px; line-height:1.6; letter-spacing:.2px; color:var(--muted); font-variant-numeric:tabular-nums; }
-  .dday-line :global(b) { font-weight:500; font-size:13px; color:var(--ink, inherit); }
+  .dday-line { font-size:12px; line-height:1.6; letter-spacing:.2px; color:var(--muted); opacity:.62; font-variant-numeric:tabular-nums; }
+  .dday-line :global(b) { font-weight:400; font-size:12px; color:inherit; }
   .dday-line :global(.dday-sec) { color:var(--green); }
 </style>

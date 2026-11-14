@@ -1,0 +1,86 @@
+---
+// Gallery: one large rounded photo at a time that swipes sideways and moves on by itself every 4 seconds,
+// with a row of black-and-white circles below where the current photo grows and turns to colour.
+// Tapping a photo opens the full-screen viewer (#lightbox, via data-index).
+import { wedding as w } from '../data/wedding';
+const { asset } = Astro.props;
+const total = w.photos.length;
+---
+<div class="pswipe">
+  <div class="ps-track">
+    {w.photos.map((photo, i) => <button type="button" class="ps-slide" data-index={i} aria-label={`${photo.alt} 크게 보기`}>
+      <span class="ps-pic"><img src={asset(photo.src)} alt={photo.alt} loading={i < 2 ? 'eager' : 'lazy'} /></span>
+    </button>)}
+  </div>
+  <div class="ps-thumbs" role="group" aria-label="사진 고르기">
+    {w.photos.map((photo, i) => <button type="button" data-go={i} aria-label={`${i + 1}번째 사진 보기`}><img src={asset(photo.src)} alt="" loading="lazy" /></button>)}
+  </div>
+  <p class="ps-count" aria-live="polite">1 / {total}</p>
+</div>
+<script>
+  const root = document.querySelector<HTMLElement>('.pswipe');
+  if (root) {
+    const track = root.querySelector<HTMLElement>('.ps-track')!;
+    const slides = Array.from(track.querySelectorAll<HTMLElement>('.ps-slide'));
+    const thumbs = root.querySelector<HTMLElement>('.ps-thumbs')!;
+    const dots = Array.from(thumbs.children) as HTMLElement[];
+    const count = root.querySelector<HTMLElement>('.ps-count')!;
+    const total = slides.length;
+    let cur = 0, frame = 0;
+
+    const go = (i: number) => {
+      const el = slides[(i + total) % total];
+      track.scrollTo({ left: el.offsetLeft - (track.clientWidth - el.offsetWidth) / 2, behavior: 'smooth' });
+    };
+    const render = () => {
+      frame = 0;
+      const mid = track.scrollLeft + track.clientWidth / 2;
+      const step = total > 1 ? slides[1].offsetLeft - slides[0].offsetLeft : 1;
+      let best = Infinity;
+      slides.forEach((el, i) => {
+        const d = (el.offsetLeft + el.offsetWidth / 2 - mid) / step;
+        if (Math.abs(d) < best) { best = Math.abs(d); cur = i; }
+        const a = Math.min(1, Math.abs(d));
+        el.style.transform = `scale(${1 - 0.05 * a})`;
+        el.style.opacity = String(1 - 0.5 * a);
+      });
+      dots.forEach((dot, k) => { dot.classList.toggle('on', k === cur); dot.classList.toggle('near', Math.abs(k - cur) === 1); });
+      // Keep the current circle centred in its row without moving the page.
+      const on = dots[cur].getBoundingClientRect(), box = thumbs.getBoundingClientRect();
+      thumbs.scrollLeft += (on.left + on.width / 2) - (box.left + box.width / 2);
+      count.textContent = `${cur + 1} / ${total}`;
+    };
+    track.addEventListener('scroll', () => { if (!frame) frame = requestAnimationFrame(render); }, { passive: true });
+    dots.forEach((dot, k) => dot.addEventListener('click', () => { pauseUntil = Date.now() + 8000; go(k); }));
+    new ResizeObserver(render).observe(track);
+    render();
+
+    // Move on every 4 seconds while the gallery is on screen; a touch pauses it for 8 seconds.
+    const motion = new URLSearchParams(location.search).get('motion');
+    const still = motion !== 'on' && (motion === 'off' || matchMedia('(prefers-reduced-motion: reduce)').matches);
+    let pauseUntil = 0, visible = false;
+    ['pointerdown', 'touchstart', 'wheel', 'keydown'].forEach(ev => root.addEventListener(ev, () => { pauseUntil = Date.now() + 8000; }, { passive: true }));
+    new IntersectionObserver(entries => { visible = entries.some(e => e.isIntersecting); }, { threshold: 0.4 }).observe(track);
+    if (!still && total > 1) setInterval(() => {
+      const viewerOpen = document.querySelector<HTMLDialogElement>('#lightbox')?.open;
+      if (visible && !viewerOpen && !document.hidden && Date.now() > pauseUntil) go(cur + 1);
+    }, 4000);
+  }
+</script>
+<style>
+  .pswipe { margin-top:28px; }
+  .ps-track { display:flex; overflow-x:auto; scroll-snap-type:x mandatory; scrollbar-width:none; padding:6px 0 10px; margin:0 -24px; }
+  .ps-track::-webkit-scrollbar { display:none; }
+  .ps-track::before, .ps-track::after { content:""; flex:0 0 7%; }
+  .ps-slide { flex:0 0 86%; scroll-snap-align:center; border:0; padding:0; background:none; cursor:zoom-in; transition:none; }
+  .ps-pic { display:block; aspect-ratio:4 / 5; border-radius:24px; overflow:hidden; background:var(--sage, #ece5da); }
+  .ps-pic img { display:block; width:100%; height:100%; object-fit:cover; object-position:center 30%; }
+  .ps-thumbs { display:flex; align-items:center; gap:8px; height:64px; overflow-x:auto; scrollbar-width:none; padding:0 40%; margin:4px -24px 0; }
+  .ps-thumbs::-webkit-scrollbar { display:none; }
+  .ps-thumbs button { flex:0 0 auto; width:34px; height:34px; padding:2px; border:2px solid transparent; border-radius:50%; background:none; cursor:pointer; transition:width .3s, height .3s, border-color .3s; }
+  .ps-thumbs button.near { width:42px; height:42px; }
+  .ps-thumbs button.on { width:56px; height:56px; border-color:var(--green); }
+  .ps-thumbs img { display:block; width:100%; height:100%; border-radius:50%; object-fit:cover; filter:grayscale(1); opacity:.85; transition:filter .4s, opacity .4s; }
+  .ps-thumbs button.on img { filter:none; opacity:1; }
+  .ps-count { margin:6px 0 0; font-size:12px; color:var(--muted); font-variant-numeric:tabular-nums; }
+</style>
