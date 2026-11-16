@@ -22,14 +22,36 @@ const clientId=import.meta.env.PUBLIC_NAVER_MAP_CLIENT_ID || '';
  const lock=()=>{map?.setOptions({draggable:false,scrollWheel:false,pinchZoom:false,keyboardShortcuts:false});frame.classList.add('is-locked');unlock.setAttribute('aria-pressed','false');unlock.textContent='지도를 눌러 이동·확대하기';};
  const activate=()=>{if(!ready)return;map.setOptions({draggable:true,pinchZoom:true,keyboardShortcuts:true});frame.classList.remove('is-locked');unlock.setAttribute('aria-pressed','true');unlock.textContent='지도 조작 중 · 바깥을 누르면 종료돼요';};
  unlock.addEventListener('click',activate);
- shell.querySelector('.atm-map-frame')!.addEventListener('click',activate);
+ // A tap opens the place; a drag or pinch must never follow its link.
+ let gesture:{id:number;x:number;y:number;moved:boolean}|null=null;
+ let suppressLinksUntil=0;
+ frame.addEventListener('pointerdown',e=>{
+  if(gesture){gesture.moved=true;suppressLinksUntil=Date.now()+700;return;}
+  gesture={id:e.pointerId,x:e.clientX,y:e.clientY,moved:false};
+ },true);
+ document.addEventListener('pointermove',e=>{
+  if(gesture && e.pointerId===gesture.id && Math.hypot(e.clientX-gesture.x,e.clientY-gesture.y)>8)gesture.moved=true;
+ },true);
+ const finishGesture=(e:PointerEvent)=>{
+  if(!gesture)return;
+  if(gesture.moved || e.type==='pointercancel')suppressLinksUntil=Date.now()+700;
+  gesture=null;
+ };
+ document.addEventListener('pointerup',finishGesture,true);
+ document.addEventListener('pointercancel',finishGesture,true);
+ frame.addEventListener('dragstart',e=>e.preventDefault());
+ frame.addEventListener('click',e=>{
+  const link=(e.target as Element).closest('.atm-number-pin');
+  if(Date.now()<suppressLinksUntil){e.preventDefault();e.stopImmediatePropagation();return;}
+  if(!link)activate();
+ },true);
  document.addEventListener('pointerdown',e=>{if(!shell.contains(e.target as Node))lock();});
  document.addEventListener('focusin',e=>{if(!shell.contains(e.target as Node))lock();});
  shell.addEventListener('keydown',e=>{if(e.key==='Escape'){lock();unlock.focus({preventScroll:true});}});
  function resize(){
   if(!map||!frame.clientWidth||!details.open)return;
   map.setSize(new n.Size(frame.clientWidth,270));
-  if(bounds){map.fitBounds(bounds,{top:110,right:120,bottom:35,left:120});map.setZoom(frame.clientWidth<250?15:16);}
+  if(bounds){map.fitBounds(bounds,{top:110,right:120,bottom:35,left:120});map.setZoom(frame.clientWidth<250?15:16);map.panBy(new n.Point(15,0));}
  }
  async function start(){
   if(started){resize();return;}started=true;
@@ -53,6 +75,7 @@ const clientId=import.meta.env.PUBLIC_NAVER_MAP_CLIENT_ID || '';
     bounds.extend(position);
     const pin=document.createElement('a');
     pin.href='https://map.naver.com/p/search/'+encodeURIComponent(points[index].query);
+    pin.draggable=false;
     pin.target='_blank';pin.rel='noopener noreferrer';
     pin.setAttribute('aria-label',(index+1)+'. '+points[index].mapLabel+' 네이버 지도 열기');
     pin.className='atm-number-pin';
@@ -95,8 +118,8 @@ const clientId=import.meta.env.PUBLIC_NAVER_MAP_CLIENT_ID || '';
  :global(.atm-number-pin){position:relative;display:block;text-decoration:none;cursor:pointer;width:30px;height:30px;border:2px solid white;border-radius:50%;background:#655445;color:white;text-align:center;font:600 14px/26px sans-serif;box-shadow:0 2px 7px #0003;box-sizing:border-box;}
  :global(.atm-number-pin)::after{content:"";position:absolute;left:50%;top:27px;transform:translateX(-50%);width:2px;height:32px;background:#655445;}
  :global(.atm-number-pin)::before{content:"";position:absolute;left:50%;top:56px;transform:translateX(-50%);border-left:5px solid transparent;border-right:5px solid transparent;border-top:7px solid #655445;}
- :global(.atm-marker-label){position:absolute;top:0;right:34px;display:block;width:76px;padding:5px 4px;border:1px solid #d9cdbf;border-radius:5px;background:#fffdf8;color:#514438;white-space:normal;word-break:keep-all;font:500 11px/16px sans-serif;box-shadow:0 1px 4px #0001;}
+ :global(.atm-marker-label){position:absolute;top:0;right:34px;display:block;width:max-content;padding:5px 6px;border:1px solid #d9cdbf;border-radius:5px;background:#fffdf8;color:#514438;white-space:nowrap;font:500 11px/16px sans-serif;box-shadow:0 1px 4px #0001;}
  :global(.atm-marker-label.label-right){right:auto;left:34px;}
-@media(max-width:350px){:global(.atm-marker-label){width:60px;}}
+@media(max-width:350px){.atm-map-frame{margin-inline:-12px;}:global(.atm-marker-label){font-size:10px;padding-inline:4px;}}
 </style>
 
