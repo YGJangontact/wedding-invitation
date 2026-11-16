@@ -52,3 +52,13 @@ GitHub Actions 빌드에서만 `/wedding-invitation` 경로를 적용하며 로�
 - 기존 DB에는 guestbook/migrations/0001_passwords.sql을 한 번 적용합니다. 새 DB는 guestbook/schema.sql로 생성합니다. 두 파일을 같은 DB에 중복 적용하지 않습니다.
 - Worker 배포는 npx wrangler deploy --config guestbook/wrangler.jsonc로 별도 수행합니다. main push 자동 배포는 정적 청첩장에 적용됩니다.
 - 로컬 API 검증: Node 24 이상에서 node --test guestbook/worker.test.mjs (메모리 SQLite, 운영 데이터 변경 없음).
+
+
+## ATM 안내 근거 (2026-11-16)
+- 예식장 내부 ATM 없음: 사용자 전달 내용과 웨딩북 후기 일치.
+- 같은 건물 1층 이마트24 이용: https://www.weddingbook.com/review/192628 및 https://www.weddingbook.com/review/582?reviewType=BLOG_REVIEW
+- 이마트24 중림점 주소(청파로 464): https://place.clariosync.com/p/1053494/이마트24-중림점
+- KB국민은행 KB손해보험 RFC본부 ATM(서소문로 21): https://www.placeview.co.kr/id/MjU2MDIwMTAz
+- 신한은행 충정로역 ATM(충정로 8): https://kr.near-place.com/atm-nearby-sinhan-eunhaeng-atm-chungjeongloyeog-8-chungjeong-ro-seodaemun-gu
+- 위 정보는 후기·장소 목록 기반이며 현장 운영 및 일요일 이용시간은 확인하지 않음. 편의점 ATM의 은행 소속도 미확인.
+- 사이트는 지도 검색 링크를 제공하며 도보 시간·24시간 운영·수수료 면제를 보장하지 않음. 예식 전 현장 재확인 권장.

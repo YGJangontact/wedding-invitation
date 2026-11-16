@@ -23,6 +23,19 @@ const parkingQuery = encodeURIComponent('서울특별시 중구 칠패로 5 서�
         {item.highlights && <div class="parking-notice">{item.highlights.map(line=><strong>{line}</strong>)}</div>}
         <p>{item.text}</p>{i===2 && <a class="parking-link" href={`https://map.naver.com/p/search/${parkingQuery}`} target="_blank" rel="noopener noreferrer">별관 주차장 지도 ↗</a>}</div>
     </details>)}
+    <details class="atm-details">
+      <summary><span><strong>ATM 안내</strong><small>예식장 내부에는 ATM이 없습니다</small></span><span class="detail-toggle" aria-hidden="true">+</span></summary>
+      <div class="travel-content">
+        <p class="atm-intro">현금이 필요하시면 건물 1층 이마트24 또는 주변 ATM을 확인해 주세요.</p>
+        <div class="atm-list">
+          {w.nearbyAtms.map(atm=><a href={`https://map.naver.com/p/search/${encodeURIComponent(atm.query)}`} target="_blank" rel="noopener noreferrer">
+            <span><strong>{atm.name}</strong><small>{atm.detail}</small></span><span aria-hidden="true">↗</span>
+          </a>)}
+        </div>
+        <a class="atm-more" href={`https://map.naver.com/p/search/${encodeURIComponent('서울 중구 청파로 464 주변 ATM')}`} target="_blank" rel="noopener noreferrer">주변 ATM 더 찾기 ↗</a>
+        <p class="atm-note">일요일 이용 가능 여부와 운영시간은 방문 전 확인해 주세요. 기기·은행에 따라 수수료가 발생할 수 있습니다.</p>
+      </div>
+    </details>
   </div>
   <div class="venue-help" aria-label="예식장 연락처와 공식 안내">
     <a href={`tel:${w.venuePhone}`}>예식장 전화 <span>{w.venuePhone}</span></a>
@@ -31,6 +44,13 @@ const parkingQuery = encodeURIComponent('서울특별시 중구 칠패로 5 서�
   </div>
 </section>
 <style>
+  .atm-list { display:grid;gap:8px;margin:16px 0 8px; }
+  .atm-list a { display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px;border:1px solid var(--line);border-radius:4px;text-decoration:none;color:var(--ink); }
+  .atm-list strong { display:block;font-size:13px;line-height:1.6;font-weight:600;word-break:keep-all; }
+  .atm-list small { display:block;margin-top:4px;font-size:12px;color:var(--muted); }
+  .atm-more { display:inline-flex;align-items:center;min-height:44px;font-size:12px;text-underline-offset:3px; }
+  .travel-content .atm-note { margin:8px 0 0;font-size:12px;line-height:1.7;color:var(--muted);word-break:keep-all; }
+
   .travel-options summary small.parking-summary { color:var(--ink);font-weight:600; }
   .parking-notice { display:grid;gap:6px;padding:16px 18px;margin:0 0 20px;background:#f1eae0;border-left:3px solid #aa8b68;border-radius:4px;text-align:left;word-break:keep-all; }
   .parking-notice strong { color:#514338;font-size:15px;font-weight:600;line-height:1.6; }
