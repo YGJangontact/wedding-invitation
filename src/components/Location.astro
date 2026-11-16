@@ -22,10 +22,17 @@ const parkingQuery = encodeURIComponent('서울특별시 중구 칠패로 5 서�
       <div class="travel-content"><p>{item.text}</p>{i===2 && <a class="parking-link" href={`https://map.naver.com/p/search/${parkingQuery}`} target="_blank" rel="noopener noreferrer">별관 주차장 지도 ↗</a>}</div>
     </details>)}
   </div>
-  <a class="venue-call" href={`tel:${w.venuePhone}`}>예식장 문의 <span>{w.venuePhone}</span></a>
-  <p class="location-source"><a href={w.locationSource} target="_blank" rel="noopener noreferrer">아벤티움 공식 오시는 길 ↗</a><br/>{w.locationChecked.replaceAll('-', '. ')}. 확인<br/>방문 전 최신 안내를 확인해 주세요.</p>
+  <div class="venue-help" aria-label="예식장 연락처와 공식 안내">
+    <a href={`tel:${w.venuePhone}`}>예식장 전화 <span>{w.venuePhone}</span></a>
+    <span class="venue-help-divider" aria-hidden="true">|</span>
+    <a href={w.locationSource} target="_blank" rel="noopener noreferrer">공식 오시는 길 ↗</a>
+  </div>
 </section>
 <style>
+  .venue-help { display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:0 8px;margin-top:20px;font-size:11px;line-height:1.6;color:var(--muted); }
+  .venue-help a { display:inline-flex;align-items:center;gap:4px;min-height:44px;color:inherit;text-decoration:underline;text-underline-offset:3px;white-space:nowrap; }
+  .venue-help-divider { opacity:.45; }
+
   .venue-address-row { display:flex; align-items:center; justify-content:center; gap:6px; margin:10px 0 0; padding:0; }
   .venue-address-row .street-address { margin:0; min-width:0; font-size:11px; line-height:1.5; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .venue-address-row .address-copy { flex:none; margin:0; padding:0 8px; min-height:22px; font-size:10px; line-height:20px; border-radius:11px; }
