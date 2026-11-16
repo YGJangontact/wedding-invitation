@@ -62,3 +62,10 @@ GitHub Actions 빌드에서만 `/wedding-invitation` 경로를 적용하며 로�
 - 신한은행 충정로역 ATM(충정로 8): https://kr.near-place.com/atm-nearby-sinhan-eunhaeng-atm-chungjeongloyeog-8-chungjeong-ro-seodaemun-gu
 - 위 정보는 후기·장소 목록 기반이며 현장 운영 및 일요일 이용시간은 확인하지 않음. 편의점 ATM의 은행 소속도 미확인.
 - 사이트는 지도 검색 링크를 제공하며 도보 시간·24시간 운영·수수료 면제를 보장하지 않음. 예식 전 현장 재확인 권장.
+
+
+### ATM 지도 대조 및 현장 전달 내용
+- 2026-11-16 네이버 지도 검색 결과에서 이마트24 중림점(청파로 464), 우리은행 ATM 한경미디어지점, 신한 충정로금융센터 ATM 충정로역을 확인.
+- 사용자 정정: ATM은 1층 이마트24 **외부**에 있으며 국민은행 기기가 아님. 편의점 위치 지도에 연결하며 ATM 자체 핀으로 오인하지 않도록 표기.
+- 우리은행 ATM: 청파로 463. 보조 근거 https://www.weddingbook.com/review/711?reviewType=BLOG_REVIEW 및 https://dreamermemory.tistory.com/57
+- 국민은행 후보는 하객용 목록에서 제외. 개별 네이버 지도 검색 링크로 연결. 주말 운영시간·수수료는 미확인.

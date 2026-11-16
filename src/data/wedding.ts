@@ -37,9 +37,9 @@ export const wedding = {
     { title: "자가용 · 주차", summary: "무료 주차 2시간 · 연회장 앞 정산", highlights: ["무료 주차 2시간", "연회장 앞에서 주차 정산"], text: "본관 주차장\n브라운스톤서울 · 중구 청파로 464\n\n별관 주차장\n서소문공원 · 중구 칠패로 5\n\n예식장 공식 약도는 별관 주차장 이용도 안내하고 있습니다. 도착 후 현장 안내에 따라 주차해 주세요." },
   ] as { title: string; summary: string; text: string; highlights?: string[] }[],
   nearbyAtms: [
-    { name: "이마트24 중림점 ATM", detail: "같은 건물 1층 · 청파로 464", query: "이마트24 중림점 청파로 464" },
-    { name: "KB국민은행 KB손해보험 RFC본부 ATM", detail: "충정타워 · 서소문로 21", query: "KB국민은행 KB손해보험 RFC본부 ATM 서소문로 21" },
-    { name: "신한은행 충정로역 ATM", detail: "충정로역 · 충정로 8", query: "신한은행 ATM 충정로역 충정로 8" },
+    { name: "1층 이마트24 외부 ATM", detail: "이마트24 중림점 앞 · 청파로 464", query: "이마트24 중림점" },
+    { name: "우리은행 ATM 한경미디어지점", detail: "한국경제신문사 · 청파로 463", query: "우리은행 ATM 한경미디어지점" },
+    { name: "신한 충정로금융센터 ATM 충정로역", detail: "충정로역 · 충정로 8", query: "신한 충정로금융센터 ATM 충정로역" },
   ],
   contacts: [] as { label: string; phone: string }[],
   // 마음 전하실 곳: 이름·은행·계좌번호를 채운 사람만 하객에게 보입니다.
