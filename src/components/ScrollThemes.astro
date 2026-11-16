@@ -5,10 +5,9 @@
 <script>
   const theme = document.body.dataset.theme;
   const main = document.querySelector<HTMLElement>('main')!;
-  // ?motion=off: still thumbnails. ?motion=on: play even when the device asks for reduced motion (for reviewing).
-  const motionParam = new URLSearchParams(location.search).get('motion');
-  const still = motionParam !== 'on'
-    && (motionParam === 'off' || matchMedia('(prefers-reduced-motion: reduce)').matches);
+  // The scroll-linked thread and text play for everyone: they only move as far as the reader scrolls.
+  // ?motion=off gives still thumbnails. (The gallery's auto-advance still follows the device setting.)
+  const still = new URLSearchParams(location.search).get('motion') === 'off';
   const clamp = (v: number) => Math.max(0, Math.min(1, v));
   const SVG = 'http://www.w3.org/2000/svg';
 
