@@ -18,8 +18,10 @@ const parkingQuery = encodeURIComponent('서울특별시 중구 칠패로 5 서�
   </div>
   <div class="travel-options">
     {w.transport.map((item,i)=><details open={i===0}>
-      <summary><span><strong>{item.title}</strong><small>{item.summary}</small></span><span class="detail-toggle" aria-hidden="true">+</span></summary>
-      <div class="travel-content"><p>{item.text}</p>{i===2 && <a class="parking-link" href={`https://map.naver.com/p/search/${parkingQuery}`} target="_blank" rel="noopener noreferrer">별관 주차장 지도 ↗</a>}</div>
+      <summary><span><strong>{item.title}</strong><small class:list={{"parking-summary": !!item.highlights}}>{item.summary}</small></span><span class="detail-toggle" aria-hidden="true">+</span></summary>
+      <div class="travel-content">
+        {item.highlights && <div class="parking-notice">{item.highlights.map(line=><strong>{line}</strong>)}</div>}
+        <p>{item.text}</p>{i===2 && <a class="parking-link" href={`https://map.naver.com/p/search/${parkingQuery}`} target="_blank" rel="noopener noreferrer">별관 주차장 지도 ↗</a>}</div>
     </details>)}
   </div>
   <div class="venue-help" aria-label="예식장 연락처와 공식 안내">
@@ -29,6 +31,10 @@ const parkingQuery = encodeURIComponent('서울특별시 중구 칠패로 5 서�
   </div>
 </section>
 <style>
+  .travel-options summary small.parking-summary { color:var(--ink);font-weight:600; }
+  .parking-notice { display:grid;gap:6px;padding:16px 18px;margin:0 0 20px;background:#f1eae0;border-left:3px solid #aa8b68;border-radius:4px;text-align:left;word-break:keep-all; }
+  .parking-notice strong { color:#514338;font-size:15px;font-weight:600;line-height:1.6; }
+
   .venue-help { display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:0 8px;margin-top:20px;font-size:11px;line-height:1.6;color:var(--muted); }
   .venue-help a { display:inline-flex;align-items:center;gap:4px;min-height:44px;color:inherit;text-decoration:underline;text-underline-offset:3px;white-space:nowrap; }
   .venue-help-divider { opacity:.45; }
