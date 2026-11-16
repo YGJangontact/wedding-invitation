@@ -77,3 +77,12 @@ GitHub Actions 빌드에서만 `/wedding-invitation` 경로를 적용하며 로�
 - 위 두 건물 좌표의 Haversine 직선거리 약 118m. 1층 이마트24 외부 ATM은 예식장과 동일 건물.
 - 기존 신한 ATM 좌표(37.5596775,126.9632742)는 예식장에서 직선 약 455m이므로 제외. 근거 https://kr.near-place.com/atm-nearby-sinhan-eunhaeng-atm-chungjeongloyeog-8-chungjeong-ro-seodaemun-gu
 - 건물 기준 거리이며 실제 기기·출입구까지의 보행 거리를 의미하지 않음. 목록과 지도는 동일 데이터의 2곳만 표시. 범위 밖으로 안내할 수 있는 '주변 ATM 더 찾기'는 제거.
+
+## 네이버 지도 앱 연결 (2026-11-16)
+- 예식장·별관 주차장·ATM 목록과 지도 번호/라벨의 네이버 검색 링크에 공통 적용.
+- Android: 사용자 탭 안에서 nmap Intent 실행, browser_fallback_url은 동일 장소 웹 검색 주소.
+- iOS/iPadOS: nmap 검색 실행, 2.2초 동안 페이지가 계속 보이면 웹 검색으로 이동. 앱으로 전환되어 hidden/pagehide가 발생하면 대기 취소; 복귀할 때 웹으로 강제 이동하지 않음.
+- PC 및 JavaScript 비활성화: 기존 웹 링크 유지. 지도 끌기로 취소된 클릭은 앱 실행도 하지 않음.
+- 카카오톡 등의 인앱 브라우저는 외부 앱 실행을 자체 정책으로 제한하거나 확인창을 표시할 수 있음. 웹에서는 설치 여부를 확정할 수 없으며 자동 웹 대체는 best-effort. 실기기 Android/iOS 카톡에서 설치/미설치 상태 검증은 별도 필요.
+- 검증: node --test src/lib/naverMapLinks.test.mjs (주소 인코딩, OS 분기, 웹 대체, 앱 복귀, 중복 클릭, 드래그 취소).
+- 공식 참고: https://guide.ncloud-docs.com/docs/ko/application-maps-url-scheme-vpc / https://developer.chrome.com/docs/android/intents

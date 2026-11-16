@@ -44,6 +44,10 @@ const parkingQuery = encodeURIComponent('서울특별시 중구 칠패로 5 서�
     <a href={w.locationSource} target="_blank" rel="noopener noreferrer">공식 오시는 길 ↗</a>
   </div>
 </section>
+<script>
+  import { installNaverMapLinks } from '../lib/naverMapLinks.mjs';
+  installNaverMapLinks();
+</script>
 <style>
   .atm-list { display:grid;gap:8px;margin:16px 0 8px; }
   .atm-list a { display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px;border:1px solid var(--line);border-radius:4px;text-decoration:none;color:var(--ink); }
