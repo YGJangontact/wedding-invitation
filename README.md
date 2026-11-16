@@ -69,3 +69,11 @@ GitHub Actions 빌드에서만 `/wedding-invitation` 경로를 적용하며 로�
 - 사용자 정정: ATM은 1층 이마트24 **외부**에 있으며 국민은행 기기가 아님. 편의점 위치 지도에 연결하며 ATM 자체 핀으로 오인하지 않도록 표기.
 - 우리은행 ATM: 청파로 463. 보조 근거 https://www.weddingbook.com/review/711?reviewType=BLOG_REVIEW 및 https://dreamermemory.tistory.com/57
 - 국민은행 후보는 하객용 목록에서 제외. 개별 네이버 지도 검색 링크로 연결. 주말 운영시간·수수료는 미확인.
+
+
+### 300m 이내 ATM만 표시 (2026-11-16)
+- 예식장 청파로 464 기준 좌표 37.5608188,126.9682259: https://findby.co.kr/details/04510-111403101023-st-652c0cc3f27008be2c572a5e
+- 우리은행 소재 건물 청파로 463 좌표 37.5601281,126.9672067: https://place.clariosync.com/p/989196/지에스25(gs25)한국경제신문사점
+- 위 두 건물 좌표의 Haversine 직선거리 약 118m. 1층 이마트24 외부 ATM은 예식장과 동일 건물.
+- 기존 신한 ATM 좌표(37.5596775,126.9632742)는 예식장에서 직선 약 455m이므로 제외. 근거 https://kr.near-place.com/atm-nearby-sinhan-eunhaeng-atm-chungjeongloyeog-8-chungjeong-ro-seodaemun-gu
+- 건물 기준 거리이며 실제 기기·출입구까지의 보행 거리를 의미하지 않음. 목록과 지도는 동일 데이터의 2곳만 표시. 범위 밖으로 안내할 수 있는 '주변 ATM 더 찾기'는 제거.

@@ -3,10 +3,10 @@ import {wedding} from '../data/wedding';
 const clientId=import.meta.env.PUBLIC_NAVER_MAP_CLIENT_ID || '';
 ---
 <div class="atm-map-shell" data-client={clientId} data-points={JSON.stringify(wedding.nearbyAtms)}>
-  <div class="atm-map-frame"><div id="atm-map" aria-label="주변 ATM 세 곳의 위치를 표시한 네이버 지도" inert></div></div>
+  <div class="atm-map-frame"><div id="atm-map" aria-label={`예식장 300m 이내 ATM ${wedding.nearbyAtms.length}곳의 위치를 표시한 네이버 지도`} inert></div></div>
   <button class="atm-map-unlock" type="button" aria-pressed="false" hidden>지도를 눌러 이동·확대하기</button>
   <p class="atm-map-status" role="status">ATM 지도를 불러오는 중입니다.</p>
-  <p class="atm-map-caption">번호는 아래 목록과 같아요. 건물·역 주소 기준 위치입니다.</p>
+  <p class="atm-map-caption">예식장 기준 직선 300m 이내 · 건물 주소 기준 위치입니다.</p>
 </div>
 <script>
  import {loadNaverMaps} from '../lib/naverMaps';

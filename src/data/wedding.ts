@@ -39,7 +39,6 @@ export const wedding = {
   nearbyAtms: [
     { name: "1층 이마트24 외부 ATM", address: "서울특별시 중구 청파로 464", road: "청파로 464", detail: "이마트24 중림점 앞 · 청파로 464", query: "이마트24 중림점" },
     { name: "우리은행 ATM 한경미디어지점", address: "서울특별시 중구 청파로 463", road: "청파로 463", detail: "한국경제신문사 · 청파로 463", query: "우리은행 ATM 한경미디어지점" },
-    { name: "신한 충정로금융센터 ATM 충정로역", address: "서울특별시 서대문구 충정로 8", road: "충정로 8", detail: "충정로역 · 충정로 8", query: "신한 충정로금융센터 ATM 충정로역" },
   ],
   contacts: [] as { label: string; phone: string }[],
   // 마음 전하실 곳: 이름·은행·계좌번호를 채운 사람만 하객에게 보입니다.
