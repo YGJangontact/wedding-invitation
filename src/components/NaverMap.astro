@@ -11,6 +11,7 @@ const clientId = import.meta.env.PUBLIC_NAVER_MAP_CLIENT_ID || '';
   <slot />
 </div>
 <script>
+  import {loadNaverMaps} from "../lib/naverMaps";
   // Browser SDK Client ID only. Never embed the Naver Client Secret.
   const shell = document.querySelector<HTMLElement>('.naver-map-shell')!;
   const status = shell.querySelector<HTMLElement>('.map-status')!;
@@ -23,7 +24,6 @@ const clientId = import.meta.env.PUBLIC_NAVER_MAP_CLIENT_ID || '';
   document.addEventListener('pointerdown',e=>{if(!host.inert&&!shell.contains(e.target as Node))reset();});
   document.addEventListener('focusin',e=>{if(!host.inert&&!shell.contains(e.target as Node))reset();});
   shell.addEventListener('keydown',e=>{if(e.key==='Escape'&&!host.inert){reset();unlock.focus({preventScroll:true});}});
-  const win = window as any;
   let failed = false;
   let timer: ReturnType<typeof setTimeout>;
   const fail = () => {
@@ -33,17 +33,12 @@ const clientId = import.meta.env.PUBLIC_NAVER_MAP_CLIENT_ID || '';
     unlock.hidden = true;
     status.textContent = '지도를 불러오지 못했어요. 아래 네이버 지도에서 위치와 길찾기를 확인해 주세요.';
   };
-  function start() {
+  async function start() {
     if (!shell.dataset.mapClient) { fail(); return; }
-    win.navermap_authFailure = fail;
     timer = setTimeout(fail, 18000);
-    const script = document.createElement('script');
-    script.src = `https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${encodeURIComponent(shell.dataset.mapClient)}&submodules=geocoder&callback=initWeddingMap`;
-    script.async = true;
-    script.onerror = fail;
-    win.initWeddingMap = () => {
-      if (failed || !win.naver?.maps?.Service) { fail(); return; }
-      const n = win.naver.maps;
+    try {
+      const n = await loadNaverMaps(shell.dataset.mapClient);
+      if(failed)return;
       n.Service.geocode({query:shell.dataset.mapAddress}, (code:any, response:any) => {
         if (failed) return;
         const addresses = response?.v2?.addresses;
@@ -62,8 +57,7 @@ const clientId = import.meta.env.PUBLIC_NAVER_MAP_CLIENT_ID || '';
         });
         new ResizeObserver(()=>map.setSize(new n.Size(host.clientWidth,host.clientHeight))).observe(host);
       });
-    };
-    document.head.append(script);
+    } catch { fail(); }
   }
   // Load only when guests approach the directions section.
   const observer = new IntersectionObserver(entries=>{

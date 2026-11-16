@@ -1,0 +1,83 @@
+---
+import {wedding} from '../data/wedding';
+const clientId=import.meta.env.PUBLIC_NAVER_MAP_CLIENT_ID || '';
+---
+<div class="atm-map-shell" data-client={clientId} data-points={JSON.stringify(wedding.nearbyAtms)}>
+  <div class="atm-map-frame"><div id="atm-map" aria-label="주변 ATM 세 곳의 위치를 표시한 네이버 지도" inert></div></div>
+  <button class="atm-map-unlock" type="button" aria-pressed="false" hidden>지도를 눌러 이동·확대하기</button>
+  <p class="atm-map-status" role="status">ATM 지도를 불러오는 중입니다.</p>
+  <p class="atm-map-caption">번호는 아래 목록과 같아요. 건물·역 주소 기준 위치입니다.</p>
+</div>
+<script>
+ import {loadNaverMaps} from '../lib/naverMaps';
+ const shell=document.querySelector<HTMLElement>('.atm-map-shell')!;
+ const host=shell.querySelector<HTMLElement>('#atm-map')!;
+ const frame=shell.querySelector<HTMLElement>('.atm-map-frame')!;
+ const status=shell.querySelector<HTMLElement>('.atm-map-status')!;
+ const unlock=shell.querySelector<HTMLButtonElement>('.atm-map-unlock')!;
+ const details=shell.closest('details')!;
+ type Point={name:string;address:string;road:string};
+ const points:Point[]=JSON.parse(shell.dataset.points!);
+ let started=false, ready=false, map:any, n:any, bounds:any;
+ const lock=()=>{host.inert=true;unlock.setAttribute('aria-pressed','false');unlock.textContent='지도를 눌러 이동·확대하기';};
+ const activate=()=>{if(!ready)return;host.inert=false;unlock.setAttribute('aria-pressed','true');unlock.textContent='지도 조작 중 · 바깥을 누르면 종료돼요';};
+ unlock.addEventListener('click',activate);
+ shell.querySelector('.atm-map-frame')!.addEventListener('click',activate);
+ document.addEventListener('pointerdown',e=>{if(!shell.contains(e.target as Node))lock();});
+ document.addEventListener('focusin',e=>{if(!shell.contains(e.target as Node))lock();});
+ shell.addEventListener('keydown',e=>{if(e.key==='Escape'){lock();unlock.focus({preventScroll:true});}});
+ function resize(){
+  if(!map||!frame.clientWidth||!details.open)return;
+  map.setSize(new n.Size(frame.clientWidth,270));
+  if(bounds)map.fitBounds(bounds,{top:45,right:35,bottom:35,left:35});
+ }
+ async function start(){
+  if(started){resize();return;}started=true;
+  try {
+   n=await loadNaverMaps(shell.dataset.client!);
+   const resolved=await Promise.all(points.map(point=>new Promise<any>((resolve)=>{
+    const timer=setTimeout(()=>resolve(null),12000);
+    n.Service.geocode({query:point.address},(code:any,res:any)=>{
+     clearTimeout(timer);
+     const addresses=res?.v2?.addresses;
+     if(code!==n.Service.Status.OK||addresses?.length!==1||!addresses[0].roadAddress?.includes(point.road)){resolve(null);return;}
+     const a=addresses[0];resolve(new n.LatLng(Number(a.y),Number(a.x)));
+    });
+   })));
+   const first=resolved.find(Boolean);
+   if(!first)throw new Error('No ATM positions');
+   map=new n.Map(host,{center:first,zoom:16,scrollWheel:false,zoomControl:true,zoomControlOptions:{position:n.Position.TOP_RIGHT,style:n.ZoomControlStyle.SMALL}});
+   bounds=new n.LatLngBounds(first,first);
+   resolved.forEach((position,index)=>{
+    if(!position)return;
+    bounds.extend(position);
+    const marker=new n.Marker({map,position,title:(index+1)+'. '+points[index].name,icon:{content:'<span class="atm-number-pin">'+(index+1)+'</span>',anchor:new n.Point(15,15)}});
+    n.Event.addListener(marker,'click',()=>{
+     status.hidden=false;status.textContent=(index+1)+'. '+points[index].name;
+    });
+   });
+   resize();
+   const timer=setTimeout(()=>{if(!ready)fail();},15000);
+   n.Event.once(map,'tilesloaded',()=>{
+    clearTimeout(timer);ready=true;unlock.hidden=false;lock();
+    status.hidden=resolved.every(Boolean);
+    status.textContent=resolved.every(Boolean)?'':'일부 위치를 표시하지 못했어요. 아래 지도 링크를 이용해 주세요.';
+   });
+   new ResizeObserver(resize).observe(frame);
+  }catch{fail();}
+ }
+ function fail(){ready=false;host.hidden=true;unlock.hidden=true;status.hidden=false;status.textContent='ATM 지도를 불러오지 못했어요. 아래 개별 지도 링크를 이용해 주세요.';}
+ details.addEventListener('toggle',()=>{if(details.open)start();else lock();});
+ if(details.open)start();
+</script>
+<style>
+ .atm-map-shell{margin:18px 0 12px;}
+ .atm-map-frame{border:1px solid var(--line);border-radius:6px;overflow:hidden;}
+ #atm-map{width:100%;height:270px;}
+ #atm-map[hidden]{display:none;}
+ .atm-map-frame:has([inert]){cursor:pointer;touch-action:pan-y;}
+ .atm-map-unlock{display:block;min-height:44px;margin:4px auto 0;padding:8px;border:0;background:transparent;color:var(--muted);font:12px/1.6 var(--serif);text-decoration:underline;text-underline-offset:3px;cursor:pointer;}
+ .atm-map-unlock[hidden]{display:none;}
+ .atm-map-shell .atm-map-status,.atm-map-shell .atm-map-caption{font-size:11px;line-height:1.6;margin:6px 0;color:var(--muted);word-break:keep-all;}
+ :global(.atm-number-pin){display:block;width:30px;height:30px;border:2px solid white;border-radius:50%;background:#655445;color:white;text-align:center;font:600 14px/26px sans-serif;box-shadow:0 2px 7px #0003;box-sizing:border-box;}
+</style>

@@ -1,6 +1,7 @@
 ---
 import { wedding as w } from '../data/wedding';
 import NaverMap from './NaverMap.astro';
+import AtmMap from './AtmMap.astro';
 const query = encodeURIComponent(w.address);
 const parkingQuery = encodeURIComponent('서울특별시 중구 칠패로 5 서소문공원 주차장');
 ---
@@ -27,9 +28,10 @@ const parkingQuery = encodeURIComponent('서울특별시 중구 칠패로 5 서�
       <summary><span><strong>ATM 안내</strong><small>예식장 내부에는 ATM이 없습니다</small></span><span class="detail-toggle" aria-hidden="true">+</span></summary>
       <div class="travel-content">
         <p class="atm-intro">현금이 필요하시면 건물 1층 이마트24 편의점 외부 또는 주변 은행 ATM을 확인해 주세요.</p>
+        <AtmMap />
         <div class="atm-list">
-          {w.nearbyAtms.map(atm=><a href={`https://map.naver.com/p/search/${encodeURIComponent(atm.query)}`} target="_blank" rel="noopener noreferrer">
-            <span><strong>{atm.name}</strong><small>{atm.detail}</small><small class="atm-map-label">네이버 지도 보기 ↗</small></span>
+          {w.nearbyAtms.map((atm,index)=><a href={`https://map.naver.com/p/search/${encodeURIComponent(atm.query)}`} target="_blank" rel="noopener noreferrer">
+            <span><strong>{index+1}. {atm.name}</strong><small>{atm.detail}</small><small class="atm-map-label">네이버 지도 보기 ↗</small></span>
           </a>)}
         </div>
         <a class="atm-more" href={`https://map.naver.com/p/search/${encodeURIComponent('서울 중구 청파로 464 주변 ATM')}`} target="_blank" rel="noopener noreferrer">주변 ATM 더 찾기 ↗</a>
