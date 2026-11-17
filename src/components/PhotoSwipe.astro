@@ -80,9 +80,9 @@ const total = w.photos.length;
     new ResizeObserver(() => { shown = -1; render(); }).observe(track);
     render();
 
-    // Move on every 4 seconds while the gallery is on screen; a touch pauses it for 8 seconds.
-    const motion = new URLSearchParams(location.search).get('motion');
-    const still = motion !== 'on' && (motion === 'off' || matchMedia('(prefers-reduced-motion: reduce)').matches);
+    // Move on every 4 seconds while the gallery is on screen, for everyone; a touch pauses it
+    // for 8 seconds, and only ?motion=off stops it.
+    const still = new URLSearchParams(location.search).get('motion') === 'off';
     let pauseUntil = 0, visible = false;
     ['pointerdown', 'touchstart', 'wheel', 'keydown'].forEach(ev => root.addEventListener(ev, () => { pauseUntil = Date.now() + 8000; }, { passive: true }));
     new IntersectionObserver(entries => { visible = entries.some(e => e.isIntersecting); }, { threshold: 0.4 }).observe(track);
