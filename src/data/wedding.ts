@@ -9,6 +9,10 @@ export const wedding = {
   venuePhone: "02-313-2480",
   locationSource: "https://www.aventium.co.kr/map.php",
   locationChecked: "2026-10-23",
+  // 카카오톡 공유: Kakao Developers 앱의 JavaScript 키(공개용). 비어 있으면 기기 기본 공유창이나 링크 복사로 동작합니다.
+  kakaoJsKey: "",
+  // 예식 달의 공휴일(일). 2027년 5월 5일 어린이날.
+  holidays: [5],
   heroPhoto: "/images/red-thread-cover.webp",
   // public/music/ 안에 음원을 넣은 뒤 /music/파일명.mp3를 지정합니다.
   music: { src: "/music/carefree-kevin-macleod.mp3", title: "Carefree — Kevin MacLeod", youtubeId: "" },
@@ -32,10 +36,11 @@ export const wedding = {
   ],
   // 확인된 정보만 입력하면 해당 안내가 나타납니다.
   transport: [
-    { title: "지하철", summary: "충정로역 4번 출구 · 도보 약 3분", text: "2·5호선 충정로역 4번 출구에서 약 70m 직진한 뒤 횡단보도를 건너 브라운스톤서울 3층으로 오세요.\n\n서울역에서는 15번 출구(공항철도역) 기준 도보 약 10분입니다. 서부광장으로 나와 한국경제신문사 방향으로 이동하면 맞은편에 있습니다." },
-    { title: "버스", summary: "한국경제신문사 정류장 하차", text: "한국경제신문사 정류장(02516·02109)을 이용해 주세요.\n\n간선 370 · 603\n지선 7011 · 7013A · 7013B · 7017\n마을 서대문06\n공항 6015\n\n노선과 운행 정보는 출발 전 지도 앱에서 확인해 주세요." },
-    { title: "자가용 · 주차", summary: "무료 주차 2시간 · 연회장 앞 정산", highlights: ["무료 주차 2시간", "연회장 앞에서 주차 정산"], text: "본관 주차장\n브라운스톤서울 · 중구 청파로 464\n\n별관 주차장\n서소문공원 · 중구 칠패로 5\n\n예식장 공식 약도는 별관 주차장 이용도 안내하고 있습니다. 도착 후 현장 안내에 따라 주차해 주세요." },
-  ] as { title: string; summary: string; text: string; highlights?: string[] }[],
+    { title: "지하철", summary: "충정로역 4번 출구", badges: [{ text: "도보 약 3분" }], text: "2·5호선 충정로역 4번 출구에서 약 70m 직진한 뒤 횡단보도를 건너 브라운스톤서울 3층으로 오세요.\n\n서울역에서는 15번 출구(공항철도역) 기준 도보 약 10분입니다. 서부광장으로 나와 한국경제신문사 방향으로 이동하면 맞은편에 있습니다." },
+    { title: "버스", summary: "한국경제신문사 정류장 하차", badges: [{ text: "공항버스 6015" }], text: "한국경제신문사 정류장(02516·02109)을 이용해 주세요.\n\n간선 370 · 603\n지선 7011 · 7013A · 7013B · 7017\n마을 서대문06\n공항 6015\n\n노선과 운행 정보는 출발 전 지도 앱에서 확인해 주세요." },
+    { title: "자가용 · 주차", summary: "본관 · 별관 주차장", badges: [{ text: "무료 2시간", key: true }, { text: "연회장 앞 정산" }], highlights: ["무료 주차 2시간", "연회장 앞에서 주차 정산"], text: "본관 주차장\n브라운스톤서울 · 중구 청파로 464\n\n별관 주차장\n서소문공원 · 중구 칠패로 5\n\n예식장 공식 약도는 별관 주차장 이용도 안내하고 있습니다. 도착 후 현장 안내에 따라 주차해 주세요." },
+  ] as { title: string; summary: string; text: string; badges?: { text: string; key?: boolean }[]; highlights?: string[] }[],
+  atmBadges: [{ text: "1층 편의점" }] as { text: string; key?: boolean }[],
   nearbyAtms: [
     { name: "1층 이마트24 외부 ATM", mapLabel: "이마트24 외부 ATM", address: "서울특별시 중구 청파로 464", road: "청파로 464", detail: "이마트24 중림점 앞 · 청파로 464", query: "이마트24 중림점" },
     { name: "우리은행 ATM 한경미디어지점", mapLabel: "우리은행 ATM", address: "서울특별시 중구 청파로 463", road: "청파로 463", detail: "한국경제신문사 · 청파로 463", query: "우리은행 ATM 한경미디어지점" },

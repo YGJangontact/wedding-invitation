@@ -279,12 +279,52 @@ section {
 .calendar-grid span:nth-child(7n + 1) {
   color: #9b6c62;
 }
+.calendar-grid .holiday {
+  color: #9b6c62;
+}
+/* Wedding day: a hand-drawn red-thread loop that draws itself in, then a small heart on its tail. */
 .calendar-grid .selected {
-  width: 35px;
-  justify-self: center;
-  background: var(--green);
-  border-radius: 50%;
-  color: white !important;
+  position: relative;
+  color: var(--green) !important;
+  font-weight: 600;
+}
+.calendar-grid .selected svg {
+  position: absolute;
+  overflow: visible;
+  pointer-events: none;
+}
+.day-loop {
+  width: 40px;
+  height: 36px;
+}
+.day-loop path {
+  fill: none;
+  stroke: var(--green);
+  stroke-width: 1.2;
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+.day-heart {
+  width: 9px;
+  height: 8px;
+  top: -3px;
+  right: calc(50% - 21px);
+  fill: var(--green);
+  transform: scale(0) rotate(12deg);
+  transform-origin: 50% 80%;
+}
+.calendar.drawn .day-loop path {
+  transition: stroke-dashoffset 1.6s cubic-bezier(.4, 0, .2, 1) .2s;
+  stroke-dashoffset: 0;
+}
+.calendar.drawn .day-heart {
+  transition: transform .5s cubic-bezier(.34, 1.56, .64, 1) 1.7s;
+  transform: scale(1) rotate(12deg);
+}
+@media (prefers-reduced-motion: reduce) {
+  .day-loop path { stroke-dashoffset: 0; }
+  .day-heart { transform: scale(1) rotate(12deg); }
 }
 .date-caption {
   font-size: 12px;
@@ -417,17 +457,45 @@ footer > p {
   margin-top: 25px;
   line-height: 2;
 }
-.share-button {
+.share-pair {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
+  gap: 28px;
+  margin: 36px 0 26px;
+}
+.share-pair > div {
+  display: grid;
+  justify-items: center;
+  gap: 7px;
+  font-family: var(--sans);
+  font-size: 11.5px;
+  color: var(--muted);
+}
+.share-icon {
+  display: inline-flex;
   align-items: center;
-  width: 100%;
-  margin-top: 36px;
-  padding: 16px 22px;
-  background: var(--green);
-  color: white;
-  border: 0;
-  font-size: 12px;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--paper);
+  color: var(--ink);
+  cursor: pointer;
+}
+.share-icon.kakao {
+  border-color: #fee500;
+  background: #fee500;
+  color: #191600;
+}
+.share-icon svg {
+  width: 20px;
+  height: 20px;
+}
+.share-icon:focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: 3px;
 }
 footer .local-note {
   font-family: var(--sans);

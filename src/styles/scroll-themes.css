@@ -46,7 +46,7 @@ body[data-theme="mono"] {--paper:#fff;--ink:#1f1f1f;--muted:#5e5e5e;--green:#1f1
 [data-theme="mono"] .day-section,[data-theme="mono"] .gallery {background:transparent;}
 [data-theme="mono"] .calendar {border-color:var(--line);}
 [data-theme="mono"] .calendar-grid span:nth-child(7n + 1) {color:var(--ink);}
-[data-theme="mono"] .calendar-grid .selected {background:transparent;color:var(--ink) !important;box-shadow:inset 0 0 0 1px var(--ink);}
+[data-theme="mono"] .calendar-grid .holiday {color:var(--ink);}
 [data-theme="mono"] .gallery-placeholder {background:#f4f4f4;color:#6b6b6b;}
 [data-theme="mono"] .venue-card {background:transparent;border:1px solid var(--line);}
 [data-theme="mono"] .address-copy {border-color:#bdbdbd;}
