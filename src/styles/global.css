@@ -282,50 +282,59 @@ section {
 .calendar-grid .holiday {
   color: #9b6c62;
 }
-/* Wedding day: a hand-drawn red-thread loop that draws itself in, then a small heart on its tail. */
+/* Wedding day: a red thread wraps once around the date, crosses over itself and trails off
+   to the left, with a small heart hanging from its loose end. It draws itself in on first view. */
 .calendar-grid .selected {
   position: relative;
   color: var(--green) !important;
   font-weight: 600;
 }
-.calendar-grid .selected svg {
+.day-thread {
   position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 72px;
+  height: 44px;
+  margin: -22px 0 0 -50px;
   overflow: visible;
   pointer-events: none;
 }
-.day-loop {
-  width: 40px;
-  height: 36px;
-}
-.day-loop path {
+.day-thread path {
   fill: none;
   stroke: var(--green);
-  stroke-width: 1.2;
   stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.day-thread .strand,
+.day-thread .fiber {
   stroke-dasharray: 1;
   stroke-dashoffset: 1;
 }
-.day-heart {
-  width: 9px;
-  height: 8px;
-  top: -3px;
-  right: calc(50% - 21px);
-  fill: var(--green);
-  transform: scale(0) rotate(12deg);
-  transform-origin: 50% 80%;
+.day-thread .strand { stroke-width: 1.3; }
+.day-thread .fiber { stroke-width: .5; opacity: .45; }
+.day-thread .charm path { stroke-width: .8; }
+.day-thread .heart { fill: var(--green); stroke: none; }
+.day-thread .charm {
+  opacity: 0;
+  transform: translateY(-3px) rotate(-8deg);
+  transform-box: fill-box;
+  transform-origin: 50% 0;
 }
-.calendar.drawn .day-loop path {
-  transition: stroke-dashoffset 1.6s cubic-bezier(.4, 0, .2, 1) .2s;
+.calendar.drawn .day-thread .strand,
+.calendar.drawn .day-thread .fiber {
+  transition: stroke-dashoffset 2s cubic-bezier(.45, 0, .2, 1) .2s;
   stroke-dashoffset: 0;
 }
-.calendar.drawn .day-heart {
-  transition: transform .5s cubic-bezier(.34, 1.56, .64, 1) 1.7s;
-  transform: scale(1) rotate(12deg);
+.calendar.drawn .day-thread .charm {
+  transition: opacity .3s ease 2.1s, transform .9s cubic-bezier(.34, 1.8, .5, 1) 2.1s;
+  opacity: 1;
+  transform: none;
 }
 @media (prefers-reduced-motion: reduce) {
-  .day-loop path { stroke-dashoffset: 0; }
-  .day-heart { transform: scale(1) rotate(12deg); }
+  .day-thread .strand, .day-thread .fiber { stroke-dashoffset: 0; }
+  .day-thread .charm { opacity: 1; transform: none; }
 }
+
 .date-caption {
   font-size: 12px;
   color: var(--muted);
