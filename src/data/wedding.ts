@@ -10,7 +10,7 @@ export const wedding = {
   locationSource: "https://www.aventium.co.kr/map.php",
   locationChecked: "2026-10-23",
   // 카카오톡 공유: Kakao Developers 앱의 JavaScript 키(공개용). 비어 있으면 기기 기본 공유창이나 링크 복사로 동작합니다.
-  kakaoJsKey: "",
+  kakaoJsKey: "312172a44426531a1c81d591b7c933bb",
   // 예식 달의 공휴일(일). 2027년 5월 5일 어린이날.
   holidays: [5],
   heroPhoto: "/images/red-thread-cover.webp",
