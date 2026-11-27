@@ -29,7 +29,7 @@ const parkingQuery = encodeURIComponent('서울특별시 중구 칠패로 5 서�
       <summary><span><span class="travel-head"><strong>{item.title}</strong>{item.badges?.map(b=><span class:list={['badge',{key:b.key}]}>{b.text}</span>)}</span><small class:list={{"parking-summary": !!item.highlights}}>{item.summary}</small></span><span class="detail-toggle" aria-hidden="true">+</span></summary>
       <div class="travel-content">
         {item.highlights && <div class="parking-notice">{item.highlights.map(line=><span>{line}</span>)}</div>}
-        <p>{item.text}</p>{i===2 && <a class="parking-link" href={`https://map.naver.com/p/search/${parkingQuery}`} target="_blank" rel="noopener noreferrer">별관 주차장 지도 ↗</a>}</div>
+        <p>{item.text}</p>{i===0 && <a class="parking-link" href={w.roadviewUrl} target="_blank" rel="noopener noreferrer">건물 입구 로드뷰 보기 ↗</a>}{i===2 && <a class="parking-link" href={`https://map.naver.com/p/search/${parkingQuery}`} target="_blank" rel="noopener noreferrer">별관 주차장 지도 ↗</a>}</div>
     </details>)}
     <details class="atm-details">
       <summary><span><span class="travel-head"><strong>ATM 안내</strong>{w.atmBadges.map(b=><span class:list={['badge',{key:b.key}]}>{b.text}</span>)}</span><small>예식장 내부에는 ATM이 없습니다</small></span><span class="detail-toggle" aria-hidden="true">+</span></summary>

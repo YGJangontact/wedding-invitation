@@ -40,6 +40,8 @@ export const wedding = {
     { title: "버스", summary: "한국경제신문사 정류장 하차", text: "한국경제신문사 정류장(02516·02109)을 이용해 주세요.\n\n간선 370 · 603\n지선 7011 · 7013A · 7013B · 7017\n마을 서대문06\n\n노선과 운행 정보는 출발 전 지도 앱에서 확인해 주세요." },
     { title: "자가용 · 주차", summary: "본관 · 별관 주차장", badges: [{ text: "무료 2시간", key: true }, { text: "연회장 앞 정산" }], highlights: ["무료 주차 2시간", "연회장 앞에서 주차 정산"], text: "본관 주차장\n브라운스톤서울 · 중구 청파로 464\n\n별관 주차장\n서소문공원 · 중구 칠패로 5\n\n예식장 공식 약도는 별관 주차장 이용도 안내하고 있습니다. 도착 후 현장 안내에 따라 주차해 주세요." },
   ] as { title: string; summary: string; text: string; badges?: { text: string; key?: boolean }[]; highlights?: string[] }[],
+  // 건물 앞 카카오맵 로드뷰. 좌표는 네이버 지오코딩(청파로 464 브라운스톤서울) 결과입니다.
+  roadviewUrl: "https://map.kakao.com/link/roadview/37.5608188,126.9682259",
   // 지도 바로 아래 세 칸 요약. icon: train | walk | parking
   quickFacts: [
     { icon: "train", value: "3분", label: "충정로역\n4번 출구" },
