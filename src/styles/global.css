@@ -752,3 +752,11 @@ details[open] .detail-toggle { transform: rotate(45deg); }
 .location .location-source { margin-top: 18px; color: #6c7568; font-size: 11px; line-height: 1.9; }
 .location-source a { text-decoration: underline; text-underline-offset: 4px; display: inline-block; padding: 8px 0; font-size: 12px; }
 .bottom-nav a { font-size: 13px; }
+
+/* Before / after the wedding (html[data-phase="after"] is set in <head>). */
+html:not([data-phase="after"]) .after-only { display: none !important; }
+html[data-phase="after"] .before-only { display: none !important; }
+.after-stamp { display: inline-block; margin-top: 8px; padding: 3px 12px; border: 1px solid var(--green); border-radius: 99px; color: var(--green); font-size: 13px; }
+html[data-phase="after"] #location:not(.open) > :not(.eyebrow, h2, .loc-unfold) { display: none; }
+#location.open .loc-unfold { display: none !important; }
+.loc-unfold { display: block; margin: 18px auto 0; min-height: 44px; padding: 0 20px; border: 1px solid var(--line); border-radius: 99px; background: none; color: var(--ink); font: 14px var(--sans); cursor: pointer; }

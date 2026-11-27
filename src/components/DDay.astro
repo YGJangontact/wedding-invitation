@@ -18,7 +18,8 @@ const label = left > 0 ? `D-${left}` : left === 0 ? 'D-DAY' : `D+${-left}`;
     const num = box.querySelector<HTMLElement>('.dday-num')!;
     const line = box.querySelector<HTMLElement>('.dday-line')!;
     const tick = () => {
-      const now = new Date();
+      const real = new Date();
+      const now = document.documentElement.dataset.phase === 'after' && real < when ? new Date(when.getTime() + 12 * 864e5) : real;
       const days = Math.round((kstDay(when) - kstDay(now)) / 864e5);
       num.textContent = days > 0 ? `D-${days}` : days === 0 ? 'D-DAY' : `D+${-days}`;
       const ms = when.getTime() - now.getTime();

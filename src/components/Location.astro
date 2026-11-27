@@ -6,7 +6,8 @@ const query = encodeURIComponent(w.address);
 const parkingQuery = encodeURIComponent('서울특별시 중구 칠패로 5 서소문공원 주차장');
 ---
 <section id="location" class="location">
-  <p class="eyebrow">만나는 곳</p>
+  <p class="eyebrow"><span class="before-only">만나는 곳</span><span class="after-only">예식장 정보</span></p>
+  <button type="button" class="after-only loc-unfold" aria-expanded="false" onclick="this.closest('section').classList.add('open');this.setAttribute('aria-expanded','true')">예식장 정보 펼치기 +</button>
   <h2>{w.venue}</h2>
   <p class="venue-building">{w.hall.replace(/\s*\S+층$/, '')} <em>{w.hall.match(/\S+층$/)?.[0]}</em></p>
   <div class="venue-address-row">

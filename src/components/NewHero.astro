@@ -40,7 +40,7 @@ const monoNames = w.names.every(Boolean) ? w.names.join(' 그리고 ') : names;
     <div class="mono-photo">{w.heroPhoto ? <img src={asset(w.heroPhoto)} alt="두 사람의 손을 하나로 잇는 붉은 실" fetchpriority="high"/> : <span>우리의 사진 한 장</span>}</div>
     <h1>{monoNames}</h1>
   </>}
-  <div class="new-hero-details"><p>{fullDate}<br/><strong>{time}</strong></p><p>{w.city} {w.venue}<br/><span>{w.hall}</span></p></div>
+  <div class="new-hero-details"><p>{fullDate}<br/><strong class="before-only">{time}</strong><span class="after-only after-stamp">잘 마쳤습니다</span></p><p class="before-only">{w.city} {w.venue}<br/><span>{w.hall}</span></p></div>
   <button type="button" class="ts-pill" data-text-size aria-pressed="false" aria-label="글씨 크게 보기"><span class="ts-mark" aria-hidden="true">가+</span><span class="ts-label">글씨 크게 보기</span></button>
-  <a class="new-hero-next" href="#invitation">초대의 글 읽기 <span aria-hidden="true">↓</span></a>
+  <a class="new-hero-next" href="#invitation"><span class="before-only">초대의 글 읽기</span><span class="after-only">감사 인사 읽기</span> <span aria-hidden="true">↓</span></a>
 </header>
