@@ -1,0 +1,66 @@
+---
+// "글씨 크게 보기" / "보통으로 보기". Any button with [data-text-size] toggles it.
+// Small print grows the most (under 12px -> 14, 12-13 -> 15, 14-15 -> 16); text that is
+// already 16px or more (invitation lines with fixed breaks, headings) stays as it is.
+// Photos, maps, the fixed bottom bar and the music button are left alone so nothing overflows.
+// The choice is remembered on this phone.
+---
+<script>
+  const KEY = 'invitation-text-size';
+  const SKIP = 'svg, script, style, .ps-track, .ps-thumbs, #lightbox, .naver-map-shell, .bottom-nav, .music-control, [data-text-size]';
+  const root = document.documentElement;
+  const bump = (px: number) => px < 12 ? 14 : px < 14 ? 15 : px < 16 ? 16 : 0;
+  const hasText = (el: Element) => Array.from(el.childNodes).some(n => n.nodeType === 3 && n.textContent!.trim());
+
+  const enlarge = (scope: Element) => {
+    const els = [scope, ...Array.from(scope.querySelectorAll('*'))]
+      .filter(el => el instanceof HTMLElement && !el.dataset.tsOrig && hasText(el) && !el.closest(SKIP)) as HTMLElement[];
+    // Read every size first, then write, so children that inherit are not enlarged twice.
+    const sizes = els.map(el => bump(parseFloat(getComputedStyle(el).fontSize)));
+    els.forEach((el, i) => {
+      if (!sizes[i]) return;
+      el.dataset.tsOrig = el.style.fontSize || '-';
+      el.style.fontSize = sizes[i] + 'px';
+    });
+  };
+  const restore = () => document.querySelectorAll<HTMLElement>('[data-ts-orig]').forEach(el => {
+    el.style.fontSize = el.dataset.tsOrig === '-' ? '' : el.dataset.tsOrig!;
+    delete el.dataset.tsOrig;
+  });
+
+  // Guestbook entries and other parts that appear later follow the current size too.
+  const watcher = new MutationObserver(list => {
+    for (const m of list) m.addedNodes.forEach(n => { if (n instanceof Element && !n.closest(SKIP)) enlarge(n); });
+  });
+
+  const buttons = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-text-size]'));
+  const apply = (large: boolean) => {
+    root.classList.toggle('text-large', large);
+    if (large) { enlarge(document.body); watcher.observe(document.body, { childList: true, subtree: true }); }
+    else { watcher.disconnect(); restore(); }
+    for (const b of buttons) {
+      b.setAttribute('aria-pressed', String(large));
+      const label = b.querySelector('.ts-label');
+      if (label) label.textContent = large ? '보통으로 보기' : '글씨 크게 보기';
+      const mark = b.querySelector('.ts-mark');
+      if (mark) mark.textContent = large ? '가−' : '가+';
+      b.setAttribute('aria-label', large ? '글씨 보통으로 보기' : '글씨 크게 보기');
+    }
+  };
+  buttons.forEach(b => b.addEventListener('click', () => {
+    const large = !root.classList.contains('text-large');
+    apply(large);
+    try { localStorage.setItem(KEY, large ? 'large' : 'normal'); } catch {}
+  }));
+  let saved = 'normal';
+  try { saved = localStorage.getItem(KEY) || 'normal'; } catch {}
+  if (saved === 'large') apply(true);
+</script>
+<style is:global>
+  html.text-large body[data-theme="thread"] { --muted:#4a4540; }
+  .ts-pill { display:inline-flex; align-items:center; gap:7px; min-height:44px; margin:14px auto 0; padding:0 18px; border:1px solid var(--ink); border-radius:99px; background:none; color:var(--ink); font:500 14px var(--sans, sans-serif); cursor:pointer; }
+  .ts-pill .ts-mark, .ts-round .ts-mark { font-family:var(--serif, serif); font-weight:600; }
+  .ts-round { flex:none; width:34px; height:34px; padding:0; margin-left:4px; border:1px solid var(--ink); border-radius:50%; background:none; color:var(--ink); font-size:12px; line-height:1; cursor:pointer; }
+  .ts-round[aria-pressed="true"] { background:var(--ink); color:var(--paper); }
+  .ts-pill:focus-visible, .ts-round:focus-visible { outline:2px solid var(--green); outline-offset:3px; }
+</style>

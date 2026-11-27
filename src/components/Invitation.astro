@@ -9,6 +9,7 @@ import Location from './Location.astro';
 import '../styles/themes.css';
 import '../styles/new-themes.css';
 import NewHero from './NewHero.astro';
+import TextSize from './TextSize.astro';
 import InvitationMotion from './InvitationMotion.astro';
 import SeasonStory from './SeasonStory.astro';
 import ShareMeta from './ShareMeta.astro';
@@ -69,11 +70,12 @@ const days = new Date(Date.UTC(year,month,0)).getUTCDate();
       <footer><span class="ornament">✳</span><h2>그날, 반갑게 만나요.</h2><p>소중한 걸음과 마음을<br/>오래도록 기억하겠습니다.</p><div class="share-pair" data-kakao-key={w.kakaoJsKey}><div><button type="button" id="share-kakao" class="share-icon kakao" aria-label="카카오톡으로 공유하기"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 3C6.5 3 2 6.6 2 11c0 2.8 1.9 5.3 4.7 6.7l-1 3.6c-.1.3.3.6.6.4l4.3-2.8c.5.1.9.1 1.4.1 5.5 0 10-3.6 10-8S17.5 3 12 3z"/></svg></button><span aria-hidden="true">카카오톡</span></div><div><button type="button" id="share-link" class="share-icon" aria-label="청첩장 링크 복사"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg></button><span aria-hidden="true">링크 복사</span></div></div>{!guestView && <p class="local-note">이름을 준비 중인 청첩장 시안입니다.</p>}<small>{year}. {String(month).padStart(2,'0')}. {String(day).padStart(2,'0')} · {w.venue}</small></footer>
       {w.music.src && <p class="music-credit">Music: <a href="https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1400037" target="_blank" rel="noopener noreferrer">“Carefree” — Kevin MacLeod (incompetech.com)</a><br/>Licensed under <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a> · 원본 음원, 재생 음량 조절·반복 재생</p>}
     </main>
-    <nav class="bottom-nav" aria-label="청첩장 바로가기"><a href="#day">예식 안내</a><span></span><a href="#location">오시는 길</a>{showGallery && <><span></span><a href="#gallery">사진첩</a></>}</nav>
+    <nav class="bottom-nav" aria-label="청첩장 바로가기"><a href="#day">예식 안내</a><span></span><a href="#location">오시는 길</a>{showGallery && <><span></span><a href="#gallery">사진첩</a></>}<button type="button" class="ts-round" data-text-size aria-pressed="false" aria-label="글씨 크게 보기"><span class="ts-mark" aria-hidden="true">가+</span></button></nav>
     <dialog id="lightbox" aria-label="사진 크게 보기"><div class="lb-top"><span id="lb-count" aria-live="polite"></span><button type="button" id="close-photo" aria-label="사진 닫기">×</button></div><div class="lb-track" id="lb-track">{w.photos.map(photo=><figure><img src={asset(photo.src)} alt={photo.alt} loading="lazy"/></figure>)}</div><button type="button" class="lb-nav lb-prev" aria-label="이전 사진">‹</button><button type="button" class="lb-nav lb-next" aria-label="다음 사진">›</button></dialog>
     <p id="toast" role="status" aria-live="polite"></p>
     {scrollTheme ? <ScrollThemes theme={theme}/> : <InvitationMotion />}
     {w.music.youtubeId ? <YouTubeMusic /> : <BackgroundMusic />}
+    <TextSize />
     <script>
       const toast = document.querySelector<HTMLElement>('#toast')!;
       let timer: ReturnType<typeof setTimeout>;
